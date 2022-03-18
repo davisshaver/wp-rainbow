@@ -1,0 +1,23 @@
+# Node modules
+node_modules
+
+# Composer packages
+vendor
+
+# Cache files
+.phpcs/*.json
+.phpunit.result.cache
+
+# Ignore temporary OS files
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.thumbsdb
+
+# IDE files
+*.code-workspace
+.idea
+.vscode
