@@ -1,4 +1,4 @@
-name: WordPress Tests
+name: PHPUnit Tests
 
 on: [push]
 
@@ -51,6 +51,6 @@ jobs:
       - name: Install WordPress test suite
         run: bash bin/install-wp-tests.sh wordpress_test root root mysql ${{ matrix.wordpress-version }}
 
-      ## Run integration tests
-      - name: Tests
-        run: composer test:wordpress
+      ## Run unit tests
+      - name: Unit Tests
+        run: composer test
