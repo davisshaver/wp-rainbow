@@ -8,6 +8,10 @@ vendor
 .phpcs/*.json
 .phpunit.result.cache
 
+# Build files
+build/js/index.js
+build/js/login.js
+
 # Ignore temporary OS files
 .DS_Store
 .DS_Store?

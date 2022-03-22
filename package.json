@@ -3,6 +3,25 @@
     "dependencies": {
         "@rainbow-me/rainbowkit": "^0.0.1",
         "ethers": "^5.6.1",
+        "process": "^0.11.10",
+        "siwe": "^1.1.2",
+        "util": "^0.12.4",
         "wagmi": "^0.2.21"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.17.2",
+        "@babel/preset-env": "^7.16.11",
+        "@babel/preset-react": "^7.16.7",
+        "babel-loader": "^8.2.3",
+        "css-loader": "^6.7.1",
+        "mini-css-extract-plugin": "^2.6.0",
+        "prettier": "^2.6.0",
+        "style-loader": "^3.3.1",
+        "webpack": "^5.70.0",
+        "webpack-cli": "^4.9.2"
+    },
+    "scripts": {
+        "build": "webpack",
+        "build:prod": "webpack --env production"
     }
 }
