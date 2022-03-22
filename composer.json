@@ -18,7 +18,7 @@
     "lint:fix": "@phpcbf",
     "phpcbf": "phpcbf .",
     "phpcs": "phpcs . --runtime-set text_domain wp-rainbow --runtime-set prefixes wp_rainbow",
-    "phpunit": "phpunit --config=php-unit.xml",
+    "phpunit": "phpunit --config=phpunit.xml",
     "test": "@phpunit"
   },
   "config": {
@@ -26,5 +26,9 @@
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "alleyinteractive/composer-wordpress-autoloader": true
     }
+  },
+  "require": {
+    "simplito/elliptic-php": "^1.0",
+    "kornrunner/keccak": "^1.1"
   }
 }

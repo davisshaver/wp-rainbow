@@ -24,13 +24,11 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
 
     steps:
-      # Setup
       - name: Checkout repository
         uses: actions/checkout@v1
 
-      ## Install
       - name: Get Composer Cache Directory
-        id: get-composer-cache-dir # Instead of composer-cache
+        id: get-composer-cache-dir
         run: |
           echo "::set-output name=dir::$(composer config cache-files-dir)"
 
@@ -47,10 +45,8 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress
 
-      ## Install test suite
       - name: Install WordPress test suite
         run: bash bin/install-wp-tests.sh wordpress_test root root mysql ${{ matrix.wordpress-version }}
 
-      ## Run unit tests
-      - name: Unit Tests
+      - name: Run PHPUnit tests
         run: composer test

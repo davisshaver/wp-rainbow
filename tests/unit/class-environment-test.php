@@ -8,7 +8,6 @@
 namespace WP_Rainbow\Tests;
 
 use PHPUnit\Framework\TestCase;
-use WPRainbow\Plugin;
 
 /**
  * These tests prove test setup works.
