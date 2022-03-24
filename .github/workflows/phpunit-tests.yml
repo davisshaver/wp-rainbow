@@ -42,7 +42,11 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install GMP
-        run: apt-get install -y libgmp-dev
+        run: |
+          apt-get install -y libgmp-dev
+          ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
+          docker-php-ext-configure gmp
+          docker-php-ext-install gmp
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
