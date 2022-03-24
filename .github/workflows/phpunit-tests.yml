@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install GMP
-        run: sudo apt-get install php7.4-gmp
+        run: apt-get install php7.4-gmp
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
