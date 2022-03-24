@@ -41,6 +41,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
+      - name: Install GMP
+        run: sudo apt-get install php7.4-gmp
+
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress
