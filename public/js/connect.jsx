@@ -127,7 +127,8 @@ export const WPRainbowConnect = () => {
                   style={{
                     fontSize: "12px",
                     fontStyle: "italic",
-                    margin: "4px 0",
+                    marginBottom: "4px",
+                    marginTop: "4px",
                     textAlign: "center",
                   }}
                 >
