@@ -1,33 +1,46 @@
 name: Generate ZIP for Release
+
 on:
   release:
     types: [published]
+
 jobs:
+
   build:
-    name: Upload Release Asset
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Build PHP
         run: composer install --no-dev --optimize-autoloader
-      - uses: actions/setup-node@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
         with:
           node-version: '16'
           cache: 'yarn'
-      - run: yarn install
-      - run: yarn build
+
+      - name: Install packages w/ Yarn
+        run: yarn install
+
+      - name: Build with Yarn
+        run: yarn build
+
       - name: Create release ZIP
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
           filename: 'wp-rainbow.zip'
-          exclusions: '/*node_modules/* composer.* /*bin/* package.json phpcs.xml phpunit.xml /*public/* /*tests/* yarn.lock webpack.config.js .gitignore /*.git/* .babelrc /*.phpcs/* /*.github/* /*bin/*'
+          exclusions: '/*node_modules/* composer.* package.json phpcs.xml phpunit.xml /*public/* /*bin/* /*tests/* yarn.lock webpack.config.js .gitignore /*.git/* .babelrc /*.phpcs/* /*.github/*'
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: wp-rainbow
           path: wp-rainbow.zip
+
       - name: Upload to release
         uses: JasonEtco/upload-to-release@master
         with:
