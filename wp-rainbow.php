@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP Rainbow
- * Version: 0.0.9
+ * Version: 0.0.1
  *
  * @package WP_Rainbow
  */
