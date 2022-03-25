@@ -14,11 +14,11 @@ add_filter(
 	} 
 );
 
-// Use author role for new accounts.
+// Use contributor role for new accounts.
 add_filter(
 	'wp_rainbow_role_for_address',
 	function () {
-		return 'author';
+		return 'contributor';
 	}
 );
 
