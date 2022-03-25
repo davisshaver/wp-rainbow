@@ -239,18 +239,6 @@ class WP_Rainbow {
 				display: none !important;
 			}
 
-			.wp-rainbow {
-				width: 100%;
-			}
-
-			.wp-rainbow.help-text {
-				font-size: 12px;
-				font-style: italic;
-				margin-bottom: 4px !important;
-				order: -1;
-				text-align: center;
-			}
-
 			#wp-rainbow-button {
 				order: -2;
 				width: 100%;
