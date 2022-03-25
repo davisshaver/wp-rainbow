@@ -10,9 +10,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build PHP
-        run: |
-          composer install --no-dev --optimize-autoloader
-          mkdir zip
+        run: composer install --no-dev --optimize-autoloader
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
@@ -24,7 +22,7 @@ jobs:
         with:
           type: 'zip'
           filename: 'wp-rainbow.zip'
-          exclusions: '/*node_modules/* composer.* /*bin/* package.json phpcs.xml phpunit.xml /*public/* /*tests/* yarn.lock webpack.config.js'
+          exclusions: '/*node_modules/* composer.* /*bin/* package.json phpcs.xml phpunit.xml /*public/* /*tests/* yarn.lock webpack.config.js .gitignore /*.git/* .babelrc /*.phpcs/* /*.github/* /*bin/*'
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
