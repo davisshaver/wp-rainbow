@@ -31,3 +31,13 @@ Before you begin, make sure you have [Composer](https://getcomposer.org/) and [Y
 5. Build the JS files.
 
     `yarn build`
+
+## Filters
+
+Find reference implementations of all filters in [example plugin here](https://github.com/davisshaver/wp-rainbow/blob/main/wp-rainbow-filter-examples.php).
+
+**`wp_rainbow_nonce_life`** - Filter amount of time before nonce expires.
+
+**`wp_rainbow_role_for_address`** - Filter role granted to a specific address on sign-in.
+
+**`wp_rainbow_infura_id`** - Filter Infura ID to override settings value.
