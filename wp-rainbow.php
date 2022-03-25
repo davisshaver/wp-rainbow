@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP Rainbow
- * Version: 0.0.2
+ * Version: 0.0.3
  *
  * @package WP_Rainbow
  */
@@ -13,7 +13,7 @@ namespace WP_Rainbow;
  *
  * @var string
  */
-define( 'WP_RAINBOW_ASSETS_VERSION', '0.0.2' );
+define( 'WP_RAINBOW_ASSETS_VERSION', '0.0.1' );
 
 // Include the autoloader.
 add_action(
