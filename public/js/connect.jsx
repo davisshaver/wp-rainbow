@@ -51,15 +51,17 @@ export const WPRainbowConnect = () => {
       setState((x) => ({ ...x, error: undefined, loading: true }));
       const nonceRes = await fetch(NONCE_API);
       const nonce = await nonceRes.json();
-      const message = new SiweMessage({
+      const siwePayload = {
         address,
         chainId,
         domain: window.location.host,
+        issuedAt: new Date().toISOString(),
         nonce,
         statement: `Log In with Ethereum to ${SITE_TITLE}`,
         uri: window.location.origin,
         version: "1",
-      });
+      };
+      const message = new SiweMessage(siwePayload);
       const signRes = await signMessage({
         message: message.prepareMessage(),
       });
@@ -71,10 +73,10 @@ export const WPRainbowConnect = () => {
         },
         body: JSON.stringify({
           address,
-          message: message.toMessage(),
-          signature: signRes.data,
-          nonce,
           displayName: accountData?.ens?.name ?? address,
+          nonce,
+          signature: signRes.data,
+          siwePayload,
         }),
       });
       if (!verifyRes.ok) throw new Error("Error verifying message");
