@@ -4,6 +4,8 @@
 
 Providing a [Sign-In With Ethereum](https://login.xyz/) experience for [WordPress](https://wordpress.org/) using [RainbowKit](https://www.npmjs.com/package/@rainbow-me/rainbowkit).
 
+_Want to try it out? [Head here.](https://wp-rainbow.davisshaver.com/wp-login.php)_
+
 ## Installation
 
 The recommended way to install WP Rainbow is downloading the ZIP file from [the most recent release](https://github.com/davisshaver/wp-rainbow/releases).
