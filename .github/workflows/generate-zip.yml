@@ -19,18 +19,20 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       - run: yarn build
-      - name: Create artifact
-        uses: montudor/action-zip@v0.1.0
+      - name: Create release ZIP
+        uses: thedoctor0/zip-release@master
         with:
-          args: zip -X -r zip/wp-rainbow.zip . -x node_modules/\* .* composer.* bin/\* package.json phpcs.xml phpunit.xml public/\* tests/\* yarn.lock webpack.config.js zip/\*
+          type: 'zip'
+          filename: 'wp-rainbow.zip'
+          exclusions: '/*node_modules/* composer.* /*bin/* package.json phpcs.xml phpunit.xml /*public/* /*tests/* yarn.lock webpack.config.js'
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: wp-rainbow
-          path: zip/wp-rainbow.zip
+          path: wp-rainbow.zip
       - name: Upload to release
         uses: JasonEtco/upload-to-release@master
         with:
-          args: zip/wp-rainbow.zip application/zip
+          args: wp-rainbow.zip application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
