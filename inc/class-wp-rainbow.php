@@ -247,6 +247,10 @@ class WP_Rainbow {
 			#loginform.logged-in > :not(div#wp-rainbow-button) {
 				display: none;
 			}
+
+			#loginform.logged-in .wp-rainbow.help-text {
+				display: none;
+			}
 		</style>
 		<?php
 	}
