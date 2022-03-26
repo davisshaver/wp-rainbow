@@ -101,16 +101,25 @@ export const WPRainbowConnect = () => {
     }
   }, [accountData, state.address, loading, hasLoadedSecondTime]);
 
+  const siteLoginText = (
+    <p
+      className="wp-rainbow help-text"
+      style={{
+        fontSize: "12px",
+        fontStyle: "italic",
+        marginBottom: "4px",
+        marginTop: "4px",
+        textAlign: "center",
+      }}
+    >
+      {__("- OR USE SITE LOGIN -", "wp-rainbow")}
+    </p>
+  );
+
   return (
     <>
       <ConnectButton.Custom>
-        {({
-          account,
-          chain,
-          openAccountModal,
-          openChainModal,
-          openConnectModal,
-        }) => {
+        {({ account, openAccountModal, openConnectModal }) => {
           if (state.error) {
             return (
               <React.Fragment>
@@ -122,33 +131,28 @@ export const WPRainbowConnect = () => {
                 >
                   {__("Log In Error, Click to Refresh", "wp-rainbow")}
                 </button>
-                <p
-                  className="wp-rainbow help-text"
-                  style={{
-                    fontSize: "12px",
-                    fontStyle: "italic",
-                    marginBottom: "4px",
-                    marginTop: "4px",
-                    textAlign: "center",
-                  }}
-                >
-                  {__("- OR USE SITE LOGIN -", "wp-rainbow")}
-                </p>
+                {siteLoginText}
               </React.Fragment>
             );
           }
           if (account) {
             return (
-              <button
-                className="button button-secondary button-hero"
-                onClick={state.address ? openAccountModal : signIn}
-                type="button"
-                style={{ width: "100%" }}
-              >
-                {state.address
-                  ? `${__("Logged In as ")} ${account.displayName}`
-                  : __("Continue Log In with Ethereum")}
-              </button>
+              <React.Fragment>
+                <button
+                  className="button button-secondary button-hero"
+                  onClick={state.address ? openAccountModal : signIn}
+                  type="button"
+                  disabled={state.loading}
+                  style={{ width: "100%" }}
+                >
+                  {state.address
+                    ? `${__("Logged In as ")} ${account.displayName}`
+                    : state.loading
+                    ? __("Check Wallet to Sign Message")
+                    : __("Continue Log In with Ethereum")}
+                </button>
+                {siteLoginText}
+              </React.Fragment>
             );
           }
           return (
@@ -161,18 +165,7 @@ export const WPRainbowConnect = () => {
               >
                 {__("Log In with Ethereum", "wp-rainbow")}
               </button>
-              <p
-                className="wp-rainbow help-text"
-                style={{
-                  fontSize: "12px",
-                  fontStyle: "italic",
-                  marginBottom: "4px",
-                  marginTop: "4px",
-                  textAlign: "center",
-                }}
-              >
-                {__("- OR USE SITE LOGIN -", "wp-rainbow")}
-              </p>
+              {siteLoginText}
             </React.Fragment>
           );
         }}
