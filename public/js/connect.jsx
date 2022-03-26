@@ -140,9 +140,8 @@ export const WPRainbowConnect = () => {
               <React.Fragment>
                 <button
                   className="button button-secondary button-hero"
-                  onClick={state.address ? openAccountModal : signIn}
+                  onClick={state.address || state.loading ? openAccountModal : signIn}
                   type="button"
-                  disabled={state.loading}
                   style={{ width: "100%" }}
                 >
                   {state.address
@@ -159,7 +158,12 @@ export const WPRainbowConnect = () => {
             <React.Fragment>
               <button
                 className="button button-secondary button-hero"
-                onClick={openConnectModal}
+                onClick={() => {
+                  // Make sure we don't have an active signing attempt.
+                  setState({});
+                  setTriggeredLogin(false);
+                  openConnectModal();
+                }}
                 style={{ width: "100%" }}
                 type="button"
               >
