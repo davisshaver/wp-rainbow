@@ -34,6 +34,8 @@ Before you begin, make sure you have [Composer](https://getcomposer.org/) and [Y
 
     `yarn build`
 
+_Note: This plugin requires [GMP](https://www.php.net/manual/en/book.gmp.php) to be available on the server._
+
 ## Filters
 
 Find reference implementations of all filters in [example plugin here](https://github.com/davisshaver/wp-rainbow/blob/main/wp-rainbow-filter-examples.php).
