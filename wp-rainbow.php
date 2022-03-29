@@ -1,9 +1,20 @@
 <?php
 /**
- * Plugin Name: WP Rainbow
- * Version: 0.0.3
+ * WP Rainbow
  *
- * @package WP_Rainbow
+ * @package           WP_Rainbow
+ * @author            Davis Shaver
+ * @license           MIT
+ *
+ * @wordpress-plugin
+ * Plugin Name:       WP Rainbow
+ * Plugin URI:        https://wp-rainbow.davisshaver.com/
+ * Description:       WP Rainbow is a plugin that allows WordPress users to log in with Ethereum using the Sign-In With Ethereum standard, powered by RainbowKit.
+ * Version:           0.0.3
+ * Author:            Davis Shaver
+ * Author URI:        https://davisshaver.com/
+ * Text Domain:       wp-rainbow
+ * Update URI:        https://github.com/davisshaver/wp-rainbow
  */
 
 namespace WP_Rainbow;

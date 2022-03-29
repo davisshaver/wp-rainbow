@@ -73,6 +73,11 @@ class WP_Rainbow {
 	 * @return int Nonce lifespan.
 	 */
 	public function filter_nonce_life_filtered(): int {
+		/**
+		 * Filter the nonce lifespan for WP Rainbow login.
+		 *
+		 * @param int $default Default lifespan (ten minutes).
+		 */
 		return apply_filters( 'wp_rainbow_nonce_life', 6000 );
 	}
 
@@ -84,6 +89,12 @@ class WP_Rainbow {
 	 * @return mixed|void Filtered role for a given address.
 	 */
 	public function get_role_for_address_filtered( string $address ) {
+		/**
+		 * Filter the default role for WP Rainbow users.
+		 *
+		 * @param string $default Default role for new users.
+		 * @param string $address Address of user being added.
+		 */
 		return apply_filters( 'wp_rainbow_role_for_address', 'subscriber', $address );
 	}
 
@@ -95,6 +106,11 @@ class WP_Rainbow {
 	public function get_infura_id_filtered() {
 		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_infura_id' => '' ] );
 
+		/**
+		 * Filter the Infura ID used for WP Rainbow integration.
+		 *
+		 * @param string $default Infura ID as set in WP Rainbow options.
+		 */
 		return apply_filters( 'wp_rainbow_infura_id', $options['wp_rainbow_field_infura_id'] );
 	}
 
@@ -374,6 +390,15 @@ class WP_Rainbow {
 		$generated_msg      = $this->generate_message( $siwe_payload );
 		$signature_verified = $this->verify_signature( $generated_msg, $signature, $address );
 		if ( ! $signature_verified ) {
+			/**
+			 * Fires when a WP Rainbow user's login attempt doesn't pass validation.
+			 *
+			 * @param string $generated_msg Generated SIWE message.
+			 * @param string $signature Signature passed in login request.
+			 * @param string $address Address of user attempting login.
+			 */
+			do_action( 'wp_rainbow_validation_failed', $generated_msg, $signature, $address );
+
 			return new WP_REST_Response( 'error', 500 );
 		}
 
@@ -391,6 +416,16 @@ class WP_Rainbow {
 					'display_name' => $sanitized_display_name,
 				]
 			);
+
+			/**
+			 * Fires when a new user is created via WP Rainbow.
+			 *
+			 * @param int $user_id ID of new user account.
+			 * @param string $address Address of new user.
+			 * @param string $sanitized_display_name Display name of new user (either ENS or address).
+			 */
+			do_action( 'wp_rainbow_user_created', $user->ID, $address, $sanitized_display_name );
+
 		} elseif ( $user->display_name !== $sanitized_display_name ) {
 			wp_update_user(
 				[
@@ -398,8 +433,26 @@ class WP_Rainbow {
 					'display_name' => $sanitized_display_name,
 				]
 			);
+
+			/**
+			 * Fires when a WP Rainbow user's display name is updated.
+			 *
+			 * @param int $user_id ID of new user account.
+			 * @param string $address Address of new user.
+			 * @param string $sanitized_display_name Display name of new user (either ENS or address).
+			 */
+			do_action( 'wp_rainbow_user_updated', $user->ID, $address, $sanitized_display_name );
 		}
 		wp_set_auth_cookie( $user->ID, true );
+
+		/**
+		 * Fires when a WP Rainbow user has logged in.
+		 *
+		 * @param int $user_id ID of new user account.
+		 * @param string $address Address of new user.
+		 * @param string $sanitized_display_name Display name of new user (either ENS or address).
+		 */
+		do_action( 'wp_rainbow_user_login', $user->ID, $address, $sanitized_display_name );
 
 		return new WP_REST_Response( true );
 	}
