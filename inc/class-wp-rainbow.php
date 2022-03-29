@@ -76,7 +76,7 @@ class WP_Rainbow {
 		/**
 		 * Filter the nonce lifespan for WP Rainbow login.
 		 *
-		 * @param int $default Default life span (ten minutes).
+		 * @param int $default Default lifespan (ten minutes).
 		 */
 		return apply_filters( 'wp_rainbow_nonce_life', 6000 );
 	}
