@@ -449,7 +449,7 @@ class WP_Rainbow {
 		if ( ! $user ) {
 			// If there's not a user already, double check registration settings.
 			$users_can_register = get_option( 'users_can_register', false );
-			if ( ! $users_can_register ) {
+			if ( empty( $users_can_register ) ) {
 				$wp_rainbow_options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_override_users_can_register' => false ] );
 				if ( empty( $wp_rainbow_options['wp_rainbow_field_override_users_can_register'] ) ) {
 					return new WP_REST_Response( 'error', 500 );
