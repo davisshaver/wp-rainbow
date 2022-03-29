@@ -125,7 +125,8 @@ class WP_Rainbow {
 			'WP Rainbow',
 			'manage_options',
 			'wp_rainbow',
-			[ self::$instance, 'wp_rainbow_settings_page_html' ]
+			[ self::$instance, 'wp_rainbow_settings_page_html' ],
+			'dashicons-money'
 		);
 	}
 
@@ -152,10 +153,50 @@ class WP_Rainbow {
 				'label_for' => 'wp_rainbow_field_infura_id',
 			],
 		);
+
+		add_settings_field(
+			'wp_rainbow_field_override_users_can_register',
+			__( 'Always Allow Registration', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_override_users_can_register_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_override_users_can_register',
+			],
+		);
 	}
 
 	/**
-	 * Print field for Infura ID.
+	 * Print field for Always Allow Registration option.
+	 */
+	public function wp_rainbow_override_users_can_register_callback() {
+		$options            = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_override_users_can_register' => false ] );
+		$users_can_register = ! empty( $options['wp_rainbow_field_override_users_can_register'] );
+		?>
+		<input
+			id='wp_rainbow_field_override_users_can_register'
+			name='wp_rainbow_options[wp_rainbow_field_override_users_can_register]'
+			type='checkbox'
+			<?php
+			if ( $users_can_register ) {
+				echo 'checked';
+			}
+			?>
+		/>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'If enabled, this setting will override the General Settings membership option.', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Print field for Infura ID option.
 	 */
 	public function wp_rainbow_infura_id_callback() {
 		$options   = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_infura_id' => '' ] );
@@ -406,6 +447,15 @@ class WP_Rainbow {
 		$user                   = get_user_by( 'login', $address );
 		$sanitized_display_name = sanitize_text_field( $display_name );
 		if ( ! $user ) {
+			// If there's not a user already, double check registration settings.
+			$users_can_register = get_option( 'users_can_register', false );
+			if ( empty( $users_can_register ) ) {
+				$wp_rainbow_options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_override_users_can_register' => false ] );
+				if ( empty( $wp_rainbow_options['wp_rainbow_field_override_users_can_register'] ) ) {
+					return new WP_REST_Response( 'error', 500 );
+				}
+			}
+
 			$password = wp_generate_password();
 			$user_id  = wp_create_user( $address, $password );
 			$user     = get_user_by( 'ID', $user_id );
