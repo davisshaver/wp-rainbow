@@ -183,11 +183,15 @@ class WP_Rainbow {
 			}
 			?>
 		/>
-		<p><em><small>
-		<?php
-		esc_html_e( 'If enabled, this setting will override the General Settings membership option.', 'wp-rainbow' );
-		?>
-		</small></em></p>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'If enabled, this setting will override the General Settings membership option.', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
 		<?php
 	}
 
