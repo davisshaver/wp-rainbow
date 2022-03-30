@@ -73,10 +73,10 @@ class WP_Rainbow {
 	/**
 	 * Maybe disallow password reset for WP Rainbow users.
 	 *
-	 * @param bool $allow_password_reset Default value for show password fields.
-	 * @param int  $user_id Current user.
+	 * @param bool $allow_password_reset Default value for allow password reset.
+	 * @param int  $user_id ID of current user.
 	 *
-	 * @return bool Filtered value for show password fields.
+	 * @return bool Filtered value for allow password reset.
 	 */
 	public function filter_allow_password_reset( $allow_password_reset, $user_id ) {
 		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_disable_passwords_for_wp_users' => false ] );
