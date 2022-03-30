@@ -8,6 +8,7 @@
 namespace WP_Rainbow;
 
 use Exception;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -66,9 +67,37 @@ class WP_Rainbow {
 		add_action( 'admin_init', [ self::$instance, 'action_admin_init' ] );
 		add_filter( 'show_password_fields', [ self::$instance, 'filter_show_password_fields' ], 10, 2 );
 		add_filter( 'allow_password_reset', [ self::$instance, 'filter_allow_password_reset' ], 10, 2 );
+		add_filter( 'wp_authenticate_user', [ self::$instance, 'filter_wp_authenticate_user' ] );
 	}
 
 	// FILTERS.
+
+	/**
+	 * Maybe disallow password login for WP Rainbow user.
+	 *
+	 * @param WP_User $user User logging in.
+	 *
+	 * @return WP_User|WP_Error User if allowed, error if not.
+	 */
+	public function filter_wp_authenticate_user( $user ) {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_disable_passwords_for_wp_users' => false ] );
+		if ( empty( $options['wp_rainbow_field_disable_passwords_for_wp_users'] ) ) {
+			return $user;
+		}
+		if ( $user->has_cap( 'manage_options' ) ) {
+			return $user;
+		}
+
+		$is_wp_rainbow_user = get_user_meta( $user->ID, 'wp_rainbow_user', true );
+		if ( ! $is_wp_rainbow_user ) {
+			return $user;
+		}
+
+		return new WP_Error(
+			'wp_rainbow_password_login_disabled',
+			esc_html__( 'Password login is not allowed for this user', 'wp-rainbow' )
+		);
+	}
 
 	/**
 	 * Maybe disallow password reset for WP Rainbow users.
