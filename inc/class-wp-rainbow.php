@@ -84,6 +84,7 @@ class WP_Rainbow {
 		if ( empty( $options['wp_rainbow_field_disable_passwords_for_wp_users'] ) ) {
 			return $user;
 		}
+
 		if ( $user->has_cap( 'manage_options' ) ) {
 			return $user;
 		}
