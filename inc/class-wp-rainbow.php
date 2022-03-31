@@ -8,11 +8,13 @@
 namespace WP_Rainbow;
 
 use Exception;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
 use Elliptic\EC;
 use kornrunner\Keccak;
+use WP_User;
 
 /**
  * WP Rainbow
@@ -63,6 +65,92 @@ class WP_Rainbow {
 		add_action( 'rest_api_init', [ self::$instance, 'action_rest_api_init' ] );
 		add_action( 'admin_menu', [ self::$instance, 'action_admin_menu' ] );
 		add_action( 'admin_init', [ self::$instance, 'action_admin_init' ] );
+		add_filter( 'show_password_fields', [ self::$instance, 'filter_show_password_fields' ], 10, 2 );
+		add_filter( 'allow_password_reset', [ self::$instance, 'filter_allow_password_reset' ], 10, 2 );
+		add_filter( 'wp_authenticate_user', [ self::$instance, 'filter_wp_authenticate_user' ] );
+	}
+
+	// FILTERS.
+
+	/**
+	 * Maybe disallow password login for WP Rainbow user.
+	 *
+	 * @param WP_User $user User logging in.
+	 *
+	 * @return WP_User|WP_Error User if allowed, error if not.
+	 */
+	public function filter_wp_authenticate_user( $user ) {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_disable_passwords_for_wp_users' => false ] );
+		if ( empty( $options['wp_rainbow_field_disable_passwords_for_wp_users'] ) ) {
+			return $user;
+		}
+
+		if ( $user->has_cap( 'manage_options' ) ) {
+			return $user;
+		}
+
+		$is_wp_rainbow_user = get_user_meta( $user->ID, 'wp_rainbow_user', true );
+		if ( ! $is_wp_rainbow_user ) {
+			return $user;
+		}
+
+		return new WP_Error(
+			'wp_rainbow_password_login_disabled',
+			esc_html__( 'Password login is not allowed for this user', 'wp-rainbow' )
+		);
+	}
+
+	/**
+	 * Maybe disallow password reset for WP Rainbow users.
+	 *
+	 * @param bool $allow_password_reset Default value for allow password reset.
+	 * @param int  $user_id ID of current user.
+	 *
+	 * @return bool Filtered value for allow password reset.
+	 */
+	public function filter_allow_password_reset( $allow_password_reset, $user_id ) {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_disable_passwords_for_wp_users' => false ] );
+		if ( empty( $options['wp_rainbow_field_disable_passwords_for_wp_users'] ) ) {
+			return $allow_password_reset;
+		}
+
+		$user = get_user_by( 'id', $user_id );
+		if ( $user->has_cap( 'manage_options' ) ) {
+			return $allow_password_reset;
+		}
+
+		$is_wp_rainbow_user = get_user_meta( $user->ID, 'wp_rainbow_user', true );
+		if ( ! $is_wp_rainbow_user ) {
+			return $allow_password_reset;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Maybe hide password fields for WP Rainbow users.
+	 *
+	 * @param bool    $show_password_fields Default value for show password fields.
+	 * @param WP_User $user Current user.
+	 *
+	 * @return bool Filtered value for show password fields.
+	 */
+	public function filter_show_password_fields( $show_password_fields, $user ) {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_disable_passwords_for_wp_users' => false ] );
+		if ( empty( $options['wp_rainbow_field_disable_passwords_for_wp_users'] ) ) {
+			return $show_password_fields;
+		}
+
+		if ( $user->has_cap( 'manage_options' ) ) {
+			return $show_password_fields;
+		}
+
+		$is_wp_rainbow_user = get_user_meta( $user->ID, 'wp_rainbow_user', true );
+		if ( ! $is_wp_rainbow_user ) {
+			return $show_password_fields;
+		}
+
+		return false;
 	}
 
 	// FILTERED VALUES.
@@ -164,6 +252,46 @@ class WP_Rainbow {
 				'label_for' => 'wp_rainbow_field_override_users_can_register',
 			],
 		);
+
+		add_settings_field(
+			'wp_rainbow_field_disable_passwords_for_wp_users',
+			__( 'Disable Passwords', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_disable_passwords_for_wp_users_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_disable_passwords_for_wp_users',
+			],
+		);
+	}
+
+	/**
+	 * Print field for Disable Passwords for WP Rainbow Users option.
+	 */
+	public function wp_rainbow_disable_passwords_for_wp_users_callback() {
+		$options           = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_disable_passwords_for_wp_users' => false ] );
+		$disable_passwords = ! empty( $options['wp_rainbow_field_disable_passwords_for_wp_users'] );
+		?>
+		<input
+			id='wp_rainbow_field_disable_passwords_for_wp_users'
+			name='wp_rainbow_options[wp_rainbow_field_disable_passwords_for_wp_users]'
+			type='checkbox'
+			<?php
+			if ( $disable_passwords ) {
+				echo 'checked';
+			}
+			?>
+		/>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'If enabled, non-admin WP Rainbow users will be passwordless.', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
+		<?php
 	}
 
 	/**
@@ -466,6 +594,8 @@ class WP_Rainbow {
 					'display_name' => $sanitized_display_name,
 				]
 			);
+
+			update_user_meta( $user->ID, 'wp_rainbow_user', true );
 
 			/**
 			 * Fires when a new user is created via WP Rainbow.
