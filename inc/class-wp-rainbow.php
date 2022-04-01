@@ -187,6 +187,20 @@ class WP_Rainbow {
 	}
 
 	/**
+	 * Provide filter for redirect URL. Uses admin URL if not set.
+	 */
+	public function get_redirect_url_filtered() {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_redirect_url' => '' ] );
+
+		/**
+		 * Filter the post-login redirect URL for WP Rainbow users.
+		 *
+		 * @param string $default Default redirect URL.
+		 */
+		return apply_filters( 'wp_rainbow_redirect_url', $options['wp_rainbow_field_redirect_url'] );
+	}
+
+	/**
 	 * Provide filter for Infura ID. Defaults to settings page value.
 	 *
 	 * @return mixed|void Filtered Infura ID.
@@ -263,6 +277,17 @@ class WP_Rainbow {
 				'label_for' => 'wp_rainbow_field_disable_passwords_for_wp_users',
 			],
 		);
+
+		add_settings_field(
+			'wp_rainbow_field_redirect_url',
+			__( 'Redirect URL', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_redirect_url_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_redirect_url',
+			],
+		);
 	}
 
 	/**
@@ -316,6 +341,32 @@ class WP_Rainbow {
 				<small>
 					<?php
 					esc_html_e( 'If enabled, this setting will override the General Settings membership option.', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Print field for Redirect URL option.
+	 */
+	public function wp_rainbow_redirect_url_callback() {
+		$options      = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_redirect_url' => '' ] );
+		$redirect_url = ! empty( $options['wp_rainbow_field_redirect_url'] ) ? $options['wp_rainbow_field_redirect_url'] : '';
+		?>
+		<input
+			id='wp_rainbow_field_redirect_url'
+			name='wp_rainbow_options[wp_rainbow_field_redirect_url]'
+			size='40'
+			type='url'
+			value='<?php echo esc_url( $redirect_url ); ?>'
+		/>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'If set, users will be redirected here on login instead of the admin.', 'wp-rainbow' );
 					?>
 				</small>
 			</em>
@@ -399,11 +450,12 @@ class WP_Rainbow {
 			'wp-rainbow-login',
 			'wpRainbowData',
 			[
-				'ADMIN_URL'  => get_admin_url(),
-				'INFURA_ID'  => esc_textarea( $this->get_infura_id_filtered() ),
-				'LOGIN_API'  => get_rest_url( null, 'wp-rainbow/v1/login' ),
-				'NONCE_API'  => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
-				'SITE_TITLE' => get_bloginfo( 'name' ),
+				'ADMIN_URL'    => get_admin_url(),
+				'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'   => get_bloginfo( 'name' ),
 			]
 		);
 	}
