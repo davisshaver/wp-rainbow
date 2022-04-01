@@ -36,6 +36,16 @@ Before you begin, make sure you have [Composer](https://getcomposer.org/) and [Y
 
 _Note: This plugin requires [GMP](https://www.php.net/manual/en/book.gmp.php) to be available on the server._
 
+## Actions
+
+**`wp_rainbow_validation_failed`** - Fires when validation fails.
+
+**`wp_rainbow_user_created`** - Fires when user created.
+
+**`wp_rainbow_user_updated`** - Fires when user updated.
+
+**`wp_rainbow_user_login`** - Fires when user logs in.
+
 ## Filters
 
 Find reference implementations of all filters in [example plugin here](https://github.com/davisshaver/wp-rainbow/blob/main/wp-rainbow-filter-examples.php).
