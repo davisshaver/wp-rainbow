@@ -3,7 +3,7 @@ import { useAccount, useNetwork, useSignMessage } from "wagmi";
 import { SiweMessage } from "siwe";
 
 const { __ } = wp.i18n;
-const { ADMIN_URL, LOGIN_API, NONCE_API, SITE_TITLE } = wpRainbowData;
+const { ADMIN_URL, LOGIN_API, NONCE_API, REDIRECT_URL, SITE_TITLE } = wpRainbowData;
 
 export const WPRainbowConnect = () => {
   const [state, setState] = React.useState({});
@@ -82,7 +82,7 @@ export const WPRainbowConnect = () => {
       if (!verifyRes.ok) throw new Error("Error verifying message");
       setState((x) => ({ ...x, address, loading: false }));
       document.getElementById("loginform").classList.add("logged-in");
-      window.location = ADMIN_URL;
+      window.location = REDIRECT_URL ? REDIRECT_URL : ADMIN_URL;
     } catch (error) {
       console.log(error);
       setState((x) => ({ ...x, error, loading: false }));
