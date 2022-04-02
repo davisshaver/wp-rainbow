@@ -78,15 +78,10 @@ export const WPRainbowConnect = () => {
       const signRes = await signMessage({
         message: message.prepareMessage(),
       });
-      if (
-        signRes.error &&
-        signRes.error.toString().includes("UserRejectedRequestError")
-      ) {
-        addErrorMessage(__("Signature request not approved.", "wp-rainbow"));
+      if (signRes.error) {
+        addErrorMessage(__("Signature request failed or rejected.", "wp-rainbow"));
         setState((x) => ({ ...x, error: signRes.error, loading: false }));
         return;
-      } else if (signRes.error) {
-        throw signRes.error;
       }
       const verifyRes = await fetch(LOGIN_API, {
         method: "POST",
