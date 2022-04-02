@@ -6,6 +6,18 @@ const { __ } = wp.i18n;
 const { ADMIN_URL, LOGIN_API, NONCE_API, REDIRECT_URL, SITE_TITLE } =
   wpRainbowData;
 
+const addErrorMessage = (errorMessage) => {
+  if (document.getElementById("login_error")) {
+    document.getElementById("login_error").remove();
+  }
+  const loginError = document.createElement("div");
+  loginError.id = "login_error";
+  loginError.innerHTML = `<strong>Error</strong>: ${errorMessage}`;
+  document
+    .getElementById("login")
+    .insertBefore(loginError, document.getElementById("loginform"));
+};
+
 export const WPRainbowConnect = () => {
   const [state, setState] = React.useState({});
   const [{ data: accountData, loading }] = useAccount({
@@ -66,7 +78,11 @@ export const WPRainbowConnect = () => {
       const signRes = await signMessage({
         message: message.prepareMessage(),
       });
-      if (signRes.error) throw signRes.error;
+      if (signRes.error) {
+        addErrorMessage(__("Signature request failed or rejected.", "wp-rainbow"));
+        setState((x) => ({ ...x, error: signRes.error, loading: false }));
+        return;
+      }
       const verifyRes = await fetch(LOGIN_API, {
         method: "POST",
         headers: {
@@ -86,15 +102,7 @@ export const WPRainbowConnect = () => {
         window.location = REDIRECT_URL ? REDIRECT_URL : ADMIN_URL;
       } else {
         const error = await verifyRes.json();
-        if (document.getElementById("login_error")) {
-          document.getElementById("login_error").remove();
-        }
-        const loginError = document.createElement("div");
-        loginError.id = "login_error";
-        loginError.innerHTML = `<strong>Error</strong>: ${error}`;
-        document
-          .getElementById("login")
-          .insertBefore(loginError, document.getElementById("loginform"));
+        addErrorMessage(error);
         setState((x) => ({ ...x, error, loading: false }));
       }
     } catch (error) {
