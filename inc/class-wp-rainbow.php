@@ -585,7 +585,7 @@ class WP_Rainbow {
 		$nonce_verified = wp_verify_nonce( $nonce, self::WP_RAINBOW_NONCE_KEY );
 		remove_filter( 'nonce_life', [ self::$instance, 'filter_nonce_life_filtered' ] );
 		if ( ! $nonce_verified ) {
-			return new WP_REST_Response( 'error', 500 );
+			return new WP_REST_Response( __( 'Nonce verification failed.', 'wp-rainbow' ), 500 );
 		}
 
 		// Make sure that SIWE payload contains all required keys.
@@ -594,17 +594,17 @@ class WP_Rainbow {
 		$display_name = $request->get_param( 'displayName' );
 		$siwe_payload = $request->get_param( 'siwePayload' );
 		if ( empty( $address ) || empty( $signature ) ) {
-			return new WP_REST_Response( 'error', 500 );
+			return new WP_REST_Response( __( 'Malformed authentication request.', 'wp-rainbow' ), 500 );
 		}
 		foreach ( self::WP_RAINBOW_REQUIRED_KEYS as $key ) {
 			if ( empty( $siwe_payload[ $key ] ) ) {
-				return new WP_REST_Response( 'error', 500 );
+				return new WP_REST_Response( __( 'Incomplete authentication request.', 'wp-rainbow' ), 500 );
 			}
 		}
 
 		// Make sure that nonce in message matches top-level nonce.
 		if ( $siwe_payload['nonce'] !== $nonce ) {
-			return new WP_REST_Response( 'error', 500 );
+			return new WP_REST_Response( __( 'Nonce validation failed.', 'wp-rainbow' ), 500 );
 		}
 
 		// Make sure that signature verifies correctly.
@@ -620,7 +620,7 @@ class WP_Rainbow {
 			 */
 			do_action( 'wp_rainbow_validation_failed', $generated_msg, $signature, $address );
 
-			return new WP_REST_Response( 'error', 500 );
+			return new WP_REST_Response( __( 'Message validation failed.', 'wp-rainbow' ), 500 );
 		}
 
 		// Lookup or generate user and then sign them in.
@@ -632,7 +632,7 @@ class WP_Rainbow {
 			if ( empty( $users_can_register ) ) {
 				$wp_rainbow_options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_override_users_can_register' => false ] );
 				if ( empty( $wp_rainbow_options['wp_rainbow_field_override_users_can_register'] ) ) {
-					return new WP_REST_Response( 'error', 500 );
+					return new WP_REST_Response( __( 'User registration is disabled.', 'wp-rainbow' ), 500 );
 				}
 			}
 

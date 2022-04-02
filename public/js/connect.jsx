@@ -3,7 +3,8 @@ import { useAccount, useNetwork, useSignMessage } from "wagmi";
 import { SiweMessage } from "siwe";
 
 const { __ } = wp.i18n;
-const { ADMIN_URL, LOGIN_API, NONCE_API, REDIRECT_URL, SITE_TITLE } = wpRainbowData;
+const { ADMIN_URL, LOGIN_API, NONCE_API, REDIRECT_URL, SITE_TITLE } =
+  wpRainbowData;
 
 export const WPRainbowConnect = () => {
   const [state, setState] = React.useState({});
@@ -79,10 +80,23 @@ export const WPRainbowConnect = () => {
           siwePayload,
         }),
       });
-      if (!verifyRes.ok) throw new Error("Error verifying message");
-      setState((x) => ({ ...x, address, loading: false }));
-      document.getElementById("loginform").classList.add("logged-in");
-      window.location = REDIRECT_URL ? REDIRECT_URL : ADMIN_URL;
+      if (verifyRes.ok) {
+        setState((x) => ({ ...x, address, loading: false }));
+        document.getElementById("loginform").classList.add("logged-in");
+        window.location = REDIRECT_URL ? REDIRECT_URL : ADMIN_URL;
+      } else {
+        const error = await verifyRes.json();
+        if (document.getElementById("login_error")) {
+          document.getElementById("login_error").remove();
+        }
+        const loginError = document.createElement("div");
+        loginError.id = "login_error";
+        loginError.innerHTML = `<strong>Error</strong>: ${error}`;
+        document
+          .getElementById("login")
+          .insertBefore(loginError, document.getElementById("loginform"));
+        setState((x) => ({ ...x, error, loading: false }));
+      }
     } catch (error) {
       console.log(error);
       setState((x) => ({ ...x, error, loading: false }));
@@ -125,7 +139,7 @@ export const WPRainbowConnect = () => {
               <React.Fragment>
                 <button
                   className="button button-secondary button-hero"
-                  onClick={() => window.location.reload()}
+                  onClick={() => (window.location.href = window.location.href)}
                   style={{ width: "100%" }}
                   type="button"
                 >
@@ -140,7 +154,9 @@ export const WPRainbowConnect = () => {
               <React.Fragment>
                 <button
                   className="button button-secondary button-hero"
-                  onClick={state.address || state.loading ? openAccountModal : signIn}
+                  onClick={
+                    state.address || state.loading ? openAccountModal : signIn
+                  }
                   type="button"
                   style={{ width: "100%" }}
                 >
