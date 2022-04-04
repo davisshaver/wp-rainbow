@@ -79,7 +79,9 @@ export const WPRainbowConnect = () => {
         message: message.prepareMessage(),
       });
       if (signRes.error) {
-        addErrorMessage(__("Signature request failed or rejected.", "wp-rainbow"));
+        addErrorMessage(
+          __("Signature request failed or rejected.", "wp-rainbow")
+        );
         setState((x) => ({ ...x, error: signRes.error, loading: false }));
         return;
       }
