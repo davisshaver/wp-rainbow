@@ -1,7 +1,7 @@
 {
     "name": "wp-rainbow",
     "dependencies": {
-        "@rainbow-me/rainbowkit": "^0.0.1",
+        "@rainbow-me/rainbowkit": "^0.0.2",
         "ethers": "^5.6.1",
         "process": "^0.11.10",
         "siwe": "^1.1.2",
