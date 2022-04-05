@@ -1,0 +1,24 @@
+name: JavaScript Linting
+
+on: [push]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+
+      - name: Install packages w/ Yarn
+        run: yarn install
+
+      - name: Lint JS with ESLint
+        run: yarn install

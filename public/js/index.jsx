@@ -2,16 +2,13 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import {
   RainbowKitProvider,
-  Chain,
   getDefaultWallets,
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
-import { WagmiProvider, chain, useAccount } from "wagmi";
+import { WagmiProvider, chain } from "wagmi";
 import { providers } from "ethers";
 
-import WPRainbowConnect from "./connect";
-
-const { __ } = wp.i18n;
+import { WPRainbowConnect } from "./connect";
 
 const { INFURA_ID, SITE_TITLE } = wpRainbowData;
 
@@ -30,7 +27,6 @@ const wallets = getDefaultWallets({
 });
 
 const connectors = connectorsForWallets(wallets);
-const modalRoot = document.getElementById("wp-rainbow-button");
 
 const WPRainbow = (
   <RainbowKitProvider chains={chains}>

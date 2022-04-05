@@ -18,7 +18,7 @@ const addErrorMessage = (errorMessage) => {
     .insertBefore(loginError, document.getElementById("loginform"));
 };
 
-export const WPRainbowConnect = () => {
+export function WPRainbowConnect() {
   const [state, setState] = React.useState({});
   const [{ data: accountData, loading }] = useAccount({
     fetchEns: true,
@@ -101,14 +101,13 @@ export const WPRainbowConnect = () => {
       if (verifyRes.ok) {
         setState((x) => ({ ...x, address, loading: false }));
         document.getElementById("loginform").classList.add("logged-in");
-        window.location = REDIRECT_URL ? REDIRECT_URL : ADMIN_URL;
+        window.location = REDIRECT_URL || ADMIN_URL;
       } else {
         const error = await verifyRes.json();
         addErrorMessage(error);
         setState((x) => ({ ...x, error, loading: false }));
       }
     } catch (error) {
-      console.log(error);
       setState((x) => ({ ...x, error, loading: false }));
     }
   }, [accountData, networkData, loading]);
@@ -141,67 +140,69 @@ export const WPRainbowConnect = () => {
   );
 
   return (
-    <>
-      <ConnectButton.Custom>
-        {({ account, openAccountModal, openConnectModal }) => {
-          if (state.error) {
-            return (
-              <React.Fragment>
-                <button
-                  className="button button-secondary button-hero"
-                  onClick={() => (window.location.href = window.location.href)}
-                  style={{ width: "100%" }}
-                  type="button"
-                >
-                  {__("Log In Error, Click to Refresh", "wp-rainbow")}
-                </button>
-                {siteLoginText}
-              </React.Fragment>
-            );
-          }
-          if (account) {
-            return (
-              <React.Fragment>
-                <button
-                  className="button button-secondary button-hero"
-                  onClick={
-                    state.address || state.loading ? openAccountModal : signIn
-                  }
-                  type="button"
-                  style={{ width: "100%" }}
-                >
-                  {state.address
-                    ? `${__("Logged In as ")} ${account.displayName}`
-                    : state.loading
-                    ? __("Check Wallet to Sign Message")
-                    : __("Continue Log In with Ethereum")}
-                </button>
-                {siteLoginText}
-              </React.Fragment>
-            );
-          }
+    <ConnectButton.Custom>
+      {({ account, openAccountModal, openConnectModal }) => {
+        if (state.error) {
           return (
-            <React.Fragment>
+            <>
               <button
                 className="button button-secondary button-hero"
                 onClick={() => {
-                  // Make sure we don't have an active signing attempt.
-                  setState({});
-                  setTriggeredLogin(false);
-                  openConnectModal();
+                  window.location = window.location.href;
                 }}
                 style={{ width: "100%" }}
                 type="button"
               >
-                {__("Log In with Ethereum", "wp-rainbow")}
+                {__("Log In Error, Click to Refresh", "wp-rainbow")}
               </button>
               {siteLoginText}
-            </React.Fragment>
+            </>
           );
-        }}
-      </ConnectButton.Custom>
-    </>
+        }
+        let loginText = __("Continue Log In with Ethereum");
+        if (state.address) {
+          loginText = `${__("Logged In as ")} ${account.displayName}`;
+        } else if (state.loading) {
+          loginText = __("Check Wallet to Sign Message");
+        }
+        if (account) {
+          return (
+            <>
+              <button
+                className="button button-secondary button-hero"
+                onClick={
+                  state.address || state.loading ? openAccountModal : signIn
+                }
+                type="button"
+                style={{ width: "100%" }}
+              >
+                {loginText}
+              </button>
+              {siteLoginText}
+            </>
+          );
+        }
+        return (
+          <>
+            <button
+              className="button button-secondary button-hero"
+              onClick={() => {
+                // Make sure we don't have an active signing attempt.
+                setState({});
+                setTriggeredLogin(false);
+                openConnectModal();
+              }}
+              style={{ width: "100%" }}
+              type="button"
+            >
+              {__("Log In with Ethereum", "wp-rainbow")}
+            </button>
+            {siteLoginText}
+          </>
+        );
+      }}
+    </ConnectButton.Custom>
   );
-};
+}
 
 export default WPRainbowConnect;
