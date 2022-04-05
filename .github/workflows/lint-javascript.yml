@@ -21,4 +21,4 @@ jobs:
         run: yarn install
 
       - name: Lint JS with ESLint
-        run: yarn install
+        run: yarn lint
