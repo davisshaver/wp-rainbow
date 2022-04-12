@@ -1,5 +1,3 @@
-import "@rainbow-me/rainbowkit/styles.css"; // eslint-disable-line import/no-unresolved
-
 import {
   RainbowKitProvider,
   getDefaultWallets,

@@ -1,22 +1,11 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { __ } from "@wordpress/i18n";
 import { useAccount, useNetwork, useSignMessage } from "wagmi";
 import { SiweMessage } from "siwe";
+import { addErrorMessage } from './utilities/addErrorMessage';
 
-const { __ } = wp.i18n;
 const { ADMIN_URL, LOGIN_API, NONCE_API, REDIRECT_URL, SITE_TITLE } =
   wpRainbowData;
-
-const addErrorMessage = (errorMessage) => {
-  if (document.getElementById("login_error")) {
-    document.getElementById("login_error").remove();
-  }
-  const loginError = document.createElement("div");
-  loginError.id = "login_error";
-  loginError.innerHTML = `<strong>Error</strong>: ${errorMessage}`;
-  document
-    .getElementById("login")
-    .insertBefore(loginError, document.getElementById("loginform"));
-};
 
 export function WPRainbowConnect() {
   const [state, setState] = React.useState({});
