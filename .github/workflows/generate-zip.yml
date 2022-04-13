@@ -25,7 +25,7 @@ jobs:
               run: yarn install
 
             - name: Build with Yarn
-              run: yarn build:prod
+              run: yarn build
 
             - name: Create release ZIP
               uses: thedoctor0/zip-release@master
