@@ -42,6 +42,7 @@ jobs:
 
             - name: Install GMP
               run: |
+                  apt-get update
                   apt-get install -y libgmp-dev
                   ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
                   docker-php-ext-configure gmp
