@@ -5,9 +5,17 @@ const webpack = require( 'webpack' );
 module.exports = {
 	...defaultConfig,
 	entry: {
-		'test-block': path.resolve(
+		'login-block': path.resolve(
 			process.cwd(),
-			`blocks/test-block/index.js`
+			'blocks',
+			'login-block',
+			'index.js'
+		),
+		'login-block-frontend': path.resolve(
+			process.cwd(),
+			'blocks',
+			'login-block',
+			'frontend.jsx'
 		),
 		login: [
 			path.resolve( process.cwd(), 'src', 'login.jsx' ),

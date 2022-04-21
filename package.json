@@ -1,32 +1,33 @@
 {
-    "name": "wp-rainbow",
-    "dependencies": {
-        "@rainbow-me/rainbowkit": "^0.0.2",
-        "@wordpress/block-editor": "^8.5.1",
-        "@wordpress/blocks": "^11.5.1",
-        "@wordpress/components": "^19.8.0",
-        "@wordpress/i18n": "^4.6.0",
-        "ethers": "^5.6.1",
-        "process": "^0.11.10",
-        "siwe": "^1.1.2",
-        "util": "^0.12.4",
-        "wagmi": "^0.2.21"
-    },
-    "devDependencies": {
-        "@wordpress/scripts": "^22.4.0",
-        "css-loader": "^6.7.1",
-        "eslint-config-airbnb": "^19.0.4",
-        "style-loader": "^3.3.1",
-        "webpack": "^5.72.0"
-    },
-    "scripts": {
-        "build": "wp-scripts build",
-        "check-engines": "wp-scripts check-engines",
-        "check-licenses": "wp-scripts check-licenses",
-        "format": "wp-scripts format",
-        "lint:css": "wp-scripts lint-style",
-        "lint:js": "wp-scripts lint-js",
-        "packages-update": "wp-scripts packages-update",
-        "start": "wp-scripts start"
-    }
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^0.0.2",
+    "@wordpress/block-editor": "^8.6.0",
+    "@wordpress/blocks": "^11.6.0",
+    "@wordpress/components": "^19.9.0",
+    "@wordpress/i18n": "^4.7.0",
+    "ethers": "^5.6.4",
+    "process": "^0.11.10",
+    "prop-types": "^15.8.1",
+    "siwe": "^1.1.6",
+    "util": "^0.12.4",
+    "wagmi": "^0.2.28"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^22.5.0",
+    "css-loader": "^6.7.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.72.0"
+  },
+  "name": "wp-rainbow",
+  "scripts": {
+    "build": "wp-scripts build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update",
+    "start": "wp-scripts start"
+  }
 }

@@ -59,6 +59,7 @@ class WP_Rainbow {
 	 * Setup instance.
 	 */
 	protected function setup() {
+		add_action( 'init', [ self::$instance, 'action_init' ] );
 		add_action( 'login_form', [ self::$instance, 'action_login_form' ] );
 		add_action( 'login_head', [ self::$instance, 'action_login_head' ] );
 		add_action( 'login_enqueue_scripts', [ self::$instance, 'action_login_enqueue_scripts' ] );
@@ -218,6 +219,77 @@ class WP_Rainbow {
 	}
 
 	// ADMIN PAGE.
+
+	/**
+	 * Register blocks on init.
+	 */
+	public function action_init() {
+		$test_block_path         = '../build/login-block';
+		$test_block_dependencies = include __DIR__ . '/../build/login-block.asset.php';
+		wp_register_script(
+			'login-block',
+			plugins_url( $test_block_path . '.js', __FILE__ ),
+			$test_block_dependencies['dependencies'],
+			$test_block_dependencies['version'],
+			false
+		);
+		wp_register_style(
+			'login-block-css',
+			plugins_url( $test_block_path . '.css', __FILE__ ),
+			[],
+			$test_block_dependencies['version']
+		);
+		$test_block_frontend_path         = '../build/login-block-frontend';
+		$test_block_frontend_dependencies = include __DIR__ . '/../build/login-block-frontend.asset.php';
+		wp_register_script(
+			'login-block-frontend',
+			plugins_url( $test_block_frontend_path . '.js', __FILE__ ),
+			$test_block_frontend_dependencies['dependencies'],
+			$test_block_frontend_dependencies['version'],
+			true
+		);
+		wp_register_style(
+			'login-block-frontend-css',
+			plugins_url( $test_block_frontend_path . '.css', __FILE__ ),
+			[ 'wp-block-button' ],
+			$test_block_frontend_dependencies['version']
+		);
+		register_block_type(
+			'wp-rainbow/login',
+			[
+				'api_version'   => 2,
+				'editor_script' => 'login-block',
+				'editor_style'  => 'login-block-css',
+				'view_script'   => 'login-block-frontend',
+				'style'         => 'login-block-frontend-css',
+			]
+		);
+		wp_localize_script(
+			'login-block',
+			'wpRainbowData',
+			[
+				'ADMIN_URL'    => get_admin_url(),
+				'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'   => get_bloginfo( 'name' ),
+			]
+		);
+		wp_localize_script(
+			'login-block-frontend',
+			'wpRainbowData',
+			[
+				'ADMIN_URL'    => get_admin_url(),
+				'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'   => get_bloginfo( 'name' ),
+				'LOGOUT_URL'   => wp_logout_url(),
+			]
+		);
+	}
 
 	/**
 	 * Add menu page for plugin.
@@ -436,40 +508,117 @@ class WP_Rainbow {
 
 	// FRONTEND INTEGRATION.
 
+	public function test_render_callback() {
+		echo 'test';
+
+		// var_dump( 'test' );
+
+		return 'test';
+	}
+
+	/**
+	 * Adds scripts for WP Rainbow blocks.
+	 */
 	public function action_enqueue_block_editor_assets() {
-        $block_path = '../build/test-block';
-        $script_dependencies = include __DIR__ . '/../build/test-block.asset.php';
-        wp_register_script(
-            'test-block',
-            plugins_url($block_path . '.js', __FILE__),
-            $script_dependencies['dependencies'],
-            $script_dependencies['version'],
-            true
-        );
-        wp_enqueue_script('test-block');
+		// $block_path          = '../build/test-block';
+		// $script_dependencies = include __DIR__ . '/../build/test-block.asset.php';
+		// wp_register_script(
+		// 'test-block',
+		// plugins_url( $block_path . '.js', __FILE__ ),
+		// $script_dependencies['dependencies'],
+		// $script_dependencies['version'],
+		// false
+		// );
+		// wp_enqueue_script( 'test-block' );
+		// register_block_type(
+		// 'wp-rainbow/login',
+		// [
+		// 'api_version'     => 2,
+		// 'editor_script'   => 'test-block',
+		// 'render_callback' => 'wp_rainbow_render_callback',
+		// 'attributes'      => [
+		// 'backgroundColor' => [
+		// 'type' => 'string',
+		// ],
+		// 'checkWalletText' => [
+		// 'type' => 'string',
+		// ],
+		// 'errorText'       => [
+		// 'type' => 'string',
+		// ],
+		// 'gradient'        => [
+		// 'type' => 'string',
+		// ],
+		// 'width'           => [
+		// 'type' => 'number',
+		// ],
+		// 'textColor'       => [
+		// 'type' => 'string',
+		// ],
+		// 'loginText'       => [
+		// 'type' => 'string',
+		// ],
+		// ],
+		// ]
+		// );
+
+		// wp_enqueue_style( 'test-block-css' );
+		// $block_path          = '../build/test-button-block';
+		// $script_dependencies = include __DIR__ . '/../build/test-button-block.asset.php';
+		// wp_register_script(
+		// 'test-button-block',
+		// plugins_url( $block_path . '.js', __FILE__ ),
+		// $script_dependencies['dependencies'],
+		// $script_dependencies['version'],
+		// true
+		// );
+		// wp_enqueue_script( 'test-button-block' );
+
+		// $block_path          = '../build/test-buttons-block';
+		// $script_dependencies = include __DIR__ . '/../build/test-buttons-block.asset.php';
+		// wp_register_script(
+		// 'test-buttons-block',
+		// plugins_url( $block_path . '.js', __FILE__ ),
+		// $script_dependencies['dependencies'],
+		// $script_dependencies['version'],
+		// true
+		// );
+		// wp_enqueue_script( 'test-buttons-block' );
+		// wp_localize_script(
+		// 'test-block',
+		// 'wpRainbowData',
+		// [
+		// 'ADMIN_URL'    => get_admin_url(),
+		// 'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
+		// 'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
+		// 'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+		// 'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
+		// 'SITE_TITLE'   => get_bloginfo( 'name' ),
+		// ]
+		// );
 	}
 
 	/**
 	 * Adds supplemental scripts to login page.
 	 */
 	public function action_login_enqueue_scripts() {
-        $block_path = '../build/login';
-        $script_dependencies = include __DIR__ . '/../build/login.asset.php';
-        wp_register_script(
-            'wp-rainbow-login',
-            plugins_url($block_path . '.js', __FILE__),
-            $script_dependencies['dependencies'],
-            $script_dependencies['version'],
-            true
-        );
-        wp_enqueue_script('wp-rainbow-login');
-        wp_register_style(
-            'wp-rainbow-login-css',
-            plugins_url($block_path . '.css', __FILE__),
-            [],
-            $script_dependencies['version']
-        );
-        wp_enqueue_style('wp-rainbow-login-css');
+		$script_path         = '../build/login';
+		$script_dependencies = include __DIR__ . '/../build/login.asset.php';
+		wp_register_script(
+			'wp-rainbow-login',
+			plugins_url( $script_path . '.js', __FILE__ ),
+			$script_dependencies['dependencies'],
+			$script_dependencies['version'],
+			true
+		);
+		wp_enqueue_script( 'wp-rainbow-login' );
+		wp_register_style(
+			'wp-rainbow-login-css',
+			plugins_url( $script_path . '.css', __FILE__ ),
+			[],
+			$script_dependencies['version']
+		);
+		wp_enqueue_style( 'wp-rainbow-login-css' );
 		wp_localize_script(
 			'wp-rainbow-login',
 			'wpRainbowData',
@@ -502,6 +651,11 @@ class WP_Rainbow {
 
 			#wp-rainbow-button {
 				order: -2;
+				width: 100%;
+			}
+
+			#wp-rainbow-button div[role="button"] {
+				text-align: center;
 				width: 100%;
 			}
 

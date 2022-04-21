@@ -2,7 +2,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { __ } from '@wordpress/i18n';
 import { useAccount, useNetwork, useSignMessage } from 'wagmi';
 import { SiweMessage } from 'siwe';
-import { addErrorMessage } from './utilities/addErrorMessage';
+import PropTypes from 'prop-types';
 
 const {
 	ADMIN_URL,
@@ -12,7 +12,42 @@ const {
 	SITE_TITLE,
 } = wpRainbowData;
 
-export function WPRainbowConnect() {
+/**
+ * WP Rainbow Connect Button.
+ *
+ * @param {Object}   props                         Props for WP Rainbow Connect Button.
+ * @param {string}   props.buttonClassName         Class for WP Rainbow button.
+ * @param {boolean}  props.mockLogin               Whether to skip the login redirect.
+ * @param {Function} props.onError                 Callback for error handling.
+ * @param {Function} props.onLogin                 Callback for login.
+ * @param {Function} props.onLogout                Callback for logout.
+ * @param            props.container
+ * @param            props.containerClassName
+ * @param            props.style
+ * @param            props.containers
+ * @param            props.outerContainerClassName
+ * @param            props.loginText
+ * @param            props.checkWalletText
+ * @param            props.errorText
+ * @param            props.redirectURL
+ * @param            props.loggedIn
+ */
+export function WPRainbowConnect( {
+	buttonClassName,
+	checkWalletText,
+	containerClassName,
+	containers,
+	errorText,
+	loggedIn,
+	loginText,
+	mockLogin,
+	onError,
+	onLogin,
+	onLogout,
+	outerContainerClassName,
+	redirectURL,
+	style,
+} ) {
 	const [ state, setState ] = React.useState( {} );
 	const [ { data: accountData, loading } ] = useAccount( {
 		fetchEns: true,
@@ -59,8 +94,9 @@ export function WPRainbowConnect() {
 		try {
 			const address = accountData?.address;
 			const chainId = networkData?.chain?.id;
-			if ( ! address || ! chainId ) return;
-
+			if ( ! address || ! chainId ) {
+				return;
+			}
 			setState( ( x ) => ( { ...x, error: undefined, loading: true } ) );
 			const nonceRes = await fetch( NONCE_API );
 			const nonce = await nonceRes.json();
@@ -74,12 +110,20 @@ export function WPRainbowConnect() {
 				uri: window.location.origin,
 				version: '1',
 			};
+			if ( loggedIn ) {
+				setState( ( x ) => ( { ...x, address, loading: false } ) );
+				return;
+			}
 			const message = new SiweMessage( siwePayload );
 			const signRes = await signMessage( {
 				message: message.prepareMessage(),
 			} );
+			if ( mockLogin ) {
+				setState( ( x ) => ( { ...x, address, loading: false } ) );
+				return;
+			}
 			if ( signRes.error ) {
-				addErrorMessage(
+				onError(
 					__( 'Signature request failed or rejected.', 'wp-rainbow' )
 				);
 				setState( ( x ) => ( {
@@ -104,13 +148,11 @@ export function WPRainbowConnect() {
 			} );
 			if ( verifyRes.ok ) {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
-				document
-					.getElementById( 'loginform' )
-					.classList.add( 'logged-in' );
-				window.location = REDIRECT_URL || ADMIN_URL;
+				onLogin();
+				window.location = redirectURL || REDIRECT_URL || ADMIN_URL;
 			} else {
 				const error = await verifyRes.json();
-				addErrorMessage( error );
+				onError( error );
 				setState( ( x ) => ( { ...x, error, loading: false } ) );
 			}
 		} catch ( error ) {
@@ -126,98 +168,121 @@ export function WPRainbowConnect() {
 		} else if ( ! accountData && state.address ) {
 			setState( {} );
 			setTriggeredLogin( false );
-			document
-				.getElementById( 'loginform' )
-				.classList.remove( 'logged-in' );
+			onLogout();
 		}
 	}, [ accountData, state.address, loading, hasLoadedSecondTime ] );
-
-	const siteLoginText = (
-		<p
-			className="wp-rainbow help-text"
-			style={ {
-				fontSize: '12px',
-				fontStyle: 'italic',
-				marginBottom: '4px',
-				marginTop: '4px',
-				textAlign: 'center',
-			} }
-		>
-			{ __( '- OR USE SITE LOGIN -', 'wp-rainbow' ) }
-		</p>
-	);
 
 	return (
 		<ConnectButton.Custom>
 			{ ( { account, openAccountModal, openConnectModal } ) => {
+				let button = null;
 				if ( state.error ) {
-					return (
-						<>
-							<button
-								className="button button-secondary button-hero"
-								onClick={ () => {
-									window.location = window.location.href;
-								} }
-								style={ { width: '100%' } }
-								type="button"
-							>
-								{ __(
+					button = (
+						<div
+							className={ buttonClassName }
+							onClick={ () => {
+								window.location = window.location.href;
+							} }
+							role="button"
+							style={ style }
+						>
+							{ errorText ||
+								__(
 									'Log In Error, Click to Refresh',
 									'wp-rainbow'
 								) }
-							</button>
-							{ siteLoginText }
-						</>
+						</div>
 					);
-				}
-				let loginText = __( 'Continue Log In with Ethereum' );
-				if ( state.address ) {
-					loginText = `${ __( 'Logged In as ' ) } ${
-						account.displayName
-					}`;
-				} else if ( state.loading ) {
-					loginText = __( 'Check Wallet to Sign Message' );
-				}
-				if ( account ) {
-					return (
-						<>
-							<button
-								className="button button-secondary button-hero"
-								onClick={
-									state.address || state.loading
-										? openAccountModal
-										: signIn
-								}
-								type="button"
-								style={ { width: '100%' } }
-							>
-								{ loginText }
-							</button>
-							{ siteLoginText }
-						</>
+				} else if ( account ) {
+					let loginText = __( 'Continue Log In with Ethereum' );
+					if ( state.address ) {
+						loginText = `${ __( 'Logged In as ' ) } ${
+							account.displayName
+						}`;
+					} else if ( state.loading ) {
+						loginText =
+							checkWalletText ||
+							__( 'Check Wallet to Sign Message' );
+					}
+					button = (
+						<div
+							className={ buttonClassName }
+							onClick={
+								state.address || state.loading
+									? openAccountModal
+									: signIn
+							}
+							role="button"
+							style={ style }
+						>
+							{ loginText }
+						</div>
 					);
-				}
-				return (
-					<>
-						<button
-							className="button button-secondary button-hero"
+				} else {
+					button = (
+						<div
+							className={ buttonClassName }
 							onClick={ () => {
 								// Make sure we don't have an active signing attempt.
 								setState( {} );
 								setTriggeredLogin( false );
 								openConnectModal();
 							} }
-							style={ { width: '100%' } }
-							type="button"
+							role="button"
+							style={ style }
 						>
-							{ __( 'Log In with Ethereum', 'wp-rainbow' ) }
-						</button>
-						{ siteLoginText }
-					</>
-				);
+							{ loginText ||
+								__( 'Log In with Ethereum', 'wp-rainbow' ) }
+						</div>
+					);
+				}
+				if ( containers ) {
+					return (
+						<div className={ outerContainerClassName }>
+							<div className={ containerClassName }>
+								{ button }
+							</div>
+						</div>
+					);
+				}
+				return button;
 			} }
 		</ConnectButton.Custom>
 	);
 }
+
+WPRainbowConnect.defaultProps = {
+	buttonClassName: '',
+	checkWalletText: '',
+	containerClassName: '',
+	containers: false,
+	errorText: '',
+	loggedIn: false,
+	loginText: '',
+	mockLogin: false,
+	onError: () => {},
+	onLogin: () => {},
+	onLogout: () => {},
+	outerContainerClassName: '',
+	redirectURL: '',
+	style: {},
+};
+
+WPRainbowConnect.propTypes = {
+	buttonClassName: PropTypes.string,
+	checkWalletText: PropTypes.string,
+	containerClassName: PropTypes.string,
+	containers: PropTypes.bool,
+	errorText: PropTypes.string,
+	loggedIn: PropTypes.bool,
+	loginText: PropTypes.string,
+	mockLogin: PropTypes.bool,
+	onError: PropTypes.func,
+	onLogin: PropTypes.func,
+	onLogout: PropTypes.func,
+	outerContainerClassName: PropTypes.string,
+	redirectURL: PropTypes.string,
+	style: PropTypes.object,
+};
 
 export default WPRainbowConnect;

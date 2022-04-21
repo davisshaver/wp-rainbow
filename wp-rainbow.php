@@ -40,7 +40,4 @@ add_action(
 // Require the main class.
 require_once __DIR__ . '/inc/class-wp-rainbow.php';
 
-// Include test-block
-include_once dirname( __FILE__ ) . '/blocks/test-block/init.php';
-
 WP_Rainbow::instance();

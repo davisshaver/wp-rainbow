@@ -1,37 +1,39 @@
-import {
-	RainbowKitProvider,
-	getDefaultWallets,
-	connectorsForWallets,
-} from '@rainbow-me/rainbowkit';
-import { WagmiProvider, chain } from 'wagmi';
-import { providers } from 'ethers';
+import { __ } from '@wordpress/i18n';
+import WPRainbow from './provider';
+import { addErrorMessage } from './utilities/addErrorMessage';
 
-import { WPRainbowConnect } from './connect';
-
-const { INFURA_ID, SITE_TITLE } = wpRainbowData;
-
-const provider = ( { chainId } ) =>
-	new providers.InfuraProvider( chainId, INFURA_ID );
-
-const chains = [ { ...chain.mainnet, name: 'Ethereum' } ];
-
-const wallets = getDefaultWallets( {
-	chains,
-	infuraId: INFURA_ID,
-	appName: SITE_TITLE,
-	jsonRpcUrl: ( { chainId } ) =>
-		chains.find( ( x ) => x.id === chainId )?.rpcUrls?.[ 0 ] ??
-		chain.mainnet.rpcUrls[ 0 ],
-} );
-
-const connectors = connectorsForWallets( wallets );
-
-const WPRainbow = (
-	<RainbowKitProvider chains={ chains }>
-		<WagmiProvider connectors={ connectors } provider={ provider }>
-			<WPRainbowConnect />
-		</WagmiProvider>
-	</RainbowKitProvider>
+const siteLoginText = (
+	<p
+		className="wp-rainbow help-text"
+		style={ {
+			fontSize: '12px',
+			fontStyle: 'italic',
+			marginBottom: '4px',
+			marginTop: '4px',
+			textAlign: 'center',
+		} }
+	>
+		{ __( '- OR USE SITE LOGIN -', 'wp-rainbow' ) }
+	</p>
 );
 
-ReactDOM.render( WPRainbow, document.getElementById( 'wp-rainbow-button' ) );
+const loginForm = document.getElementById( 'loginform' );
+
+const LoginPageElement = (
+	<>
+		{ WPRainbow( {
+			buttonClassName: 'button button-secondary button-hero',
+			onError: addErrorMessage,
+			onLogin: () => loginForm && loginForm.classList.add( 'logged-in' ),
+			onLogout: () =>
+				loginForm && loginForm.classList.remove( 'logged-in' ),
+		} ) }
+		{ siteLoginText }
+	</>
+);
+
+const wpRainbowButton = document.getElementById( 'wp-rainbow-button' );
+
+if ( wpRainbowButton ) {
+	ReactDOM.render( LoginPageElement, wpRainbowButton );
+}
