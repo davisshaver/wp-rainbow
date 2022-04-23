@@ -11,7 +11,9 @@ if ( loginBlocks ) {
 		let style = {};
 		try {
 			style = JSON.parse( blockDetails.dataset.style );
-		} catch {}
+		} catch {
+			// Continue regardless of error.
+		}
 		ReactDOM.render(
 			<WPRainbow
 				buttonClassName={ blockDetails.dataset.buttonClassName }

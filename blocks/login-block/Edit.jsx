@@ -1,5 +1,4 @@
-/* eslint-disable react/prop-types */
-// import { TextControl } from '@wordpress/components';
+/* eslint-disable react/prop-types, @wordpress/no-unsafe-wp-apis, react/jsx-props-no-spreading */
 import classnames from 'classnames';
 
 import {
@@ -46,18 +45,12 @@ function WidthPanel( { selectedWidth, setAttributes } ) {
 	);
 }
 
-export default function Edit( {
-	attributes,
-	className,
-	isSelected,
-	setAttributes,
-} ) {
+export default function Edit( { attributes, className, setAttributes } ) {
 	const {
 		checkWalletText,
 		errorText,
 		loginText,
 		redirectURL,
-		style,
 		width,
 	} = attributes;
 	const onSetLoginText = useCallback(

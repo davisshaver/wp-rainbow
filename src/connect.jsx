@@ -1,6 +1,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { __ } from '@wordpress/i18n';
 import { useAccount, useNetwork, useSignMessage } from 'wagmi';
+import stylePropType from 'react-style-proptype';
 import { SiweMessage } from 'siwe';
 import PropTypes from 'prop-types';
 
@@ -21,16 +22,15 @@ const {
  * @param {Function} props.onError                 Callback for error handling.
  * @param {Function} props.onLogin                 Callback for login.
  * @param {Function} props.onLogout                Callback for logout.
- * @param            props.container
- * @param            props.containerClassName
- * @param            props.style
- * @param            props.containers
- * @param            props.outerContainerClassName
- * @param            props.loginText
- * @param            props.checkWalletText
- * @param            props.errorText
- * @param            props.redirectURL
- * @param            props.loggedIn
+ * @param {string}   props.containerClassName      Container classname.
+ * @param {Object}   props.style                   Button style.
+ * @param {boolean}  props.containers              Use container elements.
+ * @param {string}   props.outerContainerClassName Outer container classname.
+ * @param {string}   props.loginText               Login text override.
+ * @param {string}   props.checkWalletText         Check wallet text override.
+ * @param {string}   props.errorText               Error text override.
+ * @param {string}   props.redirectURL             Redirect URL override.
+ * @param {boolean}  props.loggedIn                Enabled logged in functionality.
  */
 export function WPRainbowConnect( {
 	buttonClassName,
@@ -183,8 +183,12 @@ export function WPRainbowConnect( {
 							onClick={ () => {
 								window.location = window.location.href;
 							} }
+							onKeyDown={ () => {
+								window.location = window.location.href;
+							} }
 							role="button"
 							style={ style }
+							tabIndex={ 0 }
 						>
 							{ errorText ||
 								__(
@@ -194,13 +198,13 @@ export function WPRainbowConnect( {
 						</div>
 					);
 				} else if ( account ) {
-					let loginText = __( 'Continue Log In with Ethereum' );
+					let loginButtonText = __( 'Continue Log In with Ethereum' );
 					if ( state.address ) {
-						loginText = `${ __( 'Logged In as ' ) } ${
+						loginButtonText = `${ __( 'Logged In as ' ) } ${
 							account.displayName
 						}`;
 					} else if ( state.loading ) {
-						loginText =
+						loginButtonText =
 							checkWalletText ||
 							__( 'Check Wallet to Sign Message' );
 					}
@@ -212,10 +216,16 @@ export function WPRainbowConnect( {
 									? openAccountModal
 									: signIn
 							}
+							onKeyDown={
+								state.address || state.loading
+									? openAccountModal
+									: signIn
+							}
 							role="button"
 							style={ style }
+							tabIndex={ 0 }
 						>
-							{ loginText }
+							{ loginButtonText }
 						</div>
 					);
 				} else {
@@ -228,8 +238,15 @@ export function WPRainbowConnect( {
 								setTriggeredLogin( false );
 								openConnectModal();
 							} }
+							onKeyDown={ () => {
+								// Make sure we don't have an active signing attempt.
+								setState( {} );
+								setTriggeredLogin( false );
+								openConnectModal();
+							} }
 							role="button"
 							style={ style }
+							tabIndex={ 0 }
 						>
 							{ loginText ||
 								__( 'Log In with Ethereum', 'wp-rainbow' ) }
@@ -282,7 +299,7 @@ WPRainbowConnect.propTypes = {
 	onLogout: PropTypes.func,
 	outerContainerClassName: PropTypes.string,
 	redirectURL: PropTypes.string,
-	style: PropTypes.object,
+	style: stylePropType,
 };
 
 export default WPRainbowConnect;

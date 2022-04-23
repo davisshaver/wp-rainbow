@@ -1,3 +1,5 @@
+/* eslint-disable @wordpress/no-unsafe-wp-apis, react/jsx-props-no-spreading */
+
 import classnames from 'classnames';
 import {
 	__experimentalGetBorderClassesAndStyles as getBorderClassesAndStyles,
@@ -13,7 +15,6 @@ export default function save( { attributes, className } ) {
 		errorText,
 		loginText,
 		redirectURL,
-		style,
 		width,
 	} = attributes;
 	const borderProps = getBorderClassesAndStyles( attributes );

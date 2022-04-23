@@ -5,6 +5,7 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider, chain } from 'wagmi';
 import { providers } from 'ethers';
+import stylePropType from 'react-style-proptype';
 
 import PropTypes from 'prop-types';
 import { WPRainbowConnect } from './connect';
@@ -31,28 +32,27 @@ const connectors = connectorsForWallets( wallets );
  * WP Rainbow Provider.
  *
  * @param {Object}   props                         Props for WP Rainbow Provider.
- * @param {string}   props.buttonClassName         Class for WP Rainbow button (passed through).
- * @param {boolean}  props.mockLogin               Whether to skip the login redirect (passed through).
- * @param {Function} props.onError                 Callback for error handling (passed through).
- * @param {Function} props.onLogin                 Callback for login (passed through).
- * @param {Function} props.onLogout                Callback for logout (passed through).
- * @param            props.containerClassName
- * @param            props.container
- * @param            props.style
- * @param            props.outerContainer
- * @param            props.outerContainerClassName
- * @param            props.containers
- * @param            props.loginText
- * @param            props.redirectURL
- * @param            props.isSelected
- * @param            props.disableClick
- * @param            props.loggedIn
+ * @param {string}   props.buttonClassName         Class for WP Rainbow button.
+ * @param {boolean}  props.mockLogin               Whether to skip the login redirect.
+ * @param {Function} props.onError                 Callback for error handling.
+ * @param {Function} props.onLogin                 Callback for login.
+ * @param {Function} props.onLogout                Callback for logout.
+ * @param {string}   props.containerClassName      Container classname.
+ * @param {Object}   props.style                   Button style.
+ * @param {boolean}  props.containers              Use container elements.
+ * @param {string}   props.outerContainerClassName Outer container classname.
+ * @param {string}   props.loginText               Login text override.
+ * @param {string}   props.checkWalletText         Check wallet text override.
+ * @param {string}   props.errorText               Error text override.
+ * @param {string}   props.redirectURL             Redirect URL override.
+ * @param {boolean}  props.loggedIn                Enabled logged in functionality.
  */
 function WPRainbow( {
 	buttonClassName,
+	checkWalletText,
 	containerClassName,
 	containers,
-	disableClick,
+	errorText,
 	loggedIn,
 	loginText,
 	mockLogin,
@@ -72,9 +72,10 @@ function WPRainbow( {
 			>
 				<WPRainbowConnect
 					buttonClassName={ buttonClassName }
+					checkWalletText={ checkWalletText }
 					containerClassName={ containerClassName }
 					containers={ containers }
-					disableClick={ disableClick }
+					errorText={ errorText }
 					loggedIn={ loggedIn }
 					loginText={ loginText }
 					mockLogin={ mockLogin }
@@ -121,7 +122,7 @@ WPRainbow.propTypes = {
 	onLogout: PropTypes.func,
 	outerContainerClassName: PropTypes.string,
 	redirectURL: PropTypes.string,
-	style: PropTypes.object,
+	style: stylePropType,
 };
 
 export default WPRainbow;
