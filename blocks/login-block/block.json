@@ -1,0 +1,85 @@
+{
+  "apiVersion": 2,
+  "attributes": {
+    "backgroundColor": {
+      "type": "string"
+    },
+    "checkWalletText": {
+      "type": "string"
+    },
+    "errorText": {
+      "type": "string"
+    },
+    "gradient": {
+      "type": "string"
+    },
+    "loginText": {
+      "type": "string"
+    },
+    "redirectBoomerang": {
+      "type": "boolean"
+    },
+    "redirectURL": {
+      "type": "string"
+    },
+    "textColor": {
+      "type": "string"
+    },
+    "width": {
+      "type": "number"
+    }
+  },
+  "category": "widgets",
+  "description": "Show WP Rainbow login & logout links.",
+  "icon": "money",
+  "name": "wp-rainbow/login",
+  "styles": [
+    {
+      "isDefault": true,
+      "label": "Fill",
+      "name": "fill"
+    },
+    {
+      "label": "Outline",
+      "name": "outline"
+    }
+  ],
+  "supports": {
+    "__experimentalBorder": {
+      "__experimentalDefaultControls": {
+        "radius": true
+      },
+      "__experimentalSkipSerialization": true,
+      "radius": true
+    },
+    "align": true,
+    "anchor": true,
+    "color": {
+      "__experimentalDefaultControls": {
+        "background": true,
+        "text": true
+      },
+      "__experimentalSkipSerialization": true,
+      "gradients": true
+    },
+    "html": false,
+    "spacing": {
+      "__experimentalDefaultControls": {
+        "padding": true
+      },
+      "__experimentalSkipSerialization": true,
+      "padding": [
+        "horizontal",
+        "vertical"
+      ]
+    },
+    "typography": {
+      "__experimentalDefaultControls": {
+        "fontSize": true
+      },
+      "__experimentalFontFamily": true,
+      "fontSize": true
+    }
+  },
+  "title": "WP Rainbow Login"
+}

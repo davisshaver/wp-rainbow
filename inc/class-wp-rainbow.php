@@ -59,6 +59,7 @@ class WP_Rainbow {
 	 * Setup instance.
 	 */
 	protected function setup() {
+		add_action( 'init', [ self::$instance, 'action_init' ] );
 		add_action( 'login_form', [ self::$instance, 'action_login_form' ] );
 		add_action( 'login_head', [ self::$instance, 'action_login_head' ] );
 		add_action( 'login_enqueue_scripts', [ self::$instance, 'action_login_enqueue_scripts' ] );
@@ -219,6 +220,77 @@ class WP_Rainbow {
 	// ADMIN PAGE.
 
 	/**
+	 * Register blocks on init.
+	 */
+	public function action_init() {
+		$test_block_path         = '../build/login-block';
+		$test_block_dependencies = include __DIR__ . '/../build/login-block.asset.php';
+		wp_register_script(
+			'login-block',
+			plugins_url( $test_block_path . '.js', __FILE__ ),
+			$test_block_dependencies['dependencies'],
+			$test_block_dependencies['version'],
+			false
+		);
+		wp_register_style(
+			'login-block-css',
+			plugins_url( $test_block_path . '.css', __FILE__ ),
+			[],
+			$test_block_dependencies['version']
+		);
+		$test_block_frontend_path         = '../build/login-block-frontend';
+		$test_block_frontend_dependencies = include __DIR__ . '/../build/login-block-frontend.asset.php';
+		wp_register_script(
+			'login-block-frontend',
+			plugins_url( $test_block_frontend_path . '.js', __FILE__ ),
+			$test_block_frontend_dependencies['dependencies'],
+			$test_block_frontend_dependencies['version'],
+			true
+		);
+		wp_register_style(
+			'login-block-frontend-css',
+			plugins_url( $test_block_frontend_path . '.css', __FILE__ ),
+			[ 'wp-block-button' ],
+			$test_block_frontend_dependencies['version']
+		);
+		register_block_type(
+			'wp-rainbow/login',
+			[
+				'api_version'   => 2,
+				'editor_script' => 'login-block',
+				'editor_style'  => 'login-block-css',
+				'view_script'   => 'login-block-frontend',
+				'style'         => 'login-block-frontend-css',
+			]
+		);
+		wp_localize_script(
+			'login-block',
+			'wpRainbowData',
+			[
+				'ADMIN_URL'    => get_admin_url(),
+				'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'   => get_bloginfo( 'name' ),
+			]
+		);
+		wp_localize_script(
+			'login-block-frontend',
+			'wpRainbowData',
+			[
+				'ADMIN_URL'    => get_admin_url(),
+				'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'   => get_bloginfo( 'name' ),
+				'LOGOUT_URL'   => wp_logout_url(),
+			]
+		);
+	}
+
+	/**
 	 * Add menu page for plugin.
 	 */
 	public function action_admin_menu() {
@@ -366,7 +438,7 @@ class WP_Rainbow {
 			<em>
 				<small>
 					<?php
-					esc_html_e( 'If set, users will be redirected here on login instead of the admin.', 'wp-rainbow' );
+					esc_html_e( 'If set, users will be redirected here on login instead of the admin. (Block redirect configuration will take precedent if set.)', 'wp-rainbow' );
 					?>
 				</small>
 			</em>
@@ -439,13 +511,23 @@ class WP_Rainbow {
 	 * Adds supplemental scripts to login page.
 	 */
 	public function action_login_enqueue_scripts() {
-		wp_enqueue_script(
+		$script_path         = '../build/login';
+		$script_dependencies = include __DIR__ . '/../build/login.asset.php';
+		wp_register_script(
 			'wp-rainbow-login',
-			plugins_url( '/build/js/index.js', dirname( __FILE__ ) ),
-			[ 'react', 'react-dom', 'wp-i18n' ],
-			WP_RAINBOW_ASSETS_VERSION,
+			plugins_url( $script_path . '.js', __FILE__ ),
+			$script_dependencies['dependencies'],
+			$script_dependencies['version'],
 			true
 		);
+		wp_enqueue_script( 'wp-rainbow-login' );
+		wp_register_style(
+			'wp-rainbow-login-css',
+			plugins_url( $script_path . '.css', __FILE__ ),
+			[],
+			$script_dependencies['version']
+		);
+		wp_enqueue_style( 'wp-rainbow-login-css' );
 		wp_localize_script(
 			'wp-rainbow-login',
 			'wpRainbowData',
@@ -478,6 +560,11 @@ class WP_Rainbow {
 
 			#wp-rainbow-button {
 				order: -2;
+				width: 100%;
+			}
+
+			#wp-rainbow-button div[role="button"] {
+				text-align: center;
 				width: 100%;
 			}
 

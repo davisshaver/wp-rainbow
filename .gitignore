@@ -9,7 +9,7 @@ vendor
 .phpunit.result.cache
 
 # Build files
-build/js/*
+build
 
 # Ignore temporary OS files
 .DS_Store
