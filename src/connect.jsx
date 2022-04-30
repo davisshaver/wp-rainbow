@@ -29,9 +29,9 @@ const {
  * @param {string}   props.loginText               Login text override.
  * @param {string}   props.checkWalletText         Check wallet text override.
  * @param {string}   props.errorText               Error text override.
+   @param {boolean}  props.redirectBoomerang       Enable redirecting to current page.
  * @param {string}   props.redirectURL             Redirect URL override.
  * @param {boolean}  props.loggedIn                Enabled logged in functionality.
- * @param            props.redirectBoomerang
  */
 export function WPRainbowConnect( {
 	buttonClassName,
