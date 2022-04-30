@@ -85,6 +85,7 @@ function WPRainbow( {
 					onLogin={ onLogin }
 					onLogout={ onLogout }
 					outerContainerClassName={ outerContainerClassName }
+					redirectBoomerang={ redirectBoomerang }
 					redirectURL={ redirectURL }
 					style={ style }
 				/>
