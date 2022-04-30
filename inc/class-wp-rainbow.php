@@ -505,6 +505,8 @@ class WP_Rainbow {
 		<?php
 	}
 
+	// FRONTEND INTEGRATION.
+
 	/**
 	 * Adds supplemental scripts to login page.
 	 */
