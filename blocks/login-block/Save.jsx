@@ -14,6 +14,7 @@ export default function save( { attributes, className } ) {
 		checkWalletText,
 		errorText,
 		loginText,
+		redirectBoomerang,
 		redirectURL,
 		width,
 	} = attributes;
@@ -47,6 +48,7 @@ export default function save( { attributes, className } ) {
 				data-outer-container-class-name={ classnames(
 					'wp-block-buttons'
 				) }
+				data-redirect-boomerang={ redirectBoomerang }
 				data-redirect-url={ redirectURL }
 				data-style={ JSON.stringify( {
 					...borderProps.style,

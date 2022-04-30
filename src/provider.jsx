@@ -44,6 +44,7 @@ const connectors = connectorsForWallets( wallets );
  * @param {string}   props.loginText               Login text override.
  * @param {string}   props.checkWalletText         Check wallet text override.
  * @param {string}   props.errorText               Error text override.
+   @param {boolean}  props.redirectBoomerang       Enable redirecting to current page.
  * @param {string}   props.redirectURL             Redirect URL override.
  * @param {boolean}  props.loggedIn                Enabled logged in functionality.
  */
@@ -60,6 +61,7 @@ function WPRainbow( {
 	onLogin,
 	onLogout,
 	outerContainerClassName,
+	redirectBoomerang,
 	redirectURL,
 	style,
 } ) {
@@ -104,6 +106,7 @@ WPRainbow.defaultProps = {
 	onLogin: () => {},
 	onLogout: () => {},
 	outerContainerClassName: '',
+	redirectBoomerang: false,
 	redirectURL: '',
 	style: {},
 };
@@ -121,6 +124,7 @@ WPRainbow.propTypes = {
 	onLogin: PropTypes.func,
 	onLogout: PropTypes.func,
 	outerContainerClassName: PropTypes.string,
+	redirectBoomerang: PropTypes.bool,
 	redirectURL: PropTypes.string,
 	style: stylePropType,
 };

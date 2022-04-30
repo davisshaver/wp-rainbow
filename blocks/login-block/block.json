@@ -16,6 +16,9 @@
     "loginText": {
       "type": "string"
     },
+    "redirectBoomerang": {
+      "type": "boolean"
+    },
     "redirectURL": {
       "type": "string"
     },

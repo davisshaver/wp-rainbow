@@ -12,6 +12,7 @@ import { useCallback } from '@wordpress/element';
 import {
 	Button,
 	ButtonGroup,
+	CheckboxControl,
 	PanelBody,
 	TextControl,
 } from '@wordpress/components';
@@ -45,11 +46,17 @@ function WidthPanel( { selectedWidth, setAttributes } ) {
 	);
 }
 
-export default function Edit( { attributes, className, setAttributes } ) {
+export default function Edit( {
+	attributes,
+	className,
+	isSelected,
+	setAttributes,
+} ) {
 	const {
 		checkWalletText,
 		errorText,
 		loginText,
+		redirectBoomerang,
 		redirectURL,
 		width,
 	} = attributes;
@@ -77,6 +84,12 @@ export default function Edit( { attributes, className, setAttributes } ) {
 		},
 		[ setAttributes ]
 	);
+	const onSetRedirectBoomerang = useCallback(
+		( value ) => {
+			setAttributes( { redirectBoomerang: value } );
+		},
+		[ setAttributes ]
+	);
 	const borderProps = useBorderProps( attributes );
 	const colorProps = useColorProps( attributes );
 	const spacingProps = useSpacingProps( attributes );
@@ -88,6 +101,17 @@ export default function Edit( { attributes, className, setAttributes } ) {
 				className={ `${ blockClassName } wp-block-button` }
 				{ ...blockProps }
 			>
+				{ ! isSelected && (
+					<div
+						style={ {
+							cursor: 'pointer',
+							height: '100%',
+							position: 'absolute',
+							width: '100%',
+							zIndex: 1,
+						} }
+					/>
+				) }
 				<WPRainbow
 					buttonClassName={ classnames(
 						'wp-block-button__link',
@@ -119,12 +143,19 @@ export default function Edit( { attributes, className, setAttributes } ) {
 			</div>
 			<InspectorControls>
 				<PanelBody title={ __( 'Functionality' ) }>
-					<TextControl
-						label={ __( 'Redirect URL' ) }
-						onChange={ onSetRedirectURL }
-						type="url"
-						value={ redirectURL || '' }
+					<CheckboxControl
+						label={ __( 'Redirect Back to Page' ) }
+						onChange={ onSetRedirectBoomerang }
+						checked={ redirectBoomerang === true }
 					/>
+					{ ! redirectBoomerang && (
+						<TextControl
+							label={ __( 'Redirect URL' ) }
+							onChange={ onSetRedirectURL }
+							type="url"
+							value={ redirectURL || '' }
+						/>
+					) }
 				</PanelBody>
 				<PanelBody title={ __( 'Text Settings' ) }>
 					<TextControl

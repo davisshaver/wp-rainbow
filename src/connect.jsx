@@ -31,6 +31,7 @@ const {
  * @param {string}   props.errorText               Error text override.
  * @param {string}   props.redirectURL             Redirect URL override.
  * @param {boolean}  props.loggedIn                Enabled logged in functionality.
+ * @param            props.redirectBoomerang
  */
 export function WPRainbowConnect( {
 	buttonClassName,
@@ -45,6 +46,7 @@ export function WPRainbowConnect( {
 	onLogin,
 	onLogout,
 	outerContainerClassName,
+	redirectBoomerang,
 	redirectURL,
 	style,
 } ) {
@@ -149,7 +151,11 @@ export function WPRainbowConnect( {
 			if ( verifyRes.ok ) {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
 				onLogin();
-				window.location = redirectURL || REDIRECT_URL || ADMIN_URL;
+				if ( redirectBoomerang ) {
+					window.location.reload();
+				} else {
+					window.location = redirectURL || REDIRECT_URL || ADMIN_URL;
+				}
 			} else {
 				const error = await verifyRes.json();
 				onError( error );
@@ -183,8 +189,10 @@ export function WPRainbowConnect( {
 							onClick={ () => {
 								window.location = window.location.href;
 							} }
-							onKeyDown={ () => {
-								window.location = window.location.href;
+							onKeyDown={ ( e ) => {
+								if ( e.keyCode === 13 ) {
+									window.location = window.location.href;
+								}
 							} }
 							role="button"
 							style={ style }
@@ -208,19 +216,22 @@ export function WPRainbowConnect( {
 							checkWalletText ||
 							__( 'Check Wallet to Sign Message' );
 					}
+					const triggerContinueLogin = () => {
+						if ( state.address || state.loading ) {
+							openAccountModal();
+						} else {
+							signIn();
+						}
+					};
 					button = (
 						<div
 							className={ buttonClassName }
-							onClick={
-								state.address || state.loading
-									? openAccountModal
-									: signIn
-							}
-							onKeyDown={
-								state.address || state.loading
-									? openAccountModal
-									: signIn
-							}
+							onClick={ triggerContinueLogin }
+							onKeyDown={ ( e ) => {
+								if ( e.keyCode === 13 ) {
+									triggerContinueLogin();
+								}
+							} }
 							role="button"
 							style={ style }
 							tabIndex={ 0 }
@@ -229,20 +240,22 @@ export function WPRainbowConnect( {
 						</div>
 					);
 				} else {
+					const triggerLogin = () => {
+						// Make sure we don't have an active signing attempt.
+						setState( {} );
+						setTriggeredLogin( false );
+						openConnectModal();
+					};
 					button = (
 						<div
 							className={ buttonClassName }
 							onClick={ () => {
-								// Make sure we don't have an active signing attempt.
-								setState( {} );
-								setTriggeredLogin( false );
-								openConnectModal();
+								triggerLogin();
 							} }
-							onKeyDown={ () => {
-								// Make sure we don't have an active signing attempt.
-								setState( {} );
-								setTriggeredLogin( false );
-								openConnectModal();
+							onKeyDown={ ( e ) => {
+								if ( e.keyCode === 13 ) {
+									triggerLogin();
+								}
 							} }
 							role="button"
 							style={ style }
@@ -281,6 +294,7 @@ WPRainbowConnect.defaultProps = {
 	onLogin: () => {},
 	onLogout: () => {},
 	outerContainerClassName: '',
+	redirectBoomerang: false,
 	redirectURL: '',
 	style: {},
 };
@@ -298,6 +312,7 @@ WPRainbowConnect.propTypes = {
 	onLogin: PropTypes.func,
 	onLogout: PropTypes.func,
 	outerContainerClassName: PropTypes.string,
+	redirectBoomerang: PropTypes.bool,
 	redirectURL: PropTypes.string,
 	style: stylePropType,
 };

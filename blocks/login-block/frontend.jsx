@@ -34,6 +34,7 @@ if ( loginBlocks ) {
 					);
 					window.location = logoutURL.toString();
 				} }
+				redirectBoomerang={ !! blockDetails.dataset.redirectBoomerang }
 				redirectURL={
 					blockDetails.dataset.redirectURL || window.location.href
 				}
