@@ -548,7 +548,7 @@ class WP_Rainbow {
 	public function action_login_head() {
 		?>
 		<style>
-			.js.login form {
+			.js.login-action-login form {
 				display: flex;
 				flex-wrap: wrap;
 				justify-content: space-between;
