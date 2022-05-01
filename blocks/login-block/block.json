@@ -47,10 +47,16 @@
   "supports": {
     "__experimentalBorder": {
       "__experimentalDefaultControls": {
-        "radius": true
+        "color": true,
+        "radius": true,
+        "style": true,
+        "width": true
       },
       "__experimentalSkipSerialization": true,
-      "radius": true
+      "color": true,
+      "radius": true,
+      "style": true,
+      "width": true
     },
     "align": true,
     "anchor": true,
