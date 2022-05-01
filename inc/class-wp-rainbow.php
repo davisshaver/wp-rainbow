@@ -558,6 +558,35 @@ class WP_Rainbow {
 				display: none !important;
 			}
 
+			/* Compensate for flex styling when Jetpack SSO enabled. */
+			.jetpack-sso-clear {
+				width: 100%;
+			}
+
+			.wp-rainbow-sso-or {
+				margin: 16px 0;
+				position: relative;
+				text-align: center;
+			}
+
+			.wp-rainbow-sso-or::before {
+				background: #dcdcde;
+				content: '';
+				height: 1px;
+				position: absolute;
+				left: 0;
+				top: 50%;
+				width: 100%;
+			}
+
+			.wp-rainbow-sso-or span {
+				background: #fff;
+				color: #777;
+				position: relative;
+				padding: 0 8px;
+				text-transform: uppercase;
+			}
+
 			#wp-rainbow-button {
 				order: -2;
 				width: 100%;
@@ -572,7 +601,7 @@ class WP_Rainbow {
 				display: none;
 			}
 
-			#loginform.logged-in .wp-rainbow.help-text {
+			#loginform.logged-in .wp-rainbow-sso-or {
 				display: none;
 			}
 		</style>

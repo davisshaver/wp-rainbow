@@ -3,18 +3,9 @@ import WPRainbow from './provider';
 import { addErrorMessage } from './utilities/addErrorMessage';
 
 const siteLoginText = (
-	<p
-		className="wp-rainbow help-text"
-		style={ {
-			fontSize: '12px',
-			fontStyle: 'italic',
-			marginBottom: '4px',
-			marginTop: '4px',
-			textAlign: 'center',
-		} }
-	>
-		{ __( '- OR USE SITE LOGIN -', 'wp-rainbow' ) }
-	</p>
+	<div className="wp-rainbow-sso-or">
+		<span>{ __( 'Or', 'wp-rainbow' ) }</span>
+	</div>
 );
 
 const loginForm = document.getElementById( 'loginform' );
