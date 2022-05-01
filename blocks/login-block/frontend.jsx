@@ -37,9 +37,7 @@ if ( loginBlocks ) {
 				redirectBoomerang={
 					blockDetails.dataset.redirectBoomerang === 'true'
 				}
-				redirectURL={
-					blockDetails.dataset.redirectURL || window.location.href
-				}
+				redirectURL={ blockDetails.dataset.redirectURL }
 				style={ style }
 			/>,
 			wpRainbowBlock
