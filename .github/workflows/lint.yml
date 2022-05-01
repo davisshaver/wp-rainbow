@@ -24,3 +24,9 @@ jobs:
 
             - name: Lint CSS
               run: yarn lint:css
+
+            - name: Lint package.json
+              run: yarn lint:pkg-json
+
+            - name: Lint Markdown docs
+              run: yarn lint:md-docs

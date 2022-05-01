@@ -1,4 +1,25 @@
 {
+  "name": "wp-rainbow",
+  "version": "0.0.6",
+  "description": "Sign-In With Ethereum for WordPress using RainbowKit",
+  "author": "Davis Shaver",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "Sign-In With Ethereum",
+    "RainbowKit",
+    "WordPress",
+    "SSO",
+    "web3"
+  ],
+  "homepage": "https://wp-rainbow.davisshaver.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davisshaver/wp-rainbow.git"
+  },
+  "bugs": {
+    "email": "wprainbow@davisshaver.com",
+    "url": "https://github.com/davisshaver/wp-rainbow/issues"
+  },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^0.0.2",
     "@wordpress/block-editor": "^8.6.0",
@@ -21,7 +42,6 @@
     "style-loader": "^3.3.1",
     "webpack": "^5.72.0"
   },
-  "name": "wp-rainbow",
   "scripts": {
     "build": "wp-scripts build",
     "check-engines": "wp-scripts check-engines",
@@ -29,6 +49,8 @@
     "format": "wp-scripts format",
     "lint:css": "wp-scripts lint-style",
     "lint:js": "wp-scripts lint-js",
+    "lint:md-docs": "wp-scripts lint-md-docs",
+    "lint:pkg-json": "wp-scripts lint-pkg-json",
     "packages-update": "wp-scripts packages-update",
     "start": "wp-scripts start"
   }

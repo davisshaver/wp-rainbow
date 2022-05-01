@@ -4,7 +4,7 @@
  *
  * @package           WP_Rainbow
  * @author            Davis Shaver
- * @license           MIT
+ * @license:          GPL-2.0-or-later
  *
  * @wordpress-plugin
  * Plugin Name:       WP Rainbow
@@ -14,6 +14,8 @@
  * Author:            Davis Shaver
  * Author URI:        https://davisshaver.com/
  * Text Domain:       wp-rainbow
+ * License:           GPL v2 or later
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Update URI:        https://github.com/davisshaver/wp-rainbow
  */
 
