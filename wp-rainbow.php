@@ -41,5 +41,13 @@ add_action(
 
 // Require the main class.
 require_once __DIR__ . '/inc/class-wp-rainbow.php';
+require_once __DIR__ . '/inc/class-wp-rainbow-login-functionality.php';
+require_once __DIR__ . '/inc/class-wp-rainbow-login-styling.php';
+require_once __DIR__ . '/inc/class-wp-rainbow-passwords.php';
+require_once __DIR__ . '/inc/class-wp-rainbow-settings.php';
 
 WP_Rainbow::instance();
+WP_Rainbow_Login_Functionality::instance();
+WP_Rainbow_Login_Styling::instance();
+WP_Rainbow_Passwords::instance();
+WP_Rainbow_Settings::instance();
