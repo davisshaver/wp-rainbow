@@ -7,12 +7,12 @@
 
 namespace WP_Rainbow\Tests;
 
-require __DIR__ . '/../../inc/class-wp-rainbow.php';
+require __DIR__ . '/../../inc/class-wp-rainbow-login-functionality.php';
 
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Elliptic\EC;
-use WP_Rainbow\WP_Rainbow;
+use WP_Rainbow\WP_Rainbow_Login_Functionality;
 
 /**
  * These tests check signature verification.
@@ -37,7 +37,7 @@ class Verify_Signature_Test extends TestCase {
 	 * @throws Exception Throws if unsupported Keccak Hash output size.
 	 */
 	public function testVerificationWithClass() {
-		$this_plugin        = new WP_Rainbow();
+		$this_plugin        = new WP_Rainbow_Login_Functionality();
 		$msg_payload        = [
 			'address'   => '0xfe15a1eC58947149F81c33d5f5B6D74d952bc0F2',
 			'domain'    => 'wp-rainbow.test',
