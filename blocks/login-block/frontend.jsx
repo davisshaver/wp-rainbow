@@ -3,7 +3,6 @@ import WPRainbow from '../../src/provider';
 
 const { LOGOUT_URL } = wpRainbowData;
 
-const loggedIn = document.body.classList.contains( 'logged-in' );
 const loginBlocks = document.querySelectorAll( '.wp-block-wp-rainbow-login' );
 if ( loginBlocks ) {
 	loginBlocks.forEach( ( wpRainbowBlock ) => {
@@ -21,7 +20,6 @@ if ( loginBlocks ) {
 				containers
 				containerClassName={ blockDetails.dataset.containerClassName }
 				errorText={ blockDetails.dataset.errorText }
-				loggedIn={ loggedIn }
 				loginText={ blockDetails.dataset.loginText }
 				outerContainerClassName={
 					blockDetails.dataset.outerContainerClassName

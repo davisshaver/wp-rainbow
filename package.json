@@ -21,7 +21,7 @@
     "url": "https://github.com/davisshaver/wp-rainbow/issues"
   },
   "dependencies": {
-    "@rainbow-me/rainbowkit": "^0.0.2",
+    "@rainbow-me/rainbowkit": "^0.1.0",
     "@wordpress/block-editor": "^8.6.0",
     "@wordpress/blocks": "^11.6.0",
     "@wordpress/components": "^19.9.0",
@@ -33,7 +33,7 @@
     "react-style-proptype": "^3.2.2",
     "siwe": "^1.1.6",
     "util": "^0.12.4",
-    "wagmi": "^0.2.28"
+    "wagmi": "^0.3.2"
   },
   "devDependencies": {
     "@wordpress/scripts": "^22.5.0",

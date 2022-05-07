@@ -138,6 +138,7 @@ class WP_Rainbow {
 				'ADMIN_URL'    => get_admin_url(),
 				'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
 				'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'LOGGED_IN'    => is_user_logged_in(),
 				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
 				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
 				'SITE_TITLE'   => get_bloginfo( 'name' ),
