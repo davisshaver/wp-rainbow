@@ -112,6 +112,17 @@ class WP_Rainbow_Settings {
 				'label_for' => 'wp_rainbow_field_redirect_url',
 			],
 		);
+
+		add_settings_field(
+			'wp_rainbow_field_required_nft',
+			__( 'Required NFT', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_required_nft_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_required_nft',
+			],
+		);
 	}
 
 
@@ -192,6 +203,32 @@ class WP_Rainbow_Settings {
 				<small>
 					<?php
 					esc_html_e( 'If set, users will be redirected here on login instead of the admin. (Block redirect configuration will take precedent if set.)', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Print field for Required NFT option.
+	 */
+	public function wp_rainbow_required_nft_callback() {
+		$options      = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_required_nft' => '' ] );
+		$required_nft = ! empty( $options['wp_rainbow_field_required_nft'] ) ? $options['wp_rainbow_field_required_nft'] : '';
+		?>
+		<input
+			id='wp_rainbow_field_required_nft'
+			name='wp_rainbow_options[wp_rainbow_field_required_nft]'
+			size='40'
+			type='text'
+			value='<?php echo esc_attr( $required_nft ); ?>'
+		/>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'If set, users will be required to own an NFT from this contract', 'wp-rainbow' );
 					?>
 				</small>
 			</em>

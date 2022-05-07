@@ -13,6 +13,7 @@ use WP_REST_Response;
 use WP_REST_Server;
 use Elliptic\EC;
 use kornrunner\Keccak;
+use Web3\Contract;
 
 /**
  * WP Rainbow Login Functionality
@@ -168,117 +169,146 @@ class WP_Rainbow_Login_Functionality {
 	 * @param WP_REST_Request $request REST request data.
 	 *
 	 * @return WP_REST_Response REST API response.
-	 * @throws Exception Throws if unsupported Keccak Hash output size.
+	 * @throws Exception Throws on validation error.
 	 */
 	public function login_callback( WP_REST_Request $request ): WP_REST_Response {
-		// Make sure that nonce passes WordPress validation.
-		$nonce = $request->get_param( 'nonce' );
-		add_filter( 'nonce_life', [ self::$instance, 'filter_nonce_life_filtered' ] );
-		$nonce_verified = wp_verify_nonce( $nonce, self::WP_RAINBOW_NONCE_KEY );
-		remove_filter( 'nonce_life', [ self::$instance, 'filter_nonce_life_filtered' ] );
-		if ( ! $nonce_verified ) {
-			return new WP_REST_Response( __( 'Nonce verification failed.', 'wp-rainbow' ), 500 );
-		}
-
-		// Make sure that SIWE payload contains all required keys.
-		$address      = $request->get_param( 'address' );
-		$signature    = $request->get_param( 'signature' );
-		$display_name = $request->get_param( 'displayName' );
-		$siwe_payload = $request->get_param( 'siwePayload' );
-		if ( empty( $address ) || empty( $signature ) ) {
-			return new WP_REST_Response( __( 'Malformed authentication request.', 'wp-rainbow' ), 500 );
-		}
-		foreach ( self::WP_RAINBOW_REQUIRED_KEYS as $key ) {
-			if ( empty( $siwe_payload[ $key ] ) ) {
-				return new WP_REST_Response( __( 'Incomplete authentication request.', 'wp-rainbow' ), 500 );
+		try {
+			// Make sure that nonce passes WordPress validation.
+			$nonce = $request->get_param( 'nonce' );
+			add_filter( 'nonce_life', [ self::$instance, 'filter_nonce_life_filtered' ] );
+			$nonce_verified = wp_verify_nonce( $nonce, self::WP_RAINBOW_NONCE_KEY );
+			remove_filter( 'nonce_life', [ self::$instance, 'filter_nonce_life_filtered' ] );
+			if ( ! $nonce_verified ) {
+				throw new Exception( __( 'Nonce verification failed.', 'wp-rainbow' ) );
 			}
-		}
 
-		// Make sure that nonce in message matches top-level nonce.
-		if ( $siwe_payload['nonce'] !== $nonce ) {
-			return new WP_REST_Response( __( 'Nonce validation failed.', 'wp-rainbow' ), 500 );
-		}
+			// Make sure that SIWE payload contains all required keys.
+			$address      = $request->get_param( 'address' );
+			$signature    = $request->get_param( 'signature' );
+			$display_name = $request->get_param( 'displayName' );
+			$siwe_payload = $request->get_param( 'siwePayload' );
+			if ( empty( $address ) || empty( $signature ) ) {
+				throw new Exception( __( 'Malformed authentication request.', 'wp-rainbow' ) );
+			}
 
-		// Make sure that signature verifies correctly.
-		$generated_msg      = $this->generate_message( $siwe_payload );
-		$signature_verified = $this->verify_signature( $generated_msg, $signature, $address );
-		if ( ! $signature_verified ) {
-			/**
-			 * Fires when a WP Rainbow user's login attempt doesn't pass validation.
-			 *
-			 * @param string $generated_msg Generated SIWE message.
-			 * @param string $signature Signature passed in login request.
-			 * @param string $address Address of user attempting login.
-			 */
-			do_action( 'wp_rainbow_validation_failed', $generated_msg, $signature, $address );
-
-			return new WP_REST_Response( __( 'Message validation failed.', 'wp-rainbow' ), 500 );
-		}
-
-		// Lookup or generate user and then sign them in.
-		$user                   = get_user_by( 'login', $address );
-		$sanitized_display_name = sanitize_text_field( $display_name );
-		if ( ! $user ) {
-			// If there's not a user already, double check registration settings.
-			$users_can_register = get_option( 'users_can_register', false );
-			if ( empty( $users_can_register ) ) {
-				$wp_rainbow_options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_override_users_can_register' => false ] );
-				if ( empty( $wp_rainbow_options['wp_rainbow_field_override_users_can_register'] ) ) {
-					return new WP_REST_Response( __( 'User registration is disabled.', 'wp-rainbow' ), 500 );
+			foreach ( self::WP_RAINBOW_REQUIRED_KEYS as $key ) {
+				if ( empty( $siwe_payload[ $key ] ) ) {
+					throw new Exception( __( 'Incomplete authentication request.' ) );
 				}
 			}
 
-			$password = wp_generate_password();
-			$user_id  = wp_create_user( $address, $password );
-			$user     = get_user_by( 'ID', $user_id );
-			wp_update_user(
+			// Make sure that nonce in message matches top-level nonce.
+			if ( $siwe_payload['nonce'] !== $nonce ) {
+				throw new Exception( __( 'Nonce validation failed.', 'wp-rainbow' ) );
+			}
+
+			// Make sure that signature verifies correctly.
+			$generated_msg      = $this->generate_message( $siwe_payload );
+			$signature_verified = $this->verify_signature( $generated_msg, $signature, $address );
+
+			if ( ! $signature_verified ) {
+				/**
+				 * Fires when a WP Rainbow user's login attempt doesn't pass validation.
+				 *
+				 * @param string $generated_msg Generated SIWE message.
+				 * @param string $signature Signature passed in login request.
+				 * @param string $address Address of user attempting login.
+				 */
+				do_action( 'wp_rainbow_validation_failed', $generated_msg, $signature, $address );
+
+				throw new Exception( __( 'Message validation failed.', 'wp-rainbow' ) );
+			}
+
+			// Get WP Rainbow options.
+			$wp_rainbow_options = get_option(
+				'wp_rainbow_options',
 				[
-					'ID'           => $user->ID,
-					'role'         => $this->get_role_for_address_filtered( $address ),
-					'display_name' => $sanitized_display_name,
+					'wp_rainbow_field_override_users_can_register' => false,
+					'wp_rainbow_field_required_nft' => '',
 				]
 			);
 
-			update_user_meta( $user->ID, 'wp_rainbow_user', true );
+			if ( ! empty( $wp_rainbow_options['wp_rainbow_field_required_nft'] ) && ! empty( $wp_rainbow_options['wp_rainbow_field_infura_id'] ) ) {
+				// @TODO Figure out if ABI should be an option (or formatted differently).
+				$example_abi = '[{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
+				$contract    = new Contract( 'https://mainnet.infura.io/v3/' . $wp_rainbow_options['wp_rainbow_field_infura_id'], $example_abi );
+				$contract->at( $wp_rainbow_options['wp_rainbow_field_required_nft'] )->call(
+					'balanceOf',
+					$address,
+					function ( $err, $balance ) {
+						if ( hexdec( $balance[0]->value ) === 0 ) {
+							throw new Exception( __( 'Token validation failed.', 'wp-rainbow' ) );
+						}
+					}
+				);
+			}
+
+			// Lookup or generate user and then sign them in.
+			$user                   = get_user_by( 'login', $address );
+			$sanitized_display_name = sanitize_text_field( $display_name );
+			if ( ! $user ) {
+				// If there's not a user already, double check registration settings.
+				$users_can_register = get_option( 'users_can_register', false );
+				if ( empty( $users_can_register ) ) {
+					if ( empty( $wp_rainbow_options['wp_rainbow_field_override_users_can_register'] ) ) {
+						throw new Exception( __( 'User registration is disabled.', 'wp-rainbow' ) );
+					}
+				}
+
+				$password = wp_generate_password();
+				$user_id  = wp_create_user( $address, $password );
+				$user     = get_user_by( 'ID', $user_id );
+				wp_update_user(
+					[
+						'ID'           => $user->ID,
+						'role'         => $this->get_role_for_address_filtered( $address ),
+						'display_name' => $sanitized_display_name,
+					]
+				);
+
+				update_user_meta( $user->ID, 'wp_rainbow_user', true );
+
+				/**
+				 * Fires when a new user is created via WP Rainbow.
+				 *
+				 * @param int $user_id ID of new user account.
+				 * @param string $address Address of new user.
+				 * @param string $sanitized_display_name Display name of new user (either ENS or address).
+				 */
+				do_action( 'wp_rainbow_user_created', $user->ID, $address, $sanitized_display_name );
+
+			} elseif ( $user->display_name !== $sanitized_display_name ) {
+				wp_update_user(
+					[
+						'ID'           => $user->ID,
+						'display_name' => $sanitized_display_name,
+					]
+				);
+
+				/**
+				 * Fires when a WP Rainbow user's display name is updated.
+				 *
+				 * @param int $user_id ID of new user account.
+				 * @param string $address Address of new user.
+				 * @param string $sanitized_display_name Display name of new user (either ENS or address).
+				 */
+				do_action( 'wp_rainbow_user_updated', $user->ID, $address, $sanitized_display_name );
+			}
+			wp_set_auth_cookie( $user->ID, true );
 
 			/**
-			 * Fires when a new user is created via WP Rainbow.
+			 * Fires when a WP Rainbow user has logged in.
 			 *
 			 * @param int $user_id ID of new user account.
 			 * @param string $address Address of new user.
 			 * @param string $sanitized_display_name Display name of new user (either ENS or address).
 			 */
-			do_action( 'wp_rainbow_user_created', $user->ID, $address, $sanitized_display_name );
+			do_action( 'wp_rainbow_user_login', $user->ID, $address, $sanitized_display_name );
 
-		} elseif ( $user->display_name !== $sanitized_display_name ) {
-			wp_update_user(
-				[
-					'ID'           => $user->ID,
-					'display_name' => $sanitized_display_name,
-				]
-			);
-
-			/**
-			 * Fires when a WP Rainbow user's display name is updated.
-			 *
-			 * @param int $user_id ID of new user account.
-			 * @param string $address Address of new user.
-			 * @param string $sanitized_display_name Display name of new user (either ENS or address).
-			 */
-			do_action( 'wp_rainbow_user_updated', $user->ID, $address, $sanitized_display_name );
+			return new WP_REST_Response( true );
+		} catch ( Exception $e ) {
+			return new WP_REST_Response( $e->getMessage(), 500 );
 		}
-		wp_set_auth_cookie( $user->ID, true );
-
-		/**
-		 * Fires when a WP Rainbow user has logged in.
-		 *
-		 * @param int $user_id ID of new user account.
-		 * @param string $address Address of new user.
-		 * @param string $sanitized_display_name Display name of new user (either ENS or address).
-		 */
-		do_action( 'wp_rainbow_user_login', $user->ID, $address, $sanitized_display_name );
-
-		return new WP_REST_Response( true );
 	}
 
 	/**
