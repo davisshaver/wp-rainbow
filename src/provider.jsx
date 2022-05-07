@@ -1,32 +1,32 @@
 import {
-	RainbowKitProvider,
-	connectorsForWallets,
+	apiProvider,
+	configureChains,
 	getDefaultWallets,
+	RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
-import { WagmiProvider, chain } from 'wagmi';
-import { providers } from 'ethers';
+import { chain, createClient, WagmiProvider } from 'wagmi';
 import stylePropType from 'react-style-proptype';
 
 import PropTypes from 'prop-types';
 import { WPRainbowConnect } from './connect';
 
-const { INFURA_ID, SITE_TITLE } = wpRainbowData;
+const { INFURA_ID, LOGGED_IN, SITE_TITLE } = wpRainbowData;
 
-const provider = ( { chainId } ) =>
-	new providers.InfuraProvider( chainId, INFURA_ID );
+const { chains, provider } = configureChains(
+	[ chain.mainnet ],
+	[ apiProvider.infura( INFURA_ID ), apiProvider.fallback() ]
+);
 
-const chains = [ { ...chain.mainnet, name: 'Ethereum' } ];
-
-const wallets = getDefaultWallets( {
+const { connectors } = getDefaultWallets( {
 	appName: SITE_TITLE,
 	chains,
-	infuraId: INFURA_ID,
-	jsonRpcUrl: ( { chainId } ) =>
-		chains.find( ( x ) => x.id === chainId )?.rpcUrls?.[ 0 ] ??
-		chain.mainnet.rpcUrls[ 0 ],
 } );
 
-const connectors = connectorsForWallets( wallets );
+const wagmiClient = createClient( {
+	autoConnect: LOGGED_IN === '1',
+	connectors,
+	provider,
+} );
 
 /**
  * WP Rainbow Provider.
@@ -46,7 +46,6 @@ const connectors = connectorsForWallets( wallets );
  * @param {string}   props.errorText               Error text override.
  * @param {boolean}  props.redirectBoomerang       Enable redirecting to current page.
  * @param {string}   props.redirectURL             Redirect URL override.
- * @param {boolean}  props.loggedIn                Enabled logged in functionality.
  */
 function WPRainbow( {
 	buttonClassName,
@@ -54,7 +53,6 @@ function WPRainbow( {
 	containerClassName,
 	containers,
 	errorText,
-	loggedIn,
 	loginText,
 	mockLogin,
 	onError,
@@ -66,19 +64,14 @@ function WPRainbow( {
 	style,
 } ) {
 	return (
-		<RainbowKitProvider chains={ chains }>
-			<WagmiProvider
-				autoConnect={ loggedIn }
-				connectors={ connectors }
-				provider={ provider }
-			>
+		<WagmiProvider client={ wagmiClient }>
+			<RainbowKitProvider chains={ chains }>
 				<WPRainbowConnect
 					buttonClassName={ buttonClassName }
 					checkWalletText={ checkWalletText }
 					containerClassName={ containerClassName }
 					containers={ containers }
 					errorText={ errorText }
-					loggedIn={ loggedIn }
 					loginText={ loginText }
 					mockLogin={ mockLogin }
 					onError={ onError }
@@ -89,8 +82,8 @@ function WPRainbow( {
 					redirectURL={ redirectURL }
 					style={ style }
 				/>
-			</WagmiProvider>
-		</RainbowKitProvider>
+			</RainbowKitProvider>
+		</WagmiProvider>
 	);
 }
 
@@ -100,7 +93,6 @@ WPRainbow.defaultProps = {
 	containerClassName: '',
 	containers: false,
 	errorText: '',
-	loggedIn: false,
 	loginText: '',
 	mockLogin: false,
 	onError: () => {},
@@ -118,7 +110,6 @@ WPRainbow.propTypes = {
 	containerClassName: PropTypes.string,
 	containers: PropTypes.bool,
 	errorText: PropTypes.string,
-	loggedIn: PropTypes.bool,
 	loginText: PropTypes.string,
 	mockLogin: PropTypes.bool,
 	onError: PropTypes.func,

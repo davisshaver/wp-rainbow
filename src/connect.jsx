@@ -1,12 +1,13 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { __ } from '@wordpress/i18n';
-import { useAccount, useNetwork, useSignMessage } from 'wagmi';
+import { useAccount, useEnsName, useNetwork, useSignMessage } from 'wagmi';
 import stylePropType from 'react-style-proptype';
 import { SiweMessage } from 'siwe';
 import PropTypes from 'prop-types';
 
 const {
 	ADMIN_URL,
+	LOGGED_IN,
 	LOGIN_API,
 	NONCE_API,
 	REDIRECT_URL,
@@ -31,7 +32,6 @@ const {
  * @param {string}   props.errorText               Error text override.
    @param {boolean}  props.redirectBoomerang       Enable redirecting to current page.
  * @param {string}   props.redirectURL             Redirect URL override.
- * @param {boolean}  props.loggedIn                Enabled logged in functionality.
  */
 export function WPRainbowConnect( {
 	buttonClassName,
@@ -39,7 +39,6 @@ export function WPRainbowConnect( {
 	containerClassName,
 	containers,
 	errorText,
-	loggedIn,
 	loginText,
 	mockLogin,
 	onError,
@@ -51,52 +50,24 @@ export function WPRainbowConnect( {
 	style,
 } ) {
 	const [ state, setState ] = React.useState( {} );
-	const [ { data: accountData, loading } ] = useAccount( {
-		fetchEns: true,
+	const { data: accountData } = useAccount();
+	const { activeChain } = useNetwork();
+	const { signMessageAsync } = useSignMessage();
+	const { data: ensName, isSuccess: isENSSuccess } = useEnsName( {
+		address: accountData?.address,
 	} );
-	const [ { data: networkData } ] = useNetwork();
-	const [ , signMessage ] = useSignMessage();
-
-	const [ hasLoadedFirstTime, setHasLoadedFirstTime ] = React.useState(
-		false
-	);
-	const [ isLoadingSecondTime, setIsLoadingSecondTime ] = React.useState(
-		false
-	);
-	const [ hasLoadedSecondTime, setHasLoadedSecondTime ] = React.useState(
-		false
-	);
-
-	React.useEffect( () => {
-		if ( accountData && ! loading && ! hasLoadedFirstTime ) {
-			setHasLoadedFirstTime( true );
-		}
-		if ( accountData && loading && hasLoadedFirstTime ) {
-			setIsLoadingSecondTime( true );
-		}
-		if (
-			accountData &&
-			! loading &&
-			hasLoadedFirstTime &&
-			isLoadingSecondTime &&
-			! hasLoadedSecondTime
-		) {
-			setIsLoadingSecondTime( false );
-			setHasLoadedSecondTime( true );
-		}
-	}, [
-		accountData,
-		loading,
-		hasLoadedFirstTime,
-		isLoadingSecondTime,
-		hasLoadedSecondTime,
-	] );
 
 	const signIn = React.useCallback( async () => {
 		try {
 			const address = accountData?.address;
-			const chainId = networkData?.chain?.id;
-			if ( ! address || ! chainId ) {
+			if ( ! address || ! activeChain?.id ) {
+				return;
+			}
+			if ( LOGGED_IN ) {
+				setState( ( x ) => ( { ...x, address, loading: false } ) );
+				return;
+			}
+			if ( window.signingIn.length > 1 ) {
 				return;
 			}
 			setState( ( x ) => ( { ...x, error: undefined, loading: true } ) );
@@ -104,7 +75,7 @@ export function WPRainbowConnect( {
 			const nonce = await nonceRes.json();
 			const siwePayload = {
 				address,
-				chainId,
+				chainId: activeChain.id,
 				domain: window.location.host,
 				issuedAt: new Date().toISOString(),
 				nonce,
@@ -112,27 +83,12 @@ export function WPRainbowConnect( {
 				uri: window.location.origin,
 				version: '1',
 			};
-			if ( loggedIn ) {
-				setState( ( x ) => ( { ...x, address, loading: false } ) );
-				return;
-			}
 			const message = new SiweMessage( siwePayload );
-			const signRes = await signMessage( {
+			const signature = await signMessageAsync( {
 				message: message.prepareMessage(),
 			} );
 			if ( mockLogin ) {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
-				return;
-			}
-			if ( signRes.error ) {
-				onError(
-					__( 'Signature request failed or rejected.', 'wp-rainbow' )
-				);
-				setState( ( x ) => ( {
-					...x,
-					error: signRes.error,
-					loading: false,
-				} ) );
 				return;
 			}
 			const verifyRes = await fetch( LOGIN_API, {
@@ -142,9 +98,9 @@ export function WPRainbowConnect( {
 				},
 				body: JSON.stringify( {
 					address,
-					displayName: accountData?.ens?.name ?? address,
+					displayName: ensName ?? address,
 					nonce,
-					signature: signRes.data,
+					signature,
 					siwePayload,
 				} ),
 			} );
@@ -164,19 +120,23 @@ export function WPRainbowConnect( {
 		} catch ( error ) {
 			setState( ( x ) => ( { ...x, error, loading: false } ) );
 		}
-	}, [ accountData, networkData, loading ] );
+	}, [ accountData, activeChain, ensName ] );
 
 	const [ triggeredLogin, setTriggeredLogin ] = React.useState( false );
 	React.useEffect( () => {
-		if ( accountData && ! triggeredLogin && hasLoadedSecondTime ) {
+		if ( accountData && isENSSuccess && ! triggeredLogin ) {
+			window.signingIn = ! window.signingIn
+				? [ true ]
+				: [ true, ...window.signingIn ];
 			signIn();
 			setTriggeredLogin( true );
-		} else if ( ! accountData && state.address ) {
+		} else if ( ! accountData && state.address && ! window.signingOut ) {
+			window.signingOut = true;
 			setState( {} );
 			setTriggeredLogin( false );
 			onLogout();
 		}
-	}, [ accountData, state.address, loading, hasLoadedSecondTime ] );
+	}, [ accountData, isENSSuccess, state.address ] );
 
 	return (
 		<ConnectButton.Custom>
@@ -287,7 +247,6 @@ WPRainbowConnect.defaultProps = {
 	containerClassName: '',
 	containers: false,
 	errorText: '',
-	loggedIn: false,
 	loginText: '',
 	mockLogin: false,
 	onError: () => {},
@@ -305,7 +264,6 @@ WPRainbowConnect.propTypes = {
 	containerClassName: PropTypes.string,
 	containers: PropTypes.bool,
 	errorText: PropTypes.string,
-	loggedIn: PropTypes.bool,
 	loginText: PropTypes.string,
 	mockLogin: PropTypes.bool,
 	onError: PropTypes.func,
