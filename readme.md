@@ -1,18 +1,18 @@
 # WP Rainbow
 
-Plugin URI: https://wp-rainbow.davisshaver.com/  
+Plugin URI: <https://wp-rainbow.davisshaver.com/>  
 Description: WP Rainbow allows WordPress users to log in with Ethereum using the Sign-In With Ethereum standard, powered by RainbowKit.  
 Version: 0.1.2  
 Author: Davis Shaver  
-Author URI: https://davisshaver.com  
+Author URI: <https://davisshaver.com>  
 License: GPL v2 or later  
-License URI: https://www.gnu.org/licenses/gpl-2.0.html  
+License URI: <https://www.gnu.org/licenses/gpl-2.0.html>  
 Text Domain: wp-rainbow  
-Update URI: https://github.com/davisshaver/wp-rainbow  
+Update URI: <https://github.com/davisshaver/wp-rainbow>  
 Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum  
 Contributors: davisshaver
 
-![](.wordpress-org/banner-1544x500.png)
+![WP Rainbow Plugin Banner](.wordpress-org/banner-1544x500.png)
 
 Providing a [Sign-In With Ethereum](https://login.xyz/) experience for [WordPress](https://wordpress.org/) using [RainbowKit](https://www.npmjs.com/package/@rainbow-me/rainbowkit).
 
