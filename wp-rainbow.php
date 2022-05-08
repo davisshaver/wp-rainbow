@@ -7,10 +7,10 @@
  * @license:          GPL-2.0-or-later
  *
  * @wordpress-plugin
- * Plugin Name:       WP Rainbow
+ * Plugin Name:       RainbowKit Login for WordPress (Web3 Integration for Sign-In With Ethereum)
  * Plugin URI:        https://wp-rainbow.davisshaver.com/
  * Description:       WP Rainbow allows WordPress users to log in with Ethereum using the Sign-In With Ethereum standard, powered by RainbowKit.
- * Version:           0.1.2
+ * Version:           0.1.3
  * Author:            Davis Shaver
  * Author URI:        https://davisshaver.com/
  * License:           GPL v2 or later
@@ -28,7 +28,7 @@ namespace WP_Rainbow;
  *
  * @var string
  */
-define( 'WP_RAINBOW_ASSETS_VERSION', '0.1.2' );
+define( 'WP_RAINBOW_ASSETS_VERSION', '0.1.3' );
 
 // Include the autoloader.
 add_action(

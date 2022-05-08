@@ -1,6 +1,6 @@
 {
   "name": "wp-rainbow",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Sign-In With Ethereum for WordPress using RainbowKit",
   "author": "Davis Shaver",
   "license": "GPL-2.0-or-later",
