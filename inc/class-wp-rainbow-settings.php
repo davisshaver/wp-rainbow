@@ -112,6 +112,28 @@ class WP_Rainbow_Settings {
 				'label_for' => 'wp_rainbow_field_redirect_url',
 			],
 		);
+
+		add_settings_field(
+			'wp_rainbow_field_required_token',
+			__( 'Required Token Contract', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_required_token_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_required_token',
+			],
+		);
+
+		add_settings_field(
+			'wp_rainbow_field_required_token_quantity',
+			__( 'Required Token Quantity', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_required_token_quantity_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_required_token_quantity',
+			],
+		);
 	}
 
 
@@ -192,6 +214,58 @@ class WP_Rainbow_Settings {
 				<small>
 					<?php
 					esc_html_e( 'If set, users will be redirected here on login instead of the admin. (Block redirect configuration will take precedent if set.)', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Print field for Required NFT option.
+	 */
+	public function wp_rainbow_required_token_callback() {
+		$options        = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_required_token' => '' ] );
+		$required_token = ! empty( $options['wp_rainbow_field_required_token'] ) ? $options['wp_rainbow_field_required_token'] : '';
+		?>
+		<input
+			id='wp_rainbow_field_required_token'
+			name='wp_rainbow_options[wp_rainbow_field_required_token]'
+			size='40'
+			type='text'
+			value='<?php echo esc_attr( $required_token ); ?>'
+		/>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'If set, users will be required to own an NFT from this contract', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Print field for Required NFT Quantity option.
+	 */
+	public function wp_rainbow_required_token_quantity_callback() {
+		$options                 = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_required_token_quantity' => '' ] );
+		$required_token_quantity = ! empty( $options['wp_rainbow_field_required_token_quantity'] ) ? $options['wp_rainbow_field_required_token_quantity'] : '0';
+		?>
+		<input
+			id='wp_rainbow_field_required_token_quantity'
+			name='wp_rainbow_options[wp_rainbow_field_required_token_quantity]'
+			size='40'
+			type='number'
+			value='<?php echo esc_attr( $required_token_quantity ? $required_token_quantity : 1 ); ?>'
+		/>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'Optionally set the number of tokens required to be held by user', 'wp-rainbow' );
 					?>
 				</small>
 			</em>

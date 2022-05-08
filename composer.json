@@ -29,6 +29,7 @@
   },
   "require": {
     "simplito/elliptic-php": "^1.0",
-    "kornrunner/keccak": "^1.1"
+    "kornrunner/keccak": "^1.1",
+    "web3p/web3.php": "^0.1.6"
   }
 }
