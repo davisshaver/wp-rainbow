@@ -7,6 +7,8 @@
 
 namespace WP_Rainbow;
 
+use WP_Session_Tokens;
+
 /**
  * WP Rainbow Settings
  */
@@ -60,7 +62,13 @@ class WP_Rainbow_Settings {
 	 * Register settings for plugin.
 	 */
 	public function action_admin_init() {
-		register_setting( 'wp_rainbow', 'wp_rainbow_options' );
+		register_setting(
+			'wp_rainbow',
+			'wp_rainbow_options',
+			[
+				'sanitize_callback' => [ self::$instance, 'wp_rainbow_sanitize_callback' ],
+			]
+		);
 
 		add_settings_section(
 			'wp_rainbow_connection_options',
@@ -134,8 +142,66 @@ class WP_Rainbow_Settings {
 				'label_for' => 'wp_rainbow_field_required_token_quantity',
 			],
 		);
+
+		add_settings_field(
+			'wp_rainbow_field_force_logout',
+			__( 'Clear Existing Sessions', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_force_logout_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_force_logout',
+			],
+		);
 	}
 
+	/**
+	 * Sanitize WP Rainbow options.
+	 *
+	 * @param array $input WP Rainbow options.
+	 * @return array Sanitized WP Rainbow options.
+	 */
+	public function wp_rainbow_sanitize_callback( $input ) {
+		if ( ! empty( $input['wp_rainbow_field_force_logout'] ) ) {
+			$current_user    = get_current_user_id();
+			$logged_in_users = get_users(
+				[
+					'meta_key'     => 'session_tokens',
+					'meta_compare' => 'EXISTS',
+				]
+			);
+			foreach ( $logged_in_users as $user ) {
+				if ( $current_user !== $user->ID ) {
+					$sessions = WP_Session_Tokens::get_instance( $user->ID );
+					$sessions->destroy_all();
+				}
+			}
+			$input['wp_rainbow_field_force_logout'] = null;
+		}
+		return $input;
+	}
+
+	/**
+	 * Print field for Forcing Logout of Existing Sessions.
+	 */
+	public function wp_rainbow_force_logout_callback() {
+		?>
+		<input
+			id='wp_rainbow_field_force_logout'
+			name='wp_rainbow_options[wp_rainbow_field_force_logout]'
+			type='checkbox'
+		/>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'If checked, existing sessions will be logged out on save.', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
+		<?php
+	}
 
 	/**
 	 * Print field for Disable Passwords for WP Rainbow Users option.
