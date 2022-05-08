@@ -193,7 +193,7 @@ class WP_Rainbow_Login_Functionality {
 
 			foreach ( self::WP_RAINBOW_REQUIRED_KEYS as $key ) {
 				if ( empty( $siwe_payload[ $key ] ) ) {
-					throw new Exception( __( 'Incomplete authentication request.' ) );
+					throw new Exception( __( 'Incomplete authentication request.', 'wp-rainbow' ) );
 				}
 			}
 
@@ -224,19 +224,20 @@ class WP_Rainbow_Login_Functionality {
 				'wp_rainbow_options',
 				[
 					'wp_rainbow_field_override_users_can_register' => false,
-					'wp_rainbow_field_required_nft' => '',
+					'wp_rainbow_field_required_token' => '',
+					'wp_rainbow_field_required_token_quantity' => '1',
 				]
 			);
 
-			if ( ! empty( $wp_rainbow_options['wp_rainbow_field_required_nft'] ) && ! empty( $wp_rainbow_options['wp_rainbow_field_infura_id'] ) ) {
+			if ( ! empty( $wp_rainbow_options['wp_rainbow_field_required_token'] ) && ! empty( $wp_rainbow_options['wp_rainbow_field_infura_id'] ) ) {
 				// @TODO Figure out if ABI should be an option (or formatted differently).
 				$example_abi = '[{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
 				$contract    = new Contract( 'https://mainnet.infura.io/v3/' . $wp_rainbow_options['wp_rainbow_field_infura_id'], $example_abi );
-				$contract->at( $wp_rainbow_options['wp_rainbow_field_required_nft'] )->call(
+				$contract->at( $wp_rainbow_options['wp_rainbow_field_required_token'] )->call(
 					'balanceOf',
 					$address,
-					function ( $err, $balance ) {
-						if ( hexdec( $balance[0]->value ) === 0 ) {
+					function ( $err, $balance ) use ( $wp_rainbow_options ) {
+						if ( hexdec( $balance[0]->value ) < ( $wp_rainbow_options['wp_rainbow_field_required_token_quantity'] ?: 1 ) ) {
 							throw new Exception( __( 'Token validation failed.', 'wp-rainbow' ) );
 						}
 					}
