@@ -32,7 +32,7 @@ jobs:
               with:
                   type: 'zip'
                   filename: 'wp-rainbow.zip'
-                  exclusions: '/*node_modules/* composer.* wp-rainbow-filter-examples.php readme.md package.json .eslintrc.js phpcs.xml phpunit.xml bin/install-wp-tests.sh /*tests/* yarn.lock src/* blocks/* webpack.config.js .gitignore /*.git/* .babelrc /*.phpcs/* /*.github/*'
+                  exclusions: '/*node_modules/* composer.* wp-rainbow-filter-examples.php readme.md package.json .eslintrc.js phpcs.xml phpunit.xml bin/* /*tests/* yarn.lock src/* blocks/* webpack.config.js .gitignore /*.git/* .babelrc /*.phpcs/* /*.github/*'
 
             - name: Upload artifact
               uses: actions/upload-artifact@v2
