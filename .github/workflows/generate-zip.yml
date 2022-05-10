@@ -58,4 +58,4 @@ jobs:
                   SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
                   SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
                   SLUG: rainbowkit-login-web3-integration-for-sign-in-with-ethereum
-                  BUILD_DIR: rainbowkit-login-web3-integration-for-sign-in-with-ethereum
+                  BUILD_DIR: ./rainbowkit-login-web3-integration-for-sign-in-with-ethereum
