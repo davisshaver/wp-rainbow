@@ -4,7 +4,7 @@ Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
 Tested up to: 6.0
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
