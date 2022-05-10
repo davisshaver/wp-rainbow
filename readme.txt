@@ -45,7 +45,7 @@ Find reference implementations of all filters in [example plugin here](https://g
 
 == Changelog ==
 
-= 0.1.5 =
+= 0.2.2 =
 * Initial plugin release to WordPress.org
 
 == Screenshots =
