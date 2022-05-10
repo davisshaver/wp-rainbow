@@ -45,6 +45,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 
 == Changelog ==
 
+= 0.2.6 =
+* Optimize files included in plugin on WordPress.org
+
 = 0.2.5 =
 * Optimize files included in plugin on WordPress.org
 

@@ -53,7 +53,7 @@ jobs:
                   args: unzip -qq wp-rainbow.zip -d rainbowkit-login-web3-integration-for-sign-in-with-ethereum
 
             - name: Upload plugin to WP.org
-              uses: 10up/action-wordpress-plugin-deploy@stable
+              uses: 10up/action-wordpress-plugin-deploy@v2.1.0
               env:
                   SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
                   SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
