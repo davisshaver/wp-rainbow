@@ -32,7 +32,7 @@ jobs:
               with:
                   type: 'zip'
                   filename: 'wp-rainbow.zip'
-                  exclusions: '/*node_modules/* composer.* wp-rainbow-filter-examples.php readme.md package.json .eslintrc.js phpcs.xml phpunit.xml bin/ bin/* /*tests/* yarn.lock src/ src/* src/css/ src/css/* src/utilities/ src/utilities/* blocks/ blocks/* blocks/login-block/ blocks/login-block/* webpack.config.js .gitignore /*.git/* .babelrc /*.phpcs/* /*.github/*'
+                  exclusions: '/*node_modules/* composer.* wp-rainbow-filter-examples.php readme.md package.json .eslintrc.js phpcs.xml phpunit.xml bin/ bin/* /*tests/* yarn.lock .wordpress-org/ .wordpress-org/* src/ src/* src/css/ src/css/* src/utilities/ src/utilities/* blocks/ blocks/* blocks/login-block/ blocks/login-block/* webpack.config.js .gitignore /*.git/* .babelrc /*.phpcs/* /*.github/*'
 
             - name: Upload artifact
               uses: actions/upload-artifact@v2
@@ -46,3 +46,16 @@ jobs:
                   args: wp-rainbow.zip application/zip
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Unzip folder for WP.org
+              uses: montudor/action-zip@v1
+              with:
+                  args: unzip -qq wp-rainbow.zip
+
+            - name: Upload plugin to WP.org
+              uses: 10up/action-wordpress-plugin-deploy@stable
+              env:
+                  SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+                  SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+                  SLUG: rainbowkit-login-web3-integration-for-sign-in-with-ethereum
+                  BUILD_DIR: wp-rainbow
