@@ -1,39 +1,16 @@
-# RainbowKit Login (Web3 Integration for Sign-In With Ethereum)
-
-Plugin URI: <https://wp-rainbow.davisshaver.com/>  
-Description: WP Rainbow allows WordPress users to log in with Ethereum using the Sign-In With Ethereum standard, powered by RainbowKit.  
-Version: 0.1.4  
-Author: Davis Shaver  
-Author URI: <https://davisshaver.com>  
-License: GPL v2 or later  
-License URI: <https://www.gnu.org/licenses/gpl-2.0.html>  
-Text Domain: wp-rainbow  
-Update URI: <https://github.com/davisshaver/wp-rainbow>  
-Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum  
-Contributors: davisshaver
-
-![WP Rainbow Plugin Banner](.wordpress-org/banner-1544x500.png)
-
-Providing a [Sign-In With Ethereum](https://login.xyz/) experience for [WordPress](https://wordpress.org/) using [RainbowKit](https://www.npmjs.com/package/@rainbow-me/rainbowkit).
+# WP Rainbow
 
 [![PHPUnit Tests](https://github.com/davisshaver/wp-rainbow/actions/workflows/phpunit-tests.yml/badge.svg)](https://github.com/davisshaver/wp-rainbow/actions/workflows/phpunit-tests.yml)
-
-## Description
 
 Providing a [Sign-In With Ethereum](https://login.xyz/) experience for [WordPress](https://wordpress.org/) using [RainbowKit](https://www.npmjs.com/package/@rainbow-me/rainbowkit).
 
 _Want to try it out? [Head here.](https://wp-rainbow.davisshaver.com/wp-login.php)_
 
-### Features
+## Installation
 
-* Allow users to log in with Ethereum
-* Set required token balance for login
+The recommended way to install WP Rainbow is downloading the ZIP file from [the most recent release](https://github.com/davisshaver/wp-rainbow/releases).
 
-### Installation
-
-The recommended way to install WP Rainbow is downloading the plugin from WordPress.org. Alternatively, download the ZIP file from [the most recent release](https://github.com/davisshaver/wp-rainbow/releases).
-
-### Development
+## Development
 
 Before you begin, make sure you have [Composer](https://getcomposer.org/) and [Yarn](https://yarnpkg.com/) available.
 
@@ -59,7 +36,7 @@ Before you begin, make sure you have [Composer](https://getcomposer.org/) and [Y
 
 _Note: This plugin requires [GMP](https://www.php.net/manual/en/book.gmp.php) to be available on the server._
 
-### Actions
+## Actions
 
 **`wp_rainbow_validation_failed`** - Fires when validation fails.
 
@@ -69,7 +46,7 @@ _Note: This plugin requires [GMP](https://www.php.net/manual/en/book.gmp.php) to
 
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
-### Filters
+## Filters
 
 Find reference implementations of all filters in [example plugin here](https://github.com/davisshaver/wp-rainbow/blob/main/wp-rainbow-filter-examples.php).
 
