@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WP Rainbow Filter Examples
+ * Plugin Name: RainbowKit Login Filter Examples
  * Version: 0.0.1
  *
  * @package WP_Rainbow_Filter_Examples

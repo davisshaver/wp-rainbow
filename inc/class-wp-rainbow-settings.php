@@ -48,8 +48,8 @@ class WP_Rainbow_Settings {
 	 */
 	public function action_admin_menu() {
 		add_menu_page(
-			'WP Rainbow Settings',
-			'WP Rainbow',
+			'RainbowKit Login Settings',
+			'RainbowKit Login',
 			'manage_options',
 			'wp_rainbow',
 			[ self::$instance, 'wp_rainbow_settings_page_html' ],
@@ -224,7 +224,7 @@ class WP_Rainbow_Settings {
 			<em>
 				<small>
 					<?php
-					esc_html_e( 'If enabled, non-admin WP Rainbow users will be passwordless.', 'wp-rainbow' );
+					esc_html_e( 'If enabled, non-admin RainbowKit Login users will be passwordless.', 'wp-rainbow' );
 					?>
 				</small>
 			</em>

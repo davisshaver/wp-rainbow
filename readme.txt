@@ -4,11 +4,11 @@ Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
 Tested up to: 6.0
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.2.7
+Stable tag: 0.2.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-WP Rainbow allows WordPress users to log in with Ethereum using the Sign-In With Ethereum standard, powered by RainbowKit.
+RainbowKit Login allows WordPress users to log in with Ethereum using the Sign-In With Ethereum standard, powered by RainbowKit.
 
 == Description ==
 
@@ -46,15 +46,6 @@ Find reference implementations of all filters in [example plugin here](https://g
 == Changelog ==
 
 = 0.2.7 =
-* Optimize files included in plugin on WordPress.org
-
-= 0.2.6 =
-* Optimize files included in plugin on WordPress.org
-
-= 0.2.5 =
-* Optimize files included in plugin on WordPress.org
-
-= 0.2.4 =
 * Initial plugin release to WordPress.org
 
 == Screenshots =

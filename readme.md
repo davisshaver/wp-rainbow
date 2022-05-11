@@ -1,4 +1,4 @@
-# WP Rainbow
+# RainbowKit Login (Web3 Integration for Sign-In With Ethereum)
 
 [![PHPUnit Tests](https://github.com/davisshaver/wp-rainbow/actions/workflows/phpunit-tests.yml/badge.svg)](https://github.com/davisshaver/wp-rainbow/actions/workflows/phpunit-tests.yml)
 
@@ -8,7 +8,7 @@ _Want to try it out? [Head here.](https://wp-rainbow.davisshaver.com/wp-login.ph
 
 ## Installation
 
-The recommended way to install WP Rainbow is downloading the ZIP file from [the most recent release](https://github.com/davisshaver/wp-rainbow/releases).
+The recommended way to install RainbowKit Login is downloading the ZIP file from [the most recent release](https://github.com/davisshaver/wp-rainbow/releases).
 
 ## Development
 

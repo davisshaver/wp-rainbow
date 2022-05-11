@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="WP Rainbow" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd">
-  <description>PHP_CodeSniffer standard for WP Rainbow.</description>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="RainbowKit Login" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd">
+  <description>PHP_CodeSniffer standard for RainbowKit Login.</description>
 
   <!-- Include Alley Rules -->
   <rule ref="Alley-Interactive" />

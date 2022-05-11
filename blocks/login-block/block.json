@@ -30,7 +30,7 @@
     }
   },
   "category": "widgets",
-  "description": "Show WP Rainbow login & logout links.",
+  "description": "Show RainbowKit Login login & logout links.",
   "icon": "money",
   "name": "wp-rainbow/login",
   "styles": [
@@ -87,5 +87,5 @@
       "fontSize": true
     }
   },
-  "title": "WP Rainbow Login"
+  "title": "RainbowKit Login"
 }
