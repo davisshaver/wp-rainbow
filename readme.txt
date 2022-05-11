@@ -8,7 +8,7 @@ Stable tag: 0.2.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-RainbowKit Login allows WordPress users to log in with Ethereum using the Sign-In With Ethereum standard, powered by RainbowKit.
+Sign-In With Ethereum for WordPress, powered by RainbowKit.
 
 == Description ==
 
