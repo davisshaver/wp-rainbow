@@ -153,6 +153,17 @@ class WP_Rainbow_Settings {
 				'label_for' => 'wp_rainbow_field_force_logout',
 			],
 		);
+
+		add_settings_field(
+			'wp_rainbow_field_cool_mode',
+			__( 'Enable Cool Mode', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_cool_mode_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_cool_mode',
+			]
+		);
 	}
 
 	/**
@@ -225,6 +236,35 @@ class WP_Rainbow_Settings {
 				<small>
 					<?php
 					esc_html_e( 'If enabled, non-admin RainbowKit Login users will be passwordless.', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Print field for cool mode option.
+	 */
+	public function wp_rainbow_cool_mode_callback() {
+		$options   = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_cool_mode' => false ] );
+		$cool_mode = ! empty( $options['wp_rainbow_field_cool_mode'] );
+		?>
+		<input
+			id='wp_rainbow_field_cool_mode'
+			name='wp_rainbow_options[wp_rainbow_field_cool_mode]'
+			type='checkbox'
+			<?php
+			if ( $cool_mode ) {
+				echo 'checked';
+			}
+			?>
+		/>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'If enabled, RainbowKit will use "Cool Mode" effects.', 'wp-rainbow' );
 					?>
 				</small>
 			</em>

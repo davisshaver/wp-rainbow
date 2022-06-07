@@ -73,6 +73,22 @@ class WP_Rainbow {
 		return apply_filters( 'wp_rainbow_infura_id', $options['wp_rainbow_field_infura_id'] );
 	}
 
+	/**
+	 * Provide filter for cool mode. Defaults to settings page value.
+	 *
+	 * @return boolean|void Filtered cool mode status.
+	 */
+	public function get_cool_mode_filtered() {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_cool_mode' => false ] );
+
+		/**
+		 * Filter the cool mode status used for WP Rainbow integration.
+		 *
+		 * @param boolean $default Cool mode status as set in WP Rainbow options.
+		 */
+		return apply_filters( 'wp_rainbow_infura_id', $options['wp_rainbow_field_cool_mode'] ?? false );
+	}
+
 	// BLOCK SCRIPTS.
 
 	/**
@@ -129,6 +145,7 @@ class WP_Rainbow {
 				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
 				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
 				'SITE_TITLE'   => get_bloginfo( 'name' ),
+				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
 			]
 		);
 		wp_localize_script(
@@ -143,6 +160,7 @@ class WP_Rainbow {
 				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
 				'SITE_TITLE'   => get_bloginfo( 'name' ),
 				'LOGOUT_URL'   => wp_logout_url(),
+				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
 			]
 		);
 	}
@@ -180,6 +198,7 @@ class WP_Rainbow {
 				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
 				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
 				'SITE_TITLE'   => get_bloginfo( 'name' ),
+				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
 			]
 		);
 	}
