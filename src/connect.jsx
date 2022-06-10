@@ -1,6 +1,13 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { __ } from '@wordpress/i18n';
-import { useAccount, useEnsName, useNetwork, useSignMessage } from 'wagmi';
+import {
+	useAccount,
+	useConnect,
+	useDisconnect,
+	useEnsName,
+	useNetwork,
+	useSignMessage,
+} from 'wagmi';
 import stylePropType from 'react-style-proptype';
 import { SiweMessage } from 'siwe';
 import PropTypes from 'prop-types';
@@ -56,6 +63,8 @@ export function WPRainbowConnect( {
 	const { data: ensName, isSuccess: isENSSuccess } = useEnsName( {
 		address: accountData?.address,
 	} );
+	const { activeConnector } = useConnect();
+	const { disconnectAsync } = useDisconnect();
 
 	const signIn = React.useCallback( async () => {
 		try {
@@ -67,7 +76,7 @@ export function WPRainbowConnect( {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
 				return;
 			}
-			if ( window.signingIn.length > 1 ) {
+			if ( window?.signingIn.length > 1 ) {
 				return;
 			}
 			setState( ( x ) => ( { ...x, error: undefined, loading: true } ) );
@@ -124,7 +133,12 @@ export function WPRainbowConnect( {
 
 	const [ triggeredLogin, setTriggeredLogin ] = React.useState( false );
 	React.useEffect( () => {
-		if ( accountData && isENSSuccess && ! triggeredLogin ) {
+		if (
+			activeConnector &&
+			accountData &&
+			isENSSuccess &&
+			! triggeredLogin
+		) {
 			window.signingIn = ! window.signingIn
 				? [ true ]
 				: [ true, ...window.signingIn ];
@@ -165,7 +179,7 @@ export function WPRainbowConnect( {
 								) }
 						</div>
 					);
-				} else if ( account ) {
+				} else if ( activeConnector && account ) {
 					let loginButtonText = __( 'Continue Log In with Ethereum' );
 					if ( state.address ) {
 						loginButtonText = `${ __( 'Logged In as ' ) } ${
@@ -204,7 +218,9 @@ export function WPRainbowConnect( {
 						// Make sure we don't have an active signing attempt.
 						setState( {} );
 						setTriggeredLogin( false );
-						openConnectModal();
+						// This is a little weird, but since RainbowKit autoconnects,
+						// we need to make sure we're disconnected before logging in.
+						disconnectAsync().then( openConnectModal );
 					};
 					button = (
 						<div
