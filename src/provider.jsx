@@ -6,7 +6,7 @@ import stylePropType from 'react-style-proptype';
 import PropTypes from 'prop-types';
 import { WPRainbowConnect } from './connect';
 
-const { INFURA_ID, LOGGED_IN, SITE_TITLE } = wpRainbowData;
+const { INFURA_ID, LOGGED_IN, SITE_TITLE, COOL_MODE } = wpRainbowData;
 
 const { chains, provider } = configureChains(
 	[ chain.mainnet ],
@@ -61,7 +61,7 @@ function WPRainbow( {
 } ) {
 	return (
 		<WagmiConfig client={ wagmiClient }>
-			<RainbowKitProvider chains={ chains }>
+			<RainbowKitProvider chains={ chains } coolMode={ COOL_MODE }>
 				<WPRainbowConnect
 					buttonClassName={ buttonClassName }
 					checkWalletText={ checkWalletText }

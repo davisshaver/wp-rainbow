@@ -45,6 +45,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 
 == Changelog ==
 
+= 0.2.10 =
+* Add RainbowKit Cool Mode support
+
 = 0.2.9 =
 * Update WAGMI and RainbowKit to latest versions
 
