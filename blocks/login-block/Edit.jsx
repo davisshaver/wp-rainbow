@@ -125,9 +125,10 @@ export default function Edit( {
 						'wp-block-button',
 						blockClassName,
 						{
-							[ `has-custom-width wp-block-button__width-${ width }` ]: width,
-							[ `has-custom-font-size` ]: blockProps.style
-								.fontSize,
+							[ `has-custom-width wp-block-button__width-${ width }` ]:
+								width,
+							[ `has-custom-font-size` ]:
+								blockProps.style.fontSize,
 						}
 					) }
 					errorText={ errorText }

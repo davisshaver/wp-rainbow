@@ -1,10 +1,6 @@
-import {
-	apiProvider,
-	configureChains,
-	getDefaultWallets,
-	RainbowKitProvider,
-} from '@rainbow-me/rainbowkit';
-import { chain, createClient, WagmiProvider } from 'wagmi';
+import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { chain, createClient, configureChains, WagmiConfig } from 'wagmi';
+import { infuraProvider } from 'wagmi/providers/infura';
 import stylePropType from 'react-style-proptype';
 
 import PropTypes from 'prop-types';
@@ -14,7 +10,7 @@ const { INFURA_ID, LOGGED_IN, SITE_TITLE, COOL_MODE } = wpRainbowData;
 
 const { chains, provider } = configureChains(
 	[ chain.mainnet ],
-	[ apiProvider.infura( INFURA_ID ), apiProvider.fallback() ]
+	[ infuraProvider( { infuraId: INFURA_ID } ) ]
 );
 
 const { connectors } = getDefaultWallets( {
@@ -64,7 +60,7 @@ function WPRainbow( {
 	style,
 } ) {
 	return (
-		<WagmiProvider client={ wagmiClient }>
+		<WagmiConfig client={ wagmiClient }>
 			<RainbowKitProvider chains={ chains } coolMode={ COOL_MODE }>
 				<WPRainbowConnect
 					buttonClassName={ buttonClassName }
@@ -83,7 +79,7 @@ function WPRainbow( {
 					style={ style }
 				/>
 			</RainbowKitProvider>
-		</WagmiProvider>
+		</WagmiConfig>
 	);
 }
 

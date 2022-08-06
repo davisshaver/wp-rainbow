@@ -1,18 +1,18 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { __ } from '@wordpress/i18n';
-import { useAccount, useEnsName, useNetwork, useSignMessage } from 'wagmi';
+import {
+	useAccount,
+	useDisconnect,
+	useEnsName,
+	useNetwork,
+	useSignMessage,
+} from 'wagmi';
 import stylePropType from 'react-style-proptype';
 import { SiweMessage } from 'siwe';
 import PropTypes from 'prop-types';
 
-const {
-	ADMIN_URL,
-	LOGGED_IN,
-	LOGIN_API,
-	NONCE_API,
-	REDIRECT_URL,
-	SITE_TITLE,
-} = wpRainbowData;
+const { ADMIN_URL, LOGGED_IN, LOGIN_API, NONCE_API, REDIRECT_URL, SITE_TITLE } =
+	wpRainbowData;
 
 /**
  * WP Rainbow Connect Button.
@@ -50,24 +50,24 @@ export function WPRainbowConnect( {
 	style,
 } ) {
 	const [ state, setState ] = React.useState( {} );
-	const { data: accountData } = useAccount();
-	const { activeChain } = useNetwork();
+	const { address, connector: activeConnector } = useAccount();
+	const { chain } = useNetwork();
 	const { signMessageAsync } = useSignMessage();
 	const { data: ensName, isSuccess: isENSSuccess } = useEnsName( {
-		address: accountData?.address,
+		address,
 	} );
+	const { disconnectAsync } = useDisconnect();
 
 	const signIn = React.useCallback( async () => {
 		try {
-			const address = accountData?.address;
-			if ( ! address || ! activeChain?.id ) {
+			if ( ! address || ! chain?.id ) {
 				return;
 			}
 			if ( LOGGED_IN ) {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
 				return;
 			}
-			if ( window.signingIn.length > 1 ) {
+			if ( window?.signingIn.length > 1 ) {
 				return;
 			}
 			setState( ( x ) => ( { ...x, error: undefined, loading: true } ) );
@@ -75,7 +75,7 @@ export function WPRainbowConnect( {
 			const nonce = await nonceRes.json();
 			const siwePayload = {
 				address,
-				chainId: activeChain.id,
+				chainId: chain.id,
 				domain: window.location.host,
 				issuedAt: new Date().toISOString(),
 				nonce,
@@ -120,23 +120,30 @@ export function WPRainbowConnect( {
 		} catch ( error ) {
 			setState( ( x ) => ( { ...x, error, loading: false } ) );
 		}
-	}, [ accountData, activeChain, ensName ] );
+	}, [ address, chain, ensName ] );
 
 	const [ triggeredLogin, setTriggeredLogin ] = React.useState( false );
 	React.useEffect( () => {
-		if ( accountData && isENSSuccess && ! triggeredLogin ) {
+		if ( activeConnector && address && isENSSuccess && ! triggeredLogin ) {
 			window.signingIn = ! window.signingIn
 				? [ true ]
 				: [ true, ...window.signingIn ];
 			signIn();
 			setTriggeredLogin( true );
-		} else if ( ! accountData && state.address && ! window.signingOut ) {
+		} else if ( ! address && state.address && ! window.signingOut ) {
 			window.signingOut = true;
 			setState( {} );
 			setTriggeredLogin( false );
 			onLogout();
+		} else if (
+			! address &&
+			! ( LOGGED_IN || state.address ) &&
+			window?.signingIn &&
+			window.signingIn.length > 0
+		) {
+			window.signingIn = []; // Clear signin attempt
 		}
-	}, [ accountData, isENSSuccess, state.address ] );
+	}, [ address, isENSSuccess, state.address ] );
 
 	return (
 		<ConnectButton.Custom>
@@ -165,9 +172,9 @@ export function WPRainbowConnect( {
 								) }
 						</div>
 					);
-				} else if ( account ) {
+				} else if ( activeConnector && account ) {
 					let loginButtonText = __( 'Continue Log In with Ethereum' );
-					if ( state.address ) {
+					if ( LOGGED_IN || state.address ) {
 						loginButtonText = `${ __( 'Logged In as ' ) } ${
 							account.displayName
 						}`;
@@ -177,7 +184,7 @@ export function WPRainbowConnect( {
 							__( 'Check Wallet to Sign Message' );
 					}
 					const triggerContinueLogin = () => {
-						if ( state.address || state.loading ) {
+						if ( LOGGED_IN || state.address || state.loading ) {
 							openAccountModal();
 						} else {
 							signIn();
@@ -204,7 +211,9 @@ export function WPRainbowConnect( {
 						// Make sure we don't have an active signing attempt.
 						setState( {} );
 						setTriggeredLogin( false );
-						openConnectModal();
+						// This is a little weird, but since RainbowKit autoconnects,
+						// we need to make sure we're disconnected before logging in.
+						disconnectAsync().then( openConnectModal );
 					};
 					button = (
 						<div
