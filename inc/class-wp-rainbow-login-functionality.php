@@ -80,18 +80,21 @@ class WP_Rainbow_Login_Functionality {
 	/**
 	 * Provide filter for address roles. Defaults to subscriber.
 	 *
-	 * @param string $address Address for user.
+	 * @param string        $address Address for user.
+	 * @param string        $filtered_infura_id Filtered Infura ID.
+	 * @param WP_User|false $user User object, if available.
 	 *
-	 * @return mixed|void Filtered role for a given address.
+	 * @return string Filtered role for a given address.
 	 */
-	public function get_role_for_address_filtered( string $address ) {
+	public function get_role_for_address_filtered( string $address, string $filtered_infura_id, $user ): string {
 		/**
 		 * Filter the default role for WP Rainbow users.
 		 *
-		 * @param string $default Default role for new users.
-		 * @param string $address Address of user being added.
+		 * @param string        $default Default role for new users.
+		 * @param string        $address Address of user being added.
+		 * @param WP_User|false $user User object, if available.
 		 */
-		return apply_filters( 'wp_rainbow_role_for_address', 'subscriber', $address );
+		return apply_filters( 'wp_rainbow_role_for_address', 'subscriber', $address, $filtered_infura_id, $user );
 	}
 
 	// API ROUTES.
@@ -229,10 +232,12 @@ class WP_Rainbow_Login_Functionality {
 				]
 			);
 
-			if ( ! empty( $wp_rainbow_options['wp_rainbow_field_required_token'] ) && ! empty( $wp_rainbow_options['wp_rainbow_field_infura_id'] ) ) {
+			$filtered_infura_id = WP_Rainbow::instance()->get_infura_id_filtered();
+
+			if ( ! empty( $wp_rainbow_options['wp_rainbow_field_required_token'] ) && ! empty( $filtered_infura_id ) ) {
 				// @TODO Figure out if ABI should be an option (or formatted differently).
 				$example_abi = '[{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
-				$contract    = new Contract( 'https://mainnet.infura.io/v3/' . $wp_rainbow_options['wp_rainbow_field_infura_id'], $example_abi );
+				$contract    = new Contract( 'https://mainnet.infura.io/v3/' . $filtered_infura_id, $example_abi );
 				$contract->at( $wp_rainbow_options['wp_rainbow_field_required_token'] )->call(
 					'balanceOf',
 					$address,
@@ -247,6 +252,8 @@ class WP_Rainbow_Login_Functionality {
 			// Lookup or generate user and then sign them in.
 			$user                   = get_user_by( 'login', $address );
 			$sanitized_display_name = sanitize_text_field( $display_name );
+			$role                   = $this->get_role_for_address_filtered( $address, $filtered_infura_id, $user );
+
 			if ( ! $user ) {
 				// If there's not a user already, double check registration settings.
 				$users_can_register = get_option( 'users_can_register', false );
@@ -262,7 +269,7 @@ class WP_Rainbow_Login_Functionality {
 				wp_update_user(
 					[
 						'ID'           => $user->ID,
-						'role'         => $this->get_role_for_address_filtered( $address ),
+						'role'         => $role,
 						'display_name' => $sanitized_display_name,
 					]
 				);
@@ -278,7 +285,7 @@ class WP_Rainbow_Login_Functionality {
 				 */
 				do_action( 'wp_rainbow_user_created', $user->ID, $address, $sanitized_display_name );
 
-			} elseif ( $user->display_name !== $sanitized_display_name ) {
+			} else {
 				wp_update_user(
 					[
 						'ID'           => $user->ID,
@@ -286,12 +293,14 @@ class WP_Rainbow_Login_Functionality {
 					]
 				);
 
+				$user->set_role( $role );
+
 				/**
-				 * Fires when a WP Rainbow user's display name is updated.
+				 * Fires when a WP Rainbow user's is updated on login.
 				 *
-				 * @param int $user_id ID of new user account.
-				 * @param string $address Address of new user.
-				 * @param string $sanitized_display_name Display name of new user (either ENS or address).
+				 * @param int $user_id ID of existing user account.
+				 * @param string $address Address of existing user.
+				 * @param string $sanitized_display_name Display name of existing user (either ENS or address).
 				 */
 				do_action( 'wp_rainbow_user_updated', $user->ID, $address, $sanitized_display_name );
 			}

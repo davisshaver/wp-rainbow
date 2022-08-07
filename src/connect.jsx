@@ -113,9 +113,29 @@ export function WPRainbowConnect( {
 					window.location = redirectURL || REDIRECT_URL || ADMIN_URL;
 				}
 			} else {
-				const error = await verifyRes.json();
-				onError( error );
-				setState( ( x ) => ( { ...x, error, loading: false } ) );
+				// Handle errors as strings or as encoded JSON strings.
+				let parsedError = null;
+				const rawError = await verifyRes.json();
+				try {
+					parsedError = JSON.parse( rawError );
+				} catch {
+					parsedError = rawError;
+				}
+				if ( typeof parsedError === 'string' ) {
+					onError( parsedError );
+					setState( ( x ) => ( {
+						...x,
+						error: parsedError,
+						loading: false,
+					} ) );
+				} else if ( typeof parsedError === 'object' ) {
+					if (
+						parsedError?.type === 'redirect' &&
+						parsedError.redirectURL
+					) {
+						window.location = parsedError.redirectURL;
+					}
+				}
 			}
 		} catch ( error ) {
 			setState( ( x ) => ( { ...x, error, loading: false } ) );
