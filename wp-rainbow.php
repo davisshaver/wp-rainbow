@@ -27,7 +27,7 @@ namespace WP_Rainbow;
  *
  * @var string
  */
-define( 'WP_RAINBOW_ASSETS_VERSION', '0.2.11' );
+define( 'WP_RAINBOW_ASSETS_VERSION', '0.2.12' );
 
 // Include the autoloader.
 add_action(

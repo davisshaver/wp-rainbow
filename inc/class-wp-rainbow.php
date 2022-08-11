@@ -74,6 +74,23 @@ class WP_Rainbow {
 	}
 
 	/**
+	 * Provide filter for Infura network. Defaults to settings page value.
+	 *
+	 * @return mixed|void Filtered Infura network.
+	 */
+	public function get_infura_network_filtered() {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_infura_network' => '' ] );
+		$default = ! empty( $options['wp_rainbow_field_infura_network'] ) ? $options['wp_rainbow_field_infura_network'] : 'mainnet';
+
+		/**
+		 * Filter the Infura network used for WP Rainbow integration.
+		 *
+		 * @param string $default Infura network as set in WP Rainbow options.
+		 */
+		return apply_filters( 'wp_rainbow_infura_network', $default );
+	}
+
+	/**
 	 * Provide filter for cool mode. Defaults to settings page value.
 	 *
 	 * @return boolean|void Filtered cool mode status.

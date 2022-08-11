@@ -89,6 +89,17 @@ class WP_Rainbow_Settings {
 		);
 
 		add_settings_field(
+			'wp_rainbow_field_infura_network',
+			__( 'Infura Network', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_infura_network_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_infura_network',
+			],
+		);
+
+		add_settings_field(
 			'wp_rainbow_field_override_users_can_register',
 			__( 'Always Allow Registration', 'wp-rainbow' ),
 			[ self::$instance, 'wp_rainbow_override_users_can_register_callback' ],
@@ -170,6 +181,7 @@ class WP_Rainbow_Settings {
 	 * Sanitize WP Rainbow options.
 	 *
 	 * @param array $input WP Rainbow options.
+	 *
 	 * @return array Sanitized WP Rainbow options.
 	 */
 	public function wp_rainbow_sanitize_callback( $input ) {
@@ -189,6 +201,7 @@ class WP_Rainbow_Settings {
 			}
 			$input['wp_rainbow_field_force_logout'] = null;
 		}
+
 		return $input;
 	}
 
@@ -393,6 +406,41 @@ class WP_Rainbow_Settings {
 			type='text'
 			value='<?php echo esc_textarea( $infura_id ); ?>'
 		/>
+		<?php
+	}
+
+	/**
+	 * Print field for Infura network option.
+	 */
+	public function wp_rainbow_infura_network_callback() {
+		$options        = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_infura_network' => '' ] );
+		$infura_network = ! empty( $options['wp_rainbow_field_infura_network'] ) ? $options['wp_rainbow_field_infura_network'] : '';
+		$networks       = [ 'Mainnet', 'Ropsten', 'Kovan', 'Rinkeby', 'Goerli' ];
+		?>
+		<select
+			id='wp_rainbow_field_infura_network'
+			name='wp_rainbow_options[wp_rainbow_field_infura_network]'
+		>
+			<?php
+			foreach ( $networks as $network ) {
+				printf(
+					'<option value="%s" %s>%s</option>',
+					esc_attr( strtolower( $network ) ),
+					strtolower( $network ) === $infura_network ? 'selected' : '',
+					esc_html( $network )
+				);
+			}
+			?>
+		</select>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'All contract validation will be performed on this network.', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
 		<?php
 	}
 
