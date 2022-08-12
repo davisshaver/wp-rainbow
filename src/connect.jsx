@@ -108,6 +108,11 @@ export function WPRainbowConnect( {
 			if ( verifyRes.ok ) {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
 				onLogin();
+				console.log( {
+					redirectURL,
+					REDIRECT_URL,
+					ADMIN_URL,
+				} );
 				if ( redirectBoomerang ) {
 					window.location.reload();
 				} else {
