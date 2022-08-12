@@ -163,6 +163,7 @@ class WP_Rainbow {
 				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
 				'SITE_TITLE'   => get_bloginfo( 'name' ),
 				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
+				'NETWORK'      => esc_textarea( $this->get_infura_network_filtered() ),
 			]
 		);
 		wp_localize_script(
@@ -178,6 +179,7 @@ class WP_Rainbow {
 				'SITE_TITLE'   => get_bloginfo( 'name' ),
 				'LOGOUT_URL'   => wp_logout_url(),
 				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
+				'NETWORK'      => esc_textarea( $this->get_infura_network_filtered() ),
 			]
 		);
 	}
@@ -216,6 +218,7 @@ class WP_Rainbow {
 				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
 				'SITE_TITLE'   => get_bloginfo( 'name' ),
 				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
+				'NETWORK'      => esc_textarea( $this->get_infura_network_filtered() ),
 			]
 		);
 	}

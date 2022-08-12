@@ -4,7 +4,7 @@ Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
 Tested up to: 6.0
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.2.13
+Stable tag: 0.2.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,6 +31,8 @@ Find reference implementations of all filters in [example plugin here](https://g
 
 **`wp_rainbow_infura_id`** - Filter Infura ID to override settings value.
 
+**`wp_rainbow_infura_network`** - Filter Infura network to override settings value.
+
 **`wp_rainbow_redirect_url`** - Filter login redirect URL.
 
 = What actions are included? =
@@ -44,6 +46,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
 == Changelog ==
+
+= 0.2.14 =
+* Use alternate network for connection request too
 
 = 0.2.13 =
 * Add documentation for network filter

@@ -55,6 +55,7 @@ export function WPRainbowConnect( {
 	const { signMessageAsync } = useSignMessage();
 	const { data: ensName, isSuccess: isENSSuccess } = useEnsName( {
 		address,
+		chainId: 1,
 	} );
 	const { disconnectAsync } = useDisconnect();
 

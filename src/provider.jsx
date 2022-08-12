@@ -6,10 +6,13 @@ import stylePropType from 'react-style-proptype';
 import PropTypes from 'prop-types';
 import { WPRainbowConnect } from './connect';
 
-const { INFURA_ID, LOGGED_IN, SITE_TITLE, COOL_MODE } = wpRainbowData;
+const { INFURA_ID, LOGGED_IN, SITE_TITLE, COOL_MODE, NETWORK } = wpRainbowData;
 
 const { chains, provider } = configureChains(
-	[ chain.mainnet ],
+	[
+		...( NETWORK && chain[ NETWORK ] ? [ chain[ NETWORK ] ] : [] ),
+		chain.mainnet,
+	],
 	[ infuraProvider( { infuraId: INFURA_ID } ) ]
 );
 
