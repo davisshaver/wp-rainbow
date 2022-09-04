@@ -91,10 +91,10 @@ class WP_Rainbow_Login_Functionality {
 		/**
 		 * Filter the default role for WP Rainbow users.
 		 *
-		 * @param string        $default Default role for new users.
-		 * @param string        $address Address of user being added.
-		 * @param string        $filtered_infura_id Filtered Infura ID.
-		 * @param string        $filtered_infura_network Filtered Infura network.
+		 * @param string $default Default role for new users.
+		 * @param string $address Address of user being added.
+		 * @param string $filtered_infura_id Filtered Infura ID.
+		 * @param string $filtered_infura_network Filtered Infura network.
 		 * @param WP_User|false $user User object, if available.
 		 */
 		return apply_filters( 'wp_rainbow_role_for_address', 'subscriber', $address, $filtered_infura_id, $filtered_infura_network, $user );
@@ -193,6 +193,7 @@ class WP_Rainbow_Login_Functionality {
 			$signature    = $request->get_param( 'signature' );
 			$display_name = $request->get_param( 'displayName' );
 			$siwe_payload = $request->get_param( 'siwePayload' );
+			$attributes   = $request->get_param( 'attributes' );
 			if ( empty( $address ) || empty( $signature ) ) {
 				throw new Exception( __( 'Malformed authentication request.', 'wp-rainbow' ) );
 			}
@@ -299,6 +300,30 @@ class WP_Rainbow_Login_Functionality {
 				);
 
 				$user->set_role( $role );
+
+				$user_attributes_mapping = $wp_rainbow->get_parsed_user_attributes_mapping();
+				foreach ( $user_attributes_mapping as $mapping ) {
+					if ( isset( $attributes[ $mapping[0] ] ) ) {
+						if ( in_array(
+							$mapping[1],
+							[
+								'user_email',
+								'user_url',
+							],
+							true
+						) ) {
+							wp_update_user(
+								[
+									'ID'        => $user->ID,
+									$mapping[1] => $attributes[ $mapping[0] ],
+								] 
+							);
+						} else {
+							update_user_meta( $user->ID, $mapping[1], $attributes[ $mapping[0] ] );
+
+						}
+					}
+				}
 
 				/**
 				 * Fires when a WP Rainbow user's is updated on login.

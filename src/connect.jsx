@@ -4,6 +4,7 @@ import {
 	useAccount,
 	useDisconnect,
 	useEnsName,
+	useProvider,
 	useNetwork,
 	useSignMessage,
 } from 'wagmi';
@@ -11,8 +12,15 @@ import stylePropType from 'react-style-proptype';
 import { SiweMessage } from 'siwe';
 import PropTypes from 'prop-types';
 
-const { ADMIN_URL, LOGGED_IN, LOGIN_API, NONCE_API, REDIRECT_URL, SITE_TITLE } =
-	wpRainbowData;
+const {
+	ADMIN_URL,
+	ATTRIBUTES,
+	LOGGED_IN,
+	LOGIN_API,
+	NONCE_API,
+	REDIRECT_URL,
+	SITE_TITLE,
+} = wpRainbowData;
 
 /**
  * WP Rainbow Connect Button.
@@ -57,6 +65,9 @@ export function WPRainbowConnect( {
 		address,
 		chainId: 1,
 	} );
+
+	const provider = useProvider( { chainId: 1 } );
+
 	const { disconnectAsync } = useDisconnect();
 
 	const signIn = React.useCallback( async () => {
@@ -85,6 +96,20 @@ export function WPRainbowConnect( {
 				version: '1',
 			};
 			const message = new SiweMessage( siwePayload );
+			const attributes = {};
+			if ( ensName ) {
+				try {
+					const ensProvider = await provider.getResolver( ensName );
+					await ATTRIBUTES.forEach( async ( attributeKey ) => {
+						const attributeValue = await ensProvider.getText(
+							attributeKey
+						);
+						attributes[ attributeKey ] = attributeValue;
+					} );
+				} catch ( error ) {
+					console.log( error );
+				}
+			}
 			const signature = await signMessageAsync( {
 				message: message.prepareMessage(),
 			} );
@@ -99,6 +124,7 @@ export function WPRainbowConnect( {
 				},
 				body: JSON.stringify( {
 					address,
+					attributes,
 					displayName: ensName ?? address,
 					nonce,
 					signature,
@@ -108,11 +134,6 @@ export function WPRainbowConnect( {
 			if ( verifyRes.ok ) {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
 				onLogin();
-				console.log( {
-					redirectURL,
-					REDIRECT_URL,
-					ADMIN_URL,
-				} );
 				if ( redirectBoomerang ) {
 					window.location.reload();
 				} else {

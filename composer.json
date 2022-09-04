@@ -16,7 +16,7 @@
 	"scripts": {
 		"lint": "@phpcs",
 		"lint:fix": "@phpcbf",
-		"phpcbf": "phpcbf .",
+		"phpcbf": "phpcbf . --runtime-set text_domain wp-rainbow --runtime-set prefixes wp_rainbow",
 		"phpcs": "phpcs . --runtime-set text_domain wp-rainbow --runtime-set prefixes wp_rainbow",
 		"phpunit": "phpunit --config=phpunit.xml",
 		"test": "@phpunit"

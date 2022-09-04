@@ -4,7 +4,7 @@ Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
 Tested up to: 6.0
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.2.15
+Stable tag: 0.2.16
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
 == Changelog ==
+
+= 0.2.16 =
+* Add support for mapping ENS text records to user fields
 
 = 0.2.15 =
 * Fix bug with override redirect URL on login block

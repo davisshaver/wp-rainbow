@@ -175,6 +175,17 @@ class WP_Rainbow_Settings {
 				'label_for' => 'wp_rainbow_field_cool_mode',
 			]
 		);
+
+		add_settings_field(
+			'wp_rainbow_field_user_attributes_mapping',
+			__( 'ENS Text Records to User Meta Mapping', 'wp-rainbow' ),
+			[ self::$instance, 'wp_rainbow_field_user_attributes_mapping_callback' ],
+			'wp_rainbow',
+			'wp_rainbow_connection_options',
+			[
+				'label_for' => 'wp_rainbow_field_user_attributes_mapping',
+			],
+		);
 	}
 
 	/**
@@ -437,6 +448,31 @@ class WP_Rainbow_Settings {
 				<small>
 					<?php
 					esc_html_e( 'All contract validation will be performed on this network.', 'wp-rainbow' );
+					?>
+				</small>
+			</em>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Print field for ENS text attributes to WP user meta option.
+	 */
+	public function wp_rainbow_field_user_attributes_mapping_callback() {
+		$options       = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_user_attributes_mapping' => '' ] );
+		$mapping_field = ! empty( $options['wp_rainbow_field_user_attributes_mapping'] ) ? $options['wp_rainbow_field_user_attributes_mapping'] : '';
+		?>
+		<textarea
+			id='wp_rainbow_field_user_attributes_mapping'
+			name='wp_rainbow_options[wp_rainbow_field_user_attributes_mapping]'
+			rows='5'
+			type='textarea'
+		><?php echo esc_textarea( $mapping_field ); ?></textarea>
+		<p>
+			<em>
+				<small>
+					<?php
+					esc_html_e( 'Enter a mapping of ENS text attributes to WordPress user meta, one on each line. Example: url,user_url', 'wp-rainbow' );
 					?>
 				</small>
 			</em>

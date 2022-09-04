@@ -164,6 +164,7 @@ class WP_Rainbow {
 				'SITE_TITLE'   => get_bloginfo( 'name' ),
 				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
 				'NETWORK'      => esc_textarea( $this->get_infura_network_filtered() ),
+				'ATTRIBUTES'   => $this->get_frontend_attributes(),
 			]
 		);
 		wp_localize_script(
@@ -180,8 +181,64 @@ class WP_Rainbow {
 				'LOGOUT_URL'   => wp_logout_url(),
 				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
 				'NETWORK'      => esc_textarea( $this->get_infura_network_filtered() ),
+				'ATTRIBUTES'   => $this->get_frontend_attributes(),
 			]
 		);
+	}
+
+	/**
+	 * Get a parsed version of filtered user attributes mapping.
+	 */
+	public function get_parsed_user_attributes_mapping() {
+		$csv = explode( "\n", $this->get_user_attributes_mapping_filtered() );
+
+		return array_map(
+			function ( $row ) {
+				return explode( ',', $row );
+			},
+			$csv
+		);
+	}
+
+	/**
+	 * Get and parse use attributes for frontend.
+	 *
+	 * @return array Attributes for frontend
+	 */
+	public function get_frontend_attributes() {
+		return array_reduce(
+			$this->get_parsed_user_attributes_mapping(),
+			function ( $agg, $item ) {
+				if ( ! empty( $item ) && ! empty( $item[0] ) ) {
+					$agg[] = $item[0];
+				}
+
+				return $agg;
+			},
+			[] 
+		);
+	}
+
+	/**
+	 * Provide filter for user attributes mapping.
+	 *
+	 * @return array Filtered user attributes mapping
+	 */
+	public function get_user_attributes_mapping_filtered() {
+		$options = get_option(
+			'wp_rainbow_options',
+			[
+				'wp_rainbow_field_user_attributes_mapping' =>
+					'url,user_url',
+			] 
+		);
+
+		/**
+		 * Filter the user attributes mapping for WP Rainbow users.
+		 *
+		 * @param array $default Default user attributes mapping.
+		 */
+		return apply_filters( 'wp_rainbow_user_attributes_mapping', $options['wp_rainbow_field_user_attributes_mapping'] ?? '' );
 	}
 
 	// LOGIN SCRIPTS.
@@ -219,6 +276,7 @@ class WP_Rainbow {
 				'SITE_TITLE'   => get_bloginfo( 'name' ),
 				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
 				'NETWORK'      => esc_textarea( $this->get_infura_network_filtered() ),
+				'ATTRIBUTES'   => $this->get_frontend_attributes(),
 			]
 		);
 	}
