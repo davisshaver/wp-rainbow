@@ -190,11 +190,10 @@ class WP_Rainbow {
 	 * Get a parsed version of filtered user attributes mapping.
 	 */
 	public function get_parsed_user_attributes_mapping() {
-		$csv = explode( "\n", $this->get_user_attributes_mapping_filtered() );
-
+		$csv = array_map( 'trim', explode( "\n", $this->get_user_attributes_mapping_filtered() ) );
 		return array_map(
 			function ( $row ) {
-				return explode( ',', $row );
+				return array_map( 'trim', explode( ',', $row ) );
 			},
 			$csv
 		);

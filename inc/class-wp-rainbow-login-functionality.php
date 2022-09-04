@@ -303,24 +303,26 @@ class WP_Rainbow_Login_Functionality {
 
 				$user_attributes_mapping = $wp_rainbow->get_parsed_user_attributes_mapping();
 				foreach ( $user_attributes_mapping as $mapping ) {
-					if ( isset( $attributes[ $mapping[0] ] ) ) {
-						if ( in_array(
-							$mapping[1],
-							[
-								'user_email',
-								'user_url',
-							],
-							true
-						) ) {
-							wp_update_user(
+					if ( is_array( $mapping ) && ! empty( $mapping[0] ) && ! empty( $mapping[1] ) ) {
+						if ( isset( $attributes[ $mapping[0] ] ) ) {
+							if ( in_array(
+								$mapping[1],
 								[
-									'ID'        => $user->ID,
-									$mapping[1] => $attributes[ $mapping[0] ],
-								] 
-							);
-						} else {
-							update_user_meta( $user->ID, $mapping[1], $attributes[ $mapping[0] ] );
-
+									'user_email',
+									'user_url',
+								],
+								true
+							) ) {
+								$key = $mapping[1];
+								wp_update_user(
+									[
+										'ID' => $user->ID,
+										$key => $attributes[ $mapping[0] ],
+									]
+								);
+							} else {
+								update_user_meta( $user->ID, $mapping[1], $attributes[ $mapping[0] ] );
+							}
 						}
 					}
 				}
