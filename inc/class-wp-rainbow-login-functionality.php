@@ -80,9 +80,9 @@ class WP_Rainbow_Login_Functionality {
 	/**
 	 * Provide filter for address roles. Defaults to subscriber.
 	 *
-	 * @param string        $address Address for user.
-	 * @param string        $filtered_infura_id Filtered Infura ID.
-	 * @param string        $filtered_infura_network Filtered Infura network.
+	 * @param string $address Address for user.
+	 * @param string $filtered_infura_id Filtered Infura ID.
+	 * @param string $filtered_infura_network Filtered Infura network.
 	 * @param WP_User|false $user User object, if available.
 	 *
 	 * @return string Filtered role for a given address.
@@ -170,6 +170,23 @@ class WP_Rainbow_Login_Functionality {
 	}
 
 	/**
+	 * Map filtered Infura network to an Infura endpoint value.
+	 *
+	 * @param string $filtered_network Filtered Infura network
+	 *
+	 * @return string Infura endpoint or default
+	 */
+	private function map_filtered_network_to_infura_endpoint( string $filtered_network ): string {
+		$overrides = [
+			'polygon' => 'polygon-mainnet',
+		];
+		if ( ! empty( $overrides[ $filtered_network ] ) ) {
+			return $overrides[ $filtered_network ];
+		}
+		return $filtered_network;
+	}
+
+	/**
 	 * Validates Log In with Ethereum request.
 	 *
 	 * @param WP_REST_Request $request REST request data.
@@ -231,8 +248,8 @@ class WP_Rainbow_Login_Functionality {
 				'wp_rainbow_options',
 				[
 					'wp_rainbow_field_override_users_can_register' => false,
-					'wp_rainbow_field_required_token' => '',
-					'wp_rainbow_field_required_token_quantity' => '1',
+					'wp_rainbow_field_required_token'              => '',
+					'wp_rainbow_field_required_token_quantity'     => '1',
 				]
 			);
 
@@ -242,8 +259,9 @@ class WP_Rainbow_Login_Functionality {
 
 			if ( ! empty( $wp_rainbow_options['wp_rainbow_field_required_token'] ) && ! empty( $filtered_infura_id ) && ! empty( $filtered_infura_network ) ) {
 				// @TODO Figure out if ABI should be an option (or formatted differently).
+
 				$example_abi = '[{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
-				$contract    = new Contract( 'https://' . $filtered_infura_network . '.infura.io/v3/' . $filtered_infura_id, $example_abi );
+				$contract    = new Contract( 'https://' . $this->map_filtered_network_to_infura_endpoint( $filtered_infura_network ) . '.infura.io/v3/' . $filtered_infura_id, $example_abi );
 				$contract->at( $wp_rainbow_options['wp_rainbow_field_required_token'] )->call(
 					'balanceOf',
 					$address,
