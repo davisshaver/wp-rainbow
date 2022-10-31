@@ -139,7 +139,7 @@ class WP_Rainbow {
 		wp_register_style(
 			'login-block-frontend-css',
 			plugins_url( $test_block_frontend_path . '.css', __FILE__ ),
-			[ 'wp-block-button' ],
+			[],
 			$test_block_frontend_dependencies['version']
 		);
 		register_block_type(
@@ -221,7 +221,7 @@ class WP_Rainbow {
 	/**
 	 * Provide filter for user attributes mapping.
 	 *
-	 * @return array Filtered user attributes mapping
+	 * @return string Filtered user attributes mapping
 	 */
 	public function get_user_attributes_mapping_filtered() {
 		$options = get_option(
@@ -235,7 +235,7 @@ class WP_Rainbow {
 		/**
 		 * Filter the user attributes mapping for WP Rainbow users.
 		 *
-		 * @param array $default Default user attributes mapping.
+		 * @param string $default Default user attributes mapping.
 		 */
 		return apply_filters( 'wp_rainbow_user_attributes_mapping', $options['wp_rainbow_field_user_attributes_mapping'] ?? '' );
 	}
