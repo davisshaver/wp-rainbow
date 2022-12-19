@@ -107,7 +107,8 @@ export function WPRainbowConnect( {
 						attributes[ attributeKey ] = attributeValue;
 					} );
 				} catch ( error ) {
-					console.log( error );
+					// eslint-disable-next-line no-console
+					console.error( error );
 				}
 			}
 			const signature = await signMessageAsync( {

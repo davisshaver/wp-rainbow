@@ -30,6 +30,7 @@
 		"ethers": "^5.7.1",
 		"process": "^0.11.10",
 		"prop-types": "^15.8.1",
+		"react-hook-form": "^7.38.0",
 		"react-style-proptype": "^3.2.2",
 		"siwe": "^1.1.6",
 		"util": "^0.12.4",

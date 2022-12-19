@@ -22,6 +22,7 @@ module.exports = {
 			path.resolve( process.cwd(), 'src', 'connect.jsx' ),
 			path.resolve( process.cwd(), 'src', 'css', 'login.scss' ),
 		],
+		settings: [ path.resolve( process.cwd(), 'src', 'settings.jsx' ) ],
 	},
 	resolve: {
 		...defaultConfig.resolve,

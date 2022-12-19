@@ -22,6 +22,8 @@
 
 namespace WP_Rainbow;
 
+use WP_Rainbow_Plugins\WP_Rainbow_Plugins_ERC_1155_Roles;
+
 /**
  * WP Rainbow version number.
  *
@@ -52,3 +54,6 @@ WP_Rainbow_Login_Functionality::instance();
 WP_Rainbow_Login_Styling::instance();
 WP_Rainbow_Passwords::instance();
 WP_Rainbow_Settings::instance();
+
+require_once __DIR__ . '/plugins/class-wp-rainbow-plugins-erc-1155-roles.php';
+WP_Rainbow_Plugins_ERC_1155_Roles::instance();

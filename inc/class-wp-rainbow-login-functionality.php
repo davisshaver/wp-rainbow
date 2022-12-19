@@ -172,7 +172,7 @@ class WP_Rainbow_Login_Functionality {
 	/**
 	 * Map filtered Infura network to an Infura endpoint value.
 	 *
-	 * @param string $filtered_network Filtered Infura network
+	 * @param string $filtered_network Filtered Infura network.
 	 *
 	 * @return string Infura endpoint or default
 	 */
@@ -183,6 +183,7 @@ class WP_Rainbow_Login_Functionality {
 		if ( ! empty( $overrides[ $filtered_network ] ) ) {
 			return $overrides[ $filtered_network ];
 		}
+
 		return $filtered_network;
 	}
 
@@ -247,9 +248,10 @@ class WP_Rainbow_Login_Functionality {
 			$wp_rainbow_options = get_option(
 				'wp_rainbow_options',
 				[
-					'wp_rainbow_field_override_users_can_register' => false,
-					'wp_rainbow_field_required_token'              => '',
-					'wp_rainbow_field_required_token_quantity'     => '1',
+					'wp_rainbow_field_override_users_can_register'   => false,
+					'wp_rainbow_field_required_token'                => '',
+					'wp_rainbow_field_required_token_quantity'       => '1',
+					'wp_rainbow_field_disable_overwriting_user_meta' => false,
 				]
 			);
 
@@ -318,7 +320,8 @@ class WP_Rainbow_Login_Functionality {
 				);
 
 				$user->set_role( $role );
-
+				$user_info               = get_userdata( $user->ID );
+				$user_meta               = get_user_meta( $user->ID );
 				$user_attributes_mapping = $wp_rainbow->get_parsed_user_attributes_mapping();
 				foreach ( $user_attributes_mapping as $mapping ) {
 					if ( is_array( $mapping ) && ! empty( $mapping[0] ) && ! empty( $mapping[1] ) ) {
@@ -331,6 +334,11 @@ class WP_Rainbow_Login_Functionality {
 								],
 								true
 							) ) {
+								if ( ! empty( $wp_rainbow_options['wp_rainbow_field_disable_overwriting_user_meta'] ) ) {
+									if ( ! empty( $user_info->{$mapping[1]} ) ) {
+										continue;
+									}
+								}
 								$key = $mapping[1];
 								wp_update_user(
 									[
@@ -339,6 +347,11 @@ class WP_Rainbow_Login_Functionality {
 									]
 								);
 							} else {
+								if ( ! empty( $wp_rainbow_options['wp_rainbow_field_disable_overwriting_user_meta'] ) ) {
+									if ( ! empty( $user_meta[ $mapping[1] ] ) ) {
+										continue;
+									}
+								}
 								update_user_meta( $user->ID, $mapping[1], $attributes[ $mapping[0] ] );
 							}
 						}
