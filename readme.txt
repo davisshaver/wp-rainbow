@@ -4,7 +4,7 @@ Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
 Tested up to: 6.1
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.2.19
+Stable tag: 0.2.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
 == Changelog ==
+
+= 0.2.20 =
+* Bug fix to only set user role if featured is enabled via filter
 
 = 0.2.19 =
 * Bump version to 0.2.19

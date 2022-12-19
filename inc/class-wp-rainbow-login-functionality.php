@@ -78,11 +78,23 @@ class WP_Rainbow_Login_Functionality {
 	}
 
 	/**
+	 * Provide filter for whether roles should be set by the plugin.
+
+	 * @return bool Filtered status of whether roles are being set.
+	 */
+	public function get_should_set_role_filtered(): bool {
+		/**
+		 * Filter whether roles should be set.
+		 */
+		return apply_filters( 'wp_rainbow_should_update_roles', false );
+	}
+
+	/**
 	 * Provide filter for address roles. Defaults to subscriber.
 	 *
-	 * @param string $address Address for user.
-	 * @param string $filtered_infura_id Filtered Infura ID.
-	 * @param string $filtered_infura_network Filtered Infura network.
+	 * @param string        $address Address for user.
+	 * @param string        $filtered_infura_id Filtered Infura ID.
+	 * @param string        $filtered_infura_network Filtered Infura network.
 	 * @param WP_User|false $user User object, if available.
 	 *
 	 * @return string Filtered role for a given address.
@@ -172,7 +184,7 @@ class WP_Rainbow_Login_Functionality {
 	/**
 	 * Map filtered Infura network to an Infura endpoint value.
 	 *
-	 * @param string $filtered_network Filtered Infura network
+	 * @param string $filtered_network Filtered Infura network.
 	 *
 	 * @return string Infura endpoint or default
 	 */
@@ -248,8 +260,8 @@ class WP_Rainbow_Login_Functionality {
 				'wp_rainbow_options',
 				[
 					'wp_rainbow_field_override_users_can_register' => false,
-					'wp_rainbow_field_required_token'              => '',
-					'wp_rainbow_field_required_token_quantity'     => '1',
+					'wp_rainbow_field_required_token' => '',
+					'wp_rainbow_field_required_token_quantity' => '1',
 				]
 			);
 
@@ -277,6 +289,7 @@ class WP_Rainbow_Login_Functionality {
 			$user                   = get_user_by( 'login', $address );
 			$sanitized_display_name = sanitize_text_field( $display_name );
 			$role                   = $this->get_role_for_address_filtered( $address, $filtered_infura_id, $filtered_infura_network, $user );
+			$should_set_role        = $this->get_should_set_role_filtered();
 
 			if ( ! $user ) {
 				// If there's not a user already, double check registration settings.
@@ -290,13 +303,16 @@ class WP_Rainbow_Login_Functionality {
 				$password = wp_generate_password();
 				$user_id  = wp_create_user( $address, $password );
 				$user     = get_user_by( 'ID', $user_id );
-				wp_update_user(
-					[
-						'ID'           => $user->ID,
-						'role'         => $role,
-						'display_name' => $sanitized_display_name,
-					]
-				);
+				$user_obj = [
+					'ID'           => $user->ID,
+					'display_name' => $sanitized_display_name,
+				];
+
+				if ( ! empty( $should_set_role ) ) {
+					$user_obj['role'] = $role;
+				}
+
+				wp_update_user( $user_obj );
 
 				update_user_meta( $user->ID, 'wp_rainbow_user', true );
 
@@ -317,7 +333,9 @@ class WP_Rainbow_Login_Functionality {
 					]
 				);
 
-				$user->set_role( $role );
+				if ( ! empty( $should_set_role ) ) {
+					$user->set_role( $role );
+				}
 
 				$user_attributes_mapping = $wp_rainbow->get_parsed_user_attributes_mapping();
 				foreach ( $user_attributes_mapping as $mapping ) {
