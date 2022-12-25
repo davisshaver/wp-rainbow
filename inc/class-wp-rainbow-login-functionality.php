@@ -78,16 +78,51 @@ class WP_Rainbow_Login_Functionality {
 	}
 
 	/**
+	 * Provide filter for whether roles should be set by the plugin.
+
+	 * @return bool Filtered status of whether roles are being set.
+	 */
+	public function get_should_set_role_filtered(): bool {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_set_user_roles' => 'off' ] );
+
+		/**
+		 * Filter whether roles should be set.
+		 */
+		return apply_filters( 'wp_rainbow_should_update_roles', $options['wp_rainbow_field_set_user_roles'] ?? 'off' );
+	}
+
+	/**
+	 * Provide filter for whether roles should be prevented from being set on login.
+
+	 * @return bool Filtered status of whether roles are prevented from being set on login.
+	 */
+	public function get_should_disable_user_role_updates_on_login(): bool {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_disable_user_role_updates_on_login' => 'off' ] );
+
+		/**
+		 * Filter whether roles should be prevented from being set on login.
+		 */
+		return apply_filters( 'wp_rainbow_should_disable_user_role_updates_on_login', $options['wp_rainbow_field_disable_user_role_updates_on_login'] ?? 'off' );
+	}
+
+	/**
 	 * Provide filter for address roles. Defaults to subscriber.
 	 *
-	 * @param string $address Address for user.
-	 * @param string $filtered_infura_id Filtered Infura ID.
-	 * @param string $filtered_infura_network Filtered Infura network.
+	 * @param string        $address Address for user.
+	 * @param string        $filtered_infura_id Filtered Infura ID.
+	 * @param string        $filtered_infura_network Filtered Infura network.
 	 * @param WP_User|false $user User object, if available.
 	 *
 	 * @return string Filtered role for a given address.
 	 */
 	public function get_role_for_address_filtered( string $address, string $filtered_infura_id, string $filtered_infura_network, $user ): string {
+		$default_role = get_option( 'default_role' );
+
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_default_user_role' => '' ] );
+		if ( ! empty( $options['wp_rainbow_field_default_user_role'] ) ) {
+			$default_role = $options['wp_rainbow_field_default_user_role'];
+		}
+
 		/**
 		 * Filter the default role for WP Rainbow users.
 		 *
@@ -97,7 +132,7 @@ class WP_Rainbow_Login_Functionality {
 		 * @param string $filtered_infura_network Filtered Infura network.
 		 * @param WP_User|false $user User object, if available.
 		 */
-		return apply_filters( 'wp_rainbow_role_for_address', 'subscriber', $address, $filtered_infura_id, $filtered_infura_network, $user );
+		return apply_filters( 'wp_rainbow_role_for_address', $default_role, $address, $filtered_infura_id, $filtered_infura_network, $user );
 	}
 
 	// API ROUTES.
@@ -279,6 +314,7 @@ class WP_Rainbow_Login_Functionality {
 			$user                   = get_user_by( 'login', $address );
 			$sanitized_display_name = sanitize_text_field( $display_name );
 			$role                   = $this->get_role_for_address_filtered( $address, $filtered_infura_id, $filtered_infura_network, $user );
+			$should_set_role        = $this->get_should_set_role_filtered();
 
 			if ( ! $user ) {
 				// If there's not a user already, double check registration settings.
@@ -292,13 +328,16 @@ class WP_Rainbow_Login_Functionality {
 				$password = wp_generate_password();
 				$user_id  = wp_create_user( $address, $password );
 				$user     = get_user_by( 'ID', $user_id );
-				wp_update_user(
-					[
-						'ID'           => $user->ID,
-						'role'         => $role,
-						'display_name' => $sanitized_display_name,
-					]
-				);
+				$user_obj = [
+					'ID'           => $user->ID,
+					'display_name' => $sanitized_display_name,
+				];
+
+				if ( ! empty( $should_set_role ) ) {
+					$user_obj['role'] = $role;
+				}
+
+				wp_update_user( $user_obj );
 
 				update_user_meta( $user->ID, 'wp_rainbow_user', true );
 
@@ -319,7 +358,11 @@ class WP_Rainbow_Login_Functionality {
 					]
 				);
 
-				$user->set_role( $role );
+				$should_disable_user_role_updates_on_login = $this->get_should_disable_user_role_updates_on_login();
+				if ( ! empty( $should_set_role ) && empty( $should_disable_user_role_updates_on_login ) ) {
+					$user->set_role( $role );
+				}
+
 				$user_info               = get_userdata( $user->ID );
 				$user_meta               = get_user_meta( $user->ID );
 				$user_attributes_mapping = $wp_rainbow->get_parsed_user_attributes_mapping();

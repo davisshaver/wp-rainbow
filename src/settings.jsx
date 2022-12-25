@@ -17,6 +17,7 @@ function WPRainbowSettings() {
 		control,
 		name: 'userAttributesMapping',
 	} );
+	const setUserRoles = watch( 'wp_rainbow_field_set_user_roles' );
 	const {
 		fields: erc1155Fields,
 		append: erc1155FieldsAppend,
@@ -32,6 +33,8 @@ function WPRainbowSettings() {
 		'wp_rainbow_field_force_logout',
 		'wp_rainbow_field_cool_mode',
 		'wp_rainbow_field_disable_overwriting_user_meta',
+		'wp_rainbow_field_disable_user_role_updates_on_login',
+		'wp_rainbow_field_set_user_roles',
 	];
 
 	const onSubmit = ( settings ) => {
@@ -172,12 +175,9 @@ function WPRainbowSettings() {
 					</button>
 				</div>
 			) }
-			<h2>{ __( 'Connection Options', 'wp-rainbow' ) }</h2>
-			<p id="wp_rainbow_connection_options">
-				{ __(
-					'Customize your connection settings below.',
-					'wp-rainbow'
-				) }
+			<h2>{ __( 'Network Options', 'wp-rainbow' ) }</h2>
+			<p id="wp_rainbow_network_options">
+				{ __( 'Customize your network options below.', 'wp-rainbow' ) }
 			</p>
 			<form onSubmit={ handleSubmit( onSubmit ) }>
 				<table className="form-table" role="presentation">
@@ -237,6 +237,18 @@ function WPRainbowSettings() {
 								</p>
 							</td>
 						</tr>
+						<h2>
+							{ __(
+								'Registration & Login Options',
+								'wp-rainbow'
+							) }
+						</h2>
+						<p id="wp_rainbow_registration_options">
+							{ __(
+								'Customize registration and login with the settings below.',
+								'wp-rainbow'
+							) }
+						</p>
 						<tr>
 							<th scope="row">
 								<label htmlFor="wp_rainbow_field_override_users_can_register">
@@ -265,6 +277,112 @@ function WPRainbowSettings() {
 												'If enabled, this setting will override the General Settings membership option.',
 												'wp-rainbow'
 											) }{ ' ' }
+										</small>
+									</em>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_set_user_roles">
+									{ __(
+										'Set User Roles On Account Creation',
+										'wp-rainbow'
+									) }
+								</label>
+							</th>
+							<td>
+								<input
+									id="wp_rainbow_field_set_user_roles"
+									{ ...register(
+										'wp_rainbow_field_set_user_roles'
+									) }
+									defaultChecked={
+										initialSettings?.wp_rainbow_field_set_user_roles ===
+										'on'
+									}
+									type="checkbox"
+								/>
+								<p>
+									<em>
+										<small>
+											{ __(
+												'If enabled, RainbowKit Login will set user roles on account creation and login. The default role is ',
+												'wp-rainbow'
+											) }
+											{ `${ window?.wpRainbowSettings?.default_role }` }
+											{ __(
+												'. You can override this for RainbowKit Login users below. ',
+												'wp-rainbow'
+											) }
+										</small>
+									</em>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_default_user_role">
+									{ __(
+										'Default RainbowKit Login User Role',
+										'wp-rainbow'
+									) }
+								</label>
+							</th>
+							<td>
+								<input
+									id="wp_rainbow_field_default_user_role"
+									size="40"
+									type="text"
+									{ ...register(
+										'wp_rainbow_field_default_user_role'
+									) }
+									disabled={ ! setUserRoles }
+									defaultValue={
+										initialSettings?.wp_rainbow_field_default_user_role
+									}
+								/>
+								<p>
+									<em>
+										<small>
+											{ __(
+												'If set, this user role will be used for RainbowKit Login users instead of the default role. Only applies if roles are set on account creation.',
+												'wp-rainbow'
+											) }
+										</small>
+									</em>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_disable_user_role_updates_on_login">
+									{ __(
+										'Prevent User Role Updates on Login',
+										'wp-rainbow'
+									) }
+								</label>
+							</th>
+							<td>
+								<input
+									id="wp_rainbow_field_disable_user_role_updates_on_login"
+									{ ...register(
+										'wp_rainbow_field_disable_user_role_updates_on_login'
+									) }
+									defaultChecked={
+										initialSettings?.wp_rainbow_field_disable_user_role_updates_on_login ===
+										'on'
+									}
+									disabled={ ! setUserRoles }
+									type="checkbox"
+								/>
+								<p>
+									<em>
+										<small>
+											{ __(
+												'Prevent user roles from being updated on login. Only applies if roles are set on account creation.',
+												'wp-rainbow'
+											) }
 										</small>
 									</em>
 								</p>
@@ -323,69 +441,6 @@ function WPRainbowSettings() {
 										<small>
 											{ __(
 												'If set, users will be redirected here on login instead of the admin. (Block redirect configuration will take precedent if set.)',
-												'wp-rainbow'
-											) }{ ' ' }
-										</small>
-									</em>
-								</p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row">
-								<label htmlFor="wp_rainbow_field_force_logout">
-									{ __(
-										'Clear Existing Sessions',
-										'wp-rainbow'
-									) }
-								</label>
-							</th>
-							<td>
-								<input
-									id="wp_rainbow_field_force_logout"
-									type="checkbox"
-									{ ...register(
-										'wp_rainbow_field_force_logout'
-									) }
-									defaultValue={
-										initialSettings?.wp_rainbow_field_force_logout ===
-										'on'
-									}
-								/>
-								<p>
-									<em>
-										<small>
-											{ __(
-												'If checked, existing sessions will be logged out on save.',
-												'wp-rainbow'
-											) }{ ' ' }
-										</small>
-									</em>
-								</p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row">
-								<label htmlFor="wp_rainbow_field_cool_mode">
-									{ __( 'Enable Cool Mode', 'wp-rainbow' ) }
-								</label>
-							</th>
-							<td>
-								<input
-									id="wp_rainbow_field_cool_mode"
-									type="checkbox"
-									{ ...register(
-										'wp_rainbow_field_cool_mode'
-									) }
-									defaultChecked={
-										initialSettings?.wp_rainbow_field_cool_mode ===
-										'on'
-									}
-								/>
-								<p>
-									<em>
-										<small>
-											{ __(
-												'If enabled, RainbowKit will use "Cool Mode" effects.',
 												'wp-rainbow'
 											) }{ ' ' }
 										</small>
@@ -621,39 +676,6 @@ function WPRainbowSettings() {
 								</tr>
 								<tr>
 									<th scope="row">
-										<label htmlFor="wp_rainbow_customizations_erc_1155_default_role">
-											{ __(
-												'ERC-1155 Default Role',
-												'wp-rainbow'
-											) }
-										</label>
-									</th>
-									<td>
-										<input
-											id="wp_rainbow_customizations_erc_1155_default_role"
-											size="40"
-											type="text"
-											{ ...register(
-												'wp_rainbow_customizations_erc_1155_default_role'
-											) }
-											defaultValue={
-												initialSettings?.wp_rainbow_customizations_erc_1155_default_role
-											}
-										/>
-										<p>
-											<em>
-												<small>
-													{ __(
-														'If set, this role will be used instead of the default "subscriber" role.',
-														'wp-rainbow'
-													) }{ ' ' }
-												</small>
-											</em>
-										</p>
-									</td>
-								</tr>
-								<tr>
-									<th scope="row">
 										<label htmlFor="wp_rainbow_redirect_url_field">
 											Redirect URL
 										</label>
@@ -788,6 +810,76 @@ function WPRainbowSettings() {
 								</tr>
 							</>
 						) }
+						<h2>{ __( 'Advanced Settings', 'wp-rainbow' ) }</h2>
+						<p id="wp_rainbow_registration_options">
+							{ __(
+								"Only use the following settings if you know what you're doing and/or you're very cool.",
+								'wp-rainbow'
+							) }
+						</p>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_force_logout">
+									{ __(
+										'Clear Existing Sessions',
+										'wp-rainbow'
+									) }
+								</label>
+							</th>
+							<td>
+								<input
+									id="wp_rainbow_field_force_logout"
+									type="checkbox"
+									{ ...register(
+										'wp_rainbow_field_force_logout'
+									) }
+									defaultValue={
+										initialSettings?.wp_rainbow_field_force_logout ===
+										'on'
+									}
+								/>
+								<p>
+									<em>
+										<small>
+											{ __(
+												'If checked, existing sessions will be logged out on save.',
+												'wp-rainbow'
+											) }{ ' ' }
+										</small>
+									</em>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_cool_mode">
+									{ __( 'Enable Cool Mode', 'wp-rainbow' ) }
+								</label>
+							</th>
+							<td>
+								<input
+									id="wp_rainbow_field_cool_mode"
+									type="checkbox"
+									{ ...register(
+										'wp_rainbow_field_cool_mode'
+									) }
+									defaultChecked={
+										initialSettings?.wp_rainbow_field_cool_mode ===
+										'on'
+									}
+								/>
+								<p>
+									<em>
+										<small>
+											{ __(
+												'If enabled, RainbowKit will use "Cool Mode" effects.',
+												'wp-rainbow'
+											) }{ ' ' }
+										</small>
+									</em>
+								</p>
+							</td>
+						</tr>
 					</tbody>
 				</table>
 				<p className="submit">

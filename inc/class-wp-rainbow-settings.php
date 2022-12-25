@@ -111,6 +111,29 @@ class WP_Rainbow_Settings {
 							'off',
 						],
 					],
+					'wp_rainbow_field_set_user_roles'     => [
+						'required'    => true,
+						'type'        => 'string',
+						'description' => 'Whether user roles should be set on account creation',
+						'enum'        => [
+							'on',
+							'off',
+						],
+					],
+					'wp_rainbow_field_disable_user_role_updates_on_login' => [
+						'required'    => true,
+						'type'        => 'string',
+						'description' => 'Whether user role updates should be prevented on subsequent logins',
+						'enum'        => [
+							'on',
+							'off',
+						],
+					],
+					'wp_rainbow_field_default_user_role'  => [
+						'required'    => false,
+						'type'        => 'string',
+						'description' => 'Default RainbowKit Login user role',
+					],
 					'wp_rainbow_field_infura_id'          => [
 						'required'    => true,
 						'type'        => 'string',
@@ -163,11 +186,6 @@ class WP_Rainbow_Settings {
 						'type'        => 'string',
 						'description' => 'ERC-1155 contract address',
 					],
-					'wp_rainbow_customizations_erc_1155_default_role' => [
-						'required'    => false,
-						'type'        => 'string',
-						'description' => 'ERC-1155 contract address',
-					],
 				],
 			]
 		);
@@ -190,13 +208,14 @@ class WP_Rainbow_Settings {
 			'wp-rainbow-settings',
 			'wpRainbowSettings',
 			[
-				'api'     => [
+				'api'          => [
 					'url'   => esc_url_raw( rest_url( 'wp-rainbow/v1/settings' ) ),
 					'nonce' => wp_create_nonce( 'wp_rest' ),
 				],
-				'plugins' => [
-				 	'erc-1155-roles',
+				'plugins'      => [
+					'erc-1155-roles',
 				],
+				'default_role' => get_option( 'default_role' ),
 			] 
 		);
 		wp_enqueue_script( 'wp-rainbow-settings' );

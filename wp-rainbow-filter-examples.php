@@ -22,6 +22,12 @@ add_filter(
 	}
 );
 
+// Opt into role feature.
+add_filter(
+	'wp_rainbow_should_update_roles',
+	'__return_true'
+);
+
 // Use editor role for a specific new account.
 add_filter(
 	'wp_rainbow_role_for_address',

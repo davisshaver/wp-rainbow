@@ -54,6 +54,8 @@ Find reference implementations of all filters in [example plugin here](https://g
 
 **`wp_rainbow_role_for_address`** - Filter role granted to a specific address on sign-in.
 
+**`wp_rainbow_should_update_roles`** - Filter whether roles should be set.
+
 **`wp_rainbow_infura_id`** - Filter Infura ID to override settings value.
 
 **`wp_rainbow_infura_network`** - Filter Infura network to override settings value.
