@@ -84,6 +84,25 @@ class WP_Rainbow_Settings {
 							'off',
 						],
 					],
+					'wp_rainbow_field_rainbowkit_theme'   => [
+						'required'    => true,
+						'type'        => 'string',
+						'description' => 'What base theme is used by RainbowKit',
+						'enum'        => [
+							'lightTheme',
+							'darkTheme',
+							'midnightTheme',
+						],
+					],
+					'wp_rainbow_field_compact_modal'      => [
+						'required'    => true,
+						'type'        => 'string',
+						'description' => 'Whether RainbowKit should use the compact modal',
+						'enum'        => [
+							'on',
+							'off',
+						],
+					],
 					'wp_rainbow_field_disable_overwriting_user_meta' => [
 						'required'    => true,
 						'type'        => 'string',

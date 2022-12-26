@@ -35,6 +35,7 @@ function WPRainbowSettings() {
 		'wp_rainbow_field_disable_overwriting_user_meta',
 		'wp_rainbow_field_disable_user_role_updates_on_login',
 		'wp_rainbow_field_set_user_roles',
+		'wp_rainbow_field_compact_modal',
 	];
 
 	const onSubmit = ( settings ) => {
@@ -176,9 +177,6 @@ function WPRainbowSettings() {
 				</div>
 			) }
 			<h2>{ __( 'Network Options', 'wp-rainbow' ) }</h2>
-			<p id="wp_rainbow_network_options">
-				{ __( 'Customize your network options below.', 'wp-rainbow' ) }
-			</p>
 			<form onSubmit={ handleSubmit( onSubmit ) }>
 				<table className="form-table" role="presentation">
 					<tbody>
@@ -231,24 +229,81 @@ function WPRainbowSettings() {
 											{ __(
 												'All contract validation will be performed on this network.',
 												'wp-rainbow'
-											) }{ ' ' }
+											) }
 										</small>
 									</em>
 								</p>
 							</td>
 						</tr>
-						<h2>
-							{ __(
-								'Registration & Login Options',
-								'wp-rainbow'
-							) }
-						</h2>
-						<p id="wp_rainbow_registration_options">
-							{ __(
-								'Customize registration and login with the settings below.',
-								'wp-rainbow'
-							) }
-						</p>
+						<tr>
+							<th scope="row" style={ { padding: '0' } }>
+								<h2>{ __( 'Appearance', 'wp-rainbow' ) }</h2>
+							</th>
+							<td />
+						</tr>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_rainbowkit_theme">
+									{ __(
+										'RainbowKit Base Theme',
+										'wp-rainbow'
+									) }
+								</label>
+							</th>
+							<td>
+								<select
+									{ ...register(
+										'wp_rainbow_field_rainbowkit_theme'
+									) }
+									defaultValue={
+										initialSettings?.wp_rainbow_field_rainbowkit_theme ||
+										'lightTheme'
+									}
+									id="wp_rainbow_field_rainbowkit_theme"
+								>
+									<option value="lightTheme">
+										Light Theme
+									</option>
+									<option value="darkTheme">
+										Dark Theme
+									</option>
+									<option value="midnightTheme">
+										Midnight Theme
+									</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_compact_modal">
+									{ __( 'Use Compact Modal', 'wp-rainbow' ) }
+								</label>
+							</th>
+							<td>
+								<input
+									id="wp_rainbow_field_compact_modal"
+									type="checkbox"
+									{ ...register(
+										'wp_rainbow_field_compact_modal'
+									) }
+									defaultChecked={
+										initialSettings?.wp_rainbow_field_compact_modal ===
+										'on'
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" style={ { padding: '0' } }>
+								<h2>
+									{ __(
+										'Registration & Login Options',
+										'wp-rainbow'
+									) }
+								</h2>
+							</th>
+							<td />
+						</tr>
 						<tr>
 							<th scope="row">
 								<label htmlFor="wp_rainbow_field_override_users_can_register">
@@ -276,7 +331,7 @@ function WPRainbowSettings() {
 											{ __(
 												'If enabled, this setting will override the General Settings membership option.',
 												'wp-rainbow'
-											) }{ ' ' }
+											) }
 										</small>
 									</em>
 								</p>
@@ -337,7 +392,12 @@ function WPRainbowSettings() {
 									{ ...register(
 										'wp_rainbow_field_default_user_role'
 									) }
-									disabled={ ! setUserRoles }
+									disabled={
+										setUserRoles === false ||
+										( setUserRoles === undefined &&
+											initialSettings?.wp_rainbow_field_set_user_roles !==
+												'on' )
+									}
 									defaultValue={
 										initialSettings?.wp_rainbow_field_default_user_role
 									}
@@ -373,7 +433,12 @@ function WPRainbowSettings() {
 										initialSettings?.wp_rainbow_field_disable_user_role_updates_on_login ===
 										'on'
 									}
-									disabled={ ! setUserRoles }
+									disabled={
+										setUserRoles === false ||
+										( setUserRoles === undefined &&
+											initialSettings?.wp_rainbow_field_set_user_roles !==
+												'on' )
+									}
 									type="checkbox"
 								/>
 								<p>
@@ -412,7 +477,7 @@ function WPRainbowSettings() {
 											{ __(
 												'If enabled, non-admin RainbowKit Login users will be passwordless.',
 												'wp-rainbow'
-											) }{ ' ' }
+											) }
 										</small>
 									</em>
 								</p>
@@ -442,16 +507,22 @@ function WPRainbowSettings() {
 											{ __(
 												'If set, users will be redirected here on login instead of the admin. (Block redirect configuration will take precedent if set.)',
 												'wp-rainbow'
-											) }{ ' ' }
+											) }
 										</small>
 									</em>
 								</p>
 							</td>
 						</tr>
 						<tr>
-							<th scope="row">
-								<h2>ENS Text Records to User Meta Mapping</h2>
+							<th scope="row" style={ { padding: '0' } }>
+								<h2>
+									{ __(
+										'ENS Text Records to User Meta Mapping',
+										'wp-rainbow'
+									) }
+								</h2>
 							</th>
+							<td />
 						</tr>
 						<tr>
 							<th scope="row">
@@ -480,16 +551,22 @@ function WPRainbowSettings() {
 											{ __(
 												'If enabled, ENS text records will only be synced to user meta if there is not already a value set. Existing values will not be overwritten.',
 												'wp-rainbow'
-											) }{ ' ' }
+											) }
 										</small>
 									</em>
 								</p>
 							</td>
 						</tr>
 						<tr>
-							<th scope="row">
-								<h3>Text Record Key to User Meta Key</h3>
+							<th scope="row" style={ { padding: '0' } }>
+								<h3>
+									{ __(
+										'Text Record Key to User Meta Key',
+										'wp-rainbow'
+									) }
+								</h3>
 							</th>
+							<td />
 						</tr>
 						<tr>
 							<td>
@@ -513,7 +590,12 @@ function WPRainbowSettings() {
 						</tr>
 						{ fields.map( ( { key, value, id }, index ) => (
 							<tr key={ id }>
-								<th scope="row">
+								<th
+									scope="row"
+									style={ {
+										fontWeight: 'normal',
+									} }
+								>
 									<input
 										{ ...register(
 											`userAttributesMapping.${ index }.key`
@@ -572,10 +654,11 @@ function WPRainbowSettings() {
 							</td>
 						</tr>
 						<tr>
-							<th scope="row">
-								<h2>Token-Gating</h2>
-								<h3>ERC-721</h3>
+							<th scope="row" style={ { padding: '0' } }>
+								<h2>{ __( 'Token-Gating', 'wp-rainbow' ) }</h2>
+								<h3>{ __( 'ERC-721', 'wp-rainbow' ) }</h3>
 							</th>
+							<td />
 						</tr>
 						<tr>
 							<th scope="row">
@@ -604,7 +687,7 @@ function WPRainbowSettings() {
 											{ __(
 												'If set, users will be required to own an NFT from this contract',
 												'wp-rainbow'
-											) }{ ' ' }
+											) }
 										</small>
 									</em>
 								</p>
@@ -637,7 +720,7 @@ function WPRainbowSettings() {
 											{ __(
 												'Optionally set the number of tokens required to be held by user',
 												'wp-rainbow'
-											) }{ ' ' }
+											) }
 										</small>
 									</em>
 								</p>
@@ -648,9 +731,12 @@ function WPRainbowSettings() {
 						) && (
 							<>
 								<tr>
-									<th scope="row">
-										<h3>ERC-1155</h3>
+									<th scope="row" style={ { padding: '0' } }>
+										<h3>
+											{ __( 'ERC-1155', 'wp-rainbow' ) }
+										</h3>
 									</th>
+									<td />
 								</tr>
 								{ /* <table className="form-table" role="presentation"> */ }
 								{ /*	<tbody> */ }
@@ -698,47 +784,12 @@ function WPRainbowSettings() {
 													If set, users will be
 													redirected to this URL if
 													they don't hold one of the
-													tokens specified below.{ ' ' }
+													tokens specified below.
 												</small>
 											</em>
 										</p>
 									</td>
 								</tr>
-								{ /* <tr> */ }
-								{ /*	<th scope="row"> */ }
-								{ /*		<label htmlFor="wp_rainbow_role_to_id_mapping_field"> */ }
-								{ /*			Role to ID Mapping */ }
-								{ /*		</label> */ }
-								{ /*	</th> */ }
-								{ /*	<td> */ }
-								{ /*		<textarea */ }
-								{ /*			id="wp_rainbow_role_to_id_mapping_field" */ }
-								{ /*			rows="5" */ }
-								{ /*			type="textarea" */ }
-								{ /*			{ ...register( */ }
-								{ /*				'wp_rainbow_role_to_id_mapping_field' */ }
-								{ /*			) } */ }
-								{ /*			defaultValue={ */ }
-								{ /*				initialSettings?.wp_rainbow_role_to_id_mapping_field */ }
-								{ /*			} */ }
-								{ /*			cols={ 40 } */ }
-								{ /*		/> */ }
-								{ /*		<p> */ }
-								{ /*			<em> */ }
-								{ /*				<small> */ }
-								{ /*					Enter a mapping of WordPress */ }
-								{ /*					roles to ERC-1155 IDs on */ }
-								{ /*					each new line. Order IDs */ }
-								{ /*					from least permissions to */ }
-								{ /*					most permissions, last */ }
-								{ /*					matching role will be */ }
-								{ /*					applied. Example: */ }
-								{ /*					administrator, 1{ ' ' } */ }
-								{ /*				</small> */ }
-								{ /*			</em> */ }
-								{ /*		</p> */ }
-								{ /*	</td> */ }
-								{ /* </tr> */ }
 								<tr>
 									<th scope="row">
 										WordPress User Roles to ERC-1155 IDs
@@ -748,7 +799,12 @@ function WPRainbowSettings() {
 								{ erc1155Fields.map(
 									( { key, value, id }, index ) => (
 										<tr key={ id }>
-											<th scope="row">
+											<th
+												scope="row"
+												style={ {
+													fontWeight: 'normal',
+												} }
+											>
 												<input
 													{ ...register(
 														`roleToIDMapping.${ index }.key`
@@ -810,13 +866,14 @@ function WPRainbowSettings() {
 								</tr>
 							</>
 						) }
-						<h2>{ __( 'Advanced Settings', 'wp-rainbow' ) }</h2>
-						<p id="wp_rainbow_registration_options">
-							{ __(
-								"Only use the following settings if you know what you're doing and/or you're very cool.",
-								'wp-rainbow'
-							) }
-						</p>
+						<tr>
+							<th scope="row" style={ { padding: '0' } }>
+								<h2>
+									{ __( 'Advanced Settings', 'wp-rainbow' ) }
+								</h2>
+							</th>
+							<td />
+						</tr>
 						<tr>
 							<th scope="row">
 								<label htmlFor="wp_rainbow_field_force_logout">
@@ -844,7 +901,7 @@ function WPRainbowSettings() {
 											{ __(
 												'If checked, existing sessions will be logged out on save.',
 												'wp-rainbow'
-											) }{ ' ' }
+											) }
 										</small>
 									</em>
 								</p>
@@ -874,7 +931,7 @@ function WPRainbowSettings() {
 											{ __(
 												'If enabled, RainbowKit will use "Cool Mode" effects.',
 												'wp-rainbow'
-											) }{ ' ' }
+											) }
 										</small>
 									</em>
 								</p>

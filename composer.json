@@ -28,7 +28,7 @@
 		}
 	},
 	"require": {
-		"simplito/elliptic-php": "^1.0.9",
+		"simplito/elliptic-php": "^1.0.10",
 		"kornrunner/keccak": "^1.1.0",
 		"web3p/web3.php": "^0.1.6"
 	}
