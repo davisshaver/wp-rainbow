@@ -4,7 +4,7 @@ Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
 Tested up to: 6.1
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.2.20
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,10 @@ Find reference implementations of all filters in [example plugin here](https://g
 
 **`wp_rainbow_redirect_url`** - Filter login redirect URL.
 
+**`wp_rainbow_should_update_roles`** - Filter whether roles should be set.
+
+**`wp_rainbow_should_disable_user_role_updates_on_login`** - Filter whether roles should be updated on login.
+
 = What actions are included? =
 
 **`wp_rainbow_validation_failed`** - Fires when validation fails.
@@ -48,6 +52,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
 == Changelog ==
+
+= 0.3.0 =
+* Major refactor with new React-powered admin and additional token-gating functionality
 
 = 0.2.20 =
 * Bug fix to only set user role if featured is enabled via filter
