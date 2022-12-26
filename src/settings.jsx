@@ -1,18 +1,11 @@
-import { render, Component, useEffect, useState } from '@wordpress/element';
+import { render, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { Spinner } from '@wordpress/components';
 import { useForm, useFieldArray } from 'react-hook-form';
 
 function WPRainbowSettings() {
-	const {
-		control,
-		register,
-		handleSubmit,
-		watch,
-		setValue,
-		formState: { errors },
-	} = useForm();
+	const { control, register, handleSubmit, watch, setValue } = useForm();
 	const { fields, append, remove } = useFieldArray( {
 		control,
 		name: 'userAttributesMapping',
@@ -41,13 +34,16 @@ function WPRainbowSettings() {
 	const onSubmit = ( settings ) => {
 		const data = Object.keys( settings ).reduce(
 			( allSettings, setting ) => {
+				const newAllSettings = allSettings;
 				if ( checkboxes.includes( setting ) ) {
-					allSettings[ setting ] = settings[ setting ] ? 'on' : 'off';
+					newAllSettings[ setting ] = settings[ setting ]
+						? 'on'
+						: 'off';
 				} else if (
 					setting === 'userAttributesMapping' ||
 					setting === 'roleToIDMapping'
 				) {
-					allSettings[ setting ] = settings[ setting ].reduce(
+					newAllSettings[ setting ] = settings[ setting ].reduce(
 						( mapping, { key, value } ) => {
 							if ( key && value ) {
 								return `${ mapping }${ key },${ value }\n`;
@@ -57,9 +53,9 @@ function WPRainbowSettings() {
 						''
 					);
 				} else {
-					allSettings[ setting ] = settings[ setting ];
+					newAllSettings[ setting ] = settings[ setting ];
 				}
-				return allSettings;
+				return newAllSettings;
 			},
 			{}
 		);
@@ -191,6 +187,7 @@ function WPRainbowSettings() {
 									id="wp_rainbow_field_infura_id"
 									size="40"
 									type="text"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_infura_id'
 									) }
@@ -208,6 +205,7 @@ function WPRainbowSettings() {
 							</th>
 							<td>
 								<select
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_infura_network'
 									) }
@@ -252,6 +250,7 @@ function WPRainbowSettings() {
 							</th>
 							<td>
 								<select
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_rainbowkit_theme'
 									) }
@@ -262,13 +261,13 @@ function WPRainbowSettings() {
 									id="wp_rainbow_field_rainbowkit_theme"
 								>
 									<option value="lightTheme">
-										Light Theme
+										{ __( 'Light Theme', 'wp-rainbow' ) }
 									</option>
 									<option value="darkTheme">
-										Dark Theme
+										{ __( 'Dark Theme', 'wp-rainbow' ) }
 									</option>
 									<option value="midnightTheme">
-										Midnight Theme
+										{ __( 'Midnight Theme', 'wp-rainbow' ) }
 									</option>
 								</select>
 							</td>
@@ -283,6 +282,7 @@ function WPRainbowSettings() {
 								<input
 									id="wp_rainbow_field_compact_modal"
 									type="checkbox"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_compact_modal'
 									) }
@@ -316,6 +316,7 @@ function WPRainbowSettings() {
 							<td>
 								<input
 									id="wp_rainbow_field_override_users_can_register"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_override_users_can_register'
 									) }
@@ -349,6 +350,7 @@ function WPRainbowSettings() {
 							<td>
 								<input
 									id="wp_rainbow_field_set_user_roles"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_set_user_roles'
 									) }
@@ -389,6 +391,7 @@ function WPRainbowSettings() {
 									id="wp_rainbow_field_default_user_role"
 									size="40"
 									type="text"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_default_user_role'
 									) }
@@ -426,6 +429,7 @@ function WPRainbowSettings() {
 							<td>
 								<input
 									id="wp_rainbow_field_disable_user_role_updates_on_login"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_disable_user_role_updates_on_login'
 									) }
@@ -463,6 +467,7 @@ function WPRainbowSettings() {
 								<input
 									id="wp_rainbow_field_disable_passwords_for_wp_users"
 									type="checkbox"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_disable_passwords_for_wp_users'
 									) }
@@ -494,6 +499,7 @@ function WPRainbowSettings() {
 									id="wp_rainbow_field_redirect_url"
 									size="40"
 									type="url"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_redirect_url'
 									) }
@@ -537,6 +543,7 @@ function WPRainbowSettings() {
 								<input
 									id="wp_rainbow_field_disable_overwriting_user_meta"
 									type="checkbox"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_disable_overwriting_user_meta'
 									) }
@@ -597,6 +604,7 @@ function WPRainbowSettings() {
 									} }
 								>
 									<input
+										// eslint-disable-next-line  react/jsx-props-no-spreading
 										{ ...register(
 											`userAttributesMapping.${ index }.key`
 										) }
@@ -608,6 +616,7 @@ function WPRainbowSettings() {
 								</th>
 								<td>
 									<input
+										// eslint-disable-next-line  react/jsx-props-no-spreading
 										{ ...register(
 											`userAttributesMapping.${ index }.value`,
 											{
@@ -633,7 +642,7 @@ function WPRainbowSettings() {
 							</tr>
 						) ) }
 						<tr>
-							<th scope="row" />
+							<td />
 							<td>
 								<button
 									type="button"
@@ -649,7 +658,10 @@ function WPRainbowSettings() {
 										] )
 									}
 								>
-									Add New User Attribute
+									{ __(
+										'Add New User Attribute',
+										'wp-rainbow'
+									) }
 								</button>
 							</td>
 						</tr>
@@ -674,6 +686,7 @@ function WPRainbowSettings() {
 									id="wp_rainbow_field_required_token"
 									size="40"
 									type="text"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_required_token'
 									) }
@@ -707,6 +720,7 @@ function WPRainbowSettings() {
 									id="wp_rainbow_field_required_token_quantity"
 									size="40"
 									type="number"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_required_token_quantity'
 									) }
@@ -743,13 +757,17 @@ function WPRainbowSettings() {
 								<tr>
 									<th scope="row">
 										<label htmlFor="wp_rainbow_customizations_erc_1155_contract_field">
-											ERC-1155 Contract
+											{ __(
+												'ERC-1155 Contract',
+												'wp-rainbow'
+											) }
 										</label>
 									</th>
 									<td>
 										<input
 											id="wp_rainbow_customizations_erc_1155_contract_field"
 											type="text"
+											// eslint-disable-next-line  react/jsx-props-no-spreading
 											{ ...register(
 												'wp_rainbow_customizations_erc_1155_contract_field'
 											) }
@@ -763,13 +781,17 @@ function WPRainbowSettings() {
 								<tr>
 									<th scope="row">
 										<label htmlFor="wp_rainbow_redirect_url_field">
-											Redirect URL
+											{ __(
+												'Redirect URL',
+												'wp-rainbow'
+											) }
 										</label>
 									</th>
 									<td>
 										<input
 											id="wp_rainbow_redirect_url_field"
 											type="url"
+											// eslint-disable-next-line  react/jsx-props-no-spreading
 											{ ...register(
 												'wp_rainbow_redirect_url_field'
 											) }
@@ -781,10 +803,10 @@ function WPRainbowSettings() {
 										<p>
 											<em>
 												<small>
-													If set, users will be
-													redirected to this URL if
-													they don't hold one of the
-													tokens specified below.
+													{ __(
+														"If set, users will be redirected to this URL if they don't hold one of the tokens specified below.",
+														'wp-rainbow'
+													) }
 												</small>
 											</em>
 										</p>
@@ -792,8 +814,10 @@ function WPRainbowSettings() {
 								</tr>
 								<tr>
 									<th scope="row">
-										WordPress User Roles to ERC-1155 IDs
-										Mapping
+										{ __(
+											'WordPress User Roles to ERC-1155 IDs Mapping',
+											'wp-rainbow'
+										) }
 									</th>
 								</tr>
 								{ erc1155Fields.map(
@@ -806,6 +830,7 @@ function WPRainbowSettings() {
 												} }
 											>
 												<input
+													// eslint-disable-next-line  react/jsx-props-no-spreading
 													{ ...register(
 														`roleToIDMapping.${ index }.key`
 													) }
@@ -817,6 +842,7 @@ function WPRainbowSettings() {
 											</th>
 											<td>
 												<input
+													// eslint-disable-next-line  react/jsx-props-no-spreading
 													{ ...register(
 														`roleToIDMapping.${ index }.value`
 													) }
@@ -844,9 +870,13 @@ function WPRainbowSettings() {
 									)
 								) }
 								<tr>
-									<th scope="row" />
+									<td />
 									<td>
 										<button
+											aria-label={ __(
+												'Add New Role to ID Mapping',
+												'wp-rainbow'
+											) }
 											type="button"
 											name="do_new_role_to_id_mapping"
 											id="do_new_role_to_id_mapping"
@@ -860,7 +890,10 @@ function WPRainbowSettings() {
 												] )
 											}
 										>
-											Add New Role to ID Mapping
+											{ __(
+												'Add New Role to ID Mapping',
+												'wp-rainbow'
+											) }
 										</button>
 									</td>
 								</tr>
@@ -887,6 +920,7 @@ function WPRainbowSettings() {
 								<input
 									id="wp_rainbow_field_force_logout"
 									type="checkbox"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_force_logout'
 									) }
@@ -917,6 +951,7 @@ function WPRainbowSettings() {
 								<input
 									id="wp_rainbow_field_cool_mode"
 									type="checkbox"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
 										'wp_rainbow_field_cool_mode'
 									) }
