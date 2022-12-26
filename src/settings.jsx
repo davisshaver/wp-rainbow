@@ -107,9 +107,9 @@ function WPRainbowSettings() {
 			headers: {
 				'X-WP-Nonce': window?.wpRainbowSettings?.nonce,
 			},
-		} ).then( ( settings ) => {
+		} ).then( ( allSettings ) => {
 			const userAttributesMapping =
-				settings?.wp_rainbow_field_user_attributes_mapping
+				allSettings?.wp_rainbow_field_user_attributes_mapping
 					.split( '\n' )
 					.map( ( line ) => {
 						const [ key, value ] = line
@@ -118,7 +118,7 @@ function WPRainbowSettings() {
 						return { key, value };
 					} );
 			const roleToIDMapping =
-				settings?.wp_rainbow_role_to_id_mapping_field
+				allSettings?.wp_rainbow_role_to_id_mapping_field
 					.split( '\n' )
 					.map( ( line ) => {
 						const [ key, value ] = line
@@ -128,6 +128,20 @@ function WPRainbowSettings() {
 					} );
 			setValue( 'roleToIDMapping', roleToIDMapping );
 			setValue( 'userAttributesMapping', userAttributesMapping );
+			const settings = Object.keys( allSettings ).reduce(
+				( allSettingsAgg, setting ) => {
+					const newAllSettings = allSettingsAgg;
+					if ( checkboxes.includes( setting ) ) {
+						newAllSettings[ setting ] =
+							allSettings[ setting ] === 'on';
+					} else {
+						newAllSettings[ setting ] = allSettings[ setting ];
+					}
+					return newAllSettings;
+				},
+				{}
+			);
+			console.log( settings );
 			setState( {
 				...state,
 				loaded: true,
@@ -287,8 +301,7 @@ function WPRainbowSettings() {
 										'wp_rainbow_field_compact_modal'
 									) }
 									defaultChecked={
-										initialSettings?.wp_rainbow_field_compact_modal ===
-										'on'
+										initialSettings?.wp_rainbow_field_compact_modal
 									}
 								/>
 							</td>
@@ -321,8 +334,7 @@ function WPRainbowSettings() {
 										'wp_rainbow_field_override_users_can_register'
 									) }
 									defaultChecked={
-										initialSettings?.wp_rainbow_field_override_users_can_register ===
-										'on'
+										initialSettings?.wp_rainbow_field_override_users_can_register
 									}
 									type="checkbox"
 								/>
@@ -355,8 +367,7 @@ function WPRainbowSettings() {
 										'wp_rainbow_field_set_user_roles'
 									) }
 									defaultChecked={
-										initialSettings?.wp_rainbow_field_set_user_roles ===
-										'on'
+										initialSettings?.wp_rainbow_field_set_user_roles
 									}
 									type="checkbox"
 								/>
@@ -398,8 +409,7 @@ function WPRainbowSettings() {
 									disabled={
 										setUserRoles === false ||
 										( setUserRoles === undefined &&
-											initialSettings?.wp_rainbow_field_set_user_roles !==
-												'on' )
+											! initialSettings?.wp_rainbow_field_set_user_roles )
 									}
 									defaultValue={
 										initialSettings?.wp_rainbow_field_default_user_role
@@ -434,14 +444,12 @@ function WPRainbowSettings() {
 										'wp_rainbow_field_disable_user_role_updates_on_login'
 									) }
 									defaultChecked={
-										initialSettings?.wp_rainbow_field_disable_user_role_updates_on_login ===
-										'on'
+										initialSettings?.wp_rainbow_field_disable_user_role_updates_on_login
 									}
 									disabled={
 										setUserRoles === false ||
 										( setUserRoles === undefined &&
-											initialSettings?.wp_rainbow_field_set_user_roles !==
-												'on' )
+											! initialSettings?.wp_rainbow_field_set_user_roles )
 									}
 									type="checkbox"
 								/>
@@ -472,8 +480,7 @@ function WPRainbowSettings() {
 										'wp_rainbow_field_disable_passwords_for_wp_users'
 									) }
 									defaultChecked={
-										initialSettings?.wp_rainbow_field_disable_passwords_for_wp_users ===
-										'on'
+										initialSettings?.wp_rainbow_field_disable_passwords_for_wp_users
 									}
 								/>
 								<p>
@@ -547,9 +554,8 @@ function WPRainbowSettings() {
 									{ ...register(
 										'wp_rainbow_field_disable_overwriting_user_meta'
 									) }
-									defaultValue={
-										initialSettings?.wp_rainbow_field_disable_overwriting_user_meta ===
-										'on'
+									defaultChecked={
+										initialSettings?.wp_rainbow_field_disable_overwriting_user_meta
 									}
 								/>
 								<p>
@@ -925,8 +931,7 @@ function WPRainbowSettings() {
 										'wp_rainbow_field_force_logout'
 									) }
 									defaultValue={
-										initialSettings?.wp_rainbow_field_force_logout ===
-										'on'
+										initialSettings?.wp_rainbow_field_force_logout
 									}
 								/>
 								<p>
@@ -956,8 +961,7 @@ function WPRainbowSettings() {
 										'wp_rainbow_field_cool_mode'
 									) }
 									defaultChecked={
-										initialSettings?.wp_rainbow_field_cool_mode ===
-										'on'
+										initialSettings?.wp_rainbow_field_cool_mode
 									}
 								/>
 								<p>

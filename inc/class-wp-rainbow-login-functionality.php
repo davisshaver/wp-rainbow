@@ -80,9 +80,9 @@ class WP_Rainbow_Login_Functionality {
 	/**
 	 * Provide filter for whether roles should be set by the plugin.
 
-	 * @return bool Filtered status of whether roles are being set.
+	 * @return string Filtered status of whether roles are being set.
 	 */
-	public function get_should_set_role_filtered(): bool {
+	public function get_should_set_role_filtered(): string {
 		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_set_user_roles' => 'off' ] );
 
 		/**
@@ -94,9 +94,9 @@ class WP_Rainbow_Login_Functionality {
 	/**
 	 * Provide filter for whether roles should be prevented from being set on login.
 
-	 * @return bool Filtered status of whether roles are prevented from being set on login.
+	 * @return string Filtered status of whether roles are prevented from being set on login.
 	 */
-	public function get_should_disable_user_role_updates_on_login(): bool {
+	public function get_should_disable_user_role_updates_on_login(): string {
 		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_disable_user_role_updates_on_login' => 'off' ] );
 
 		/**
@@ -283,10 +283,10 @@ class WP_Rainbow_Login_Functionality {
 			$wp_rainbow_options = get_option(
 				'wp_rainbow_options',
 				[
-					'wp_rainbow_field_override_users_can_register'   => false,
+					'wp_rainbow_field_override_users_can_register'   => 'off',
 					'wp_rainbow_field_required_token'                => '',
 					'wp_rainbow_field_required_token_quantity'       => '1',
-					'wp_rainbow_field_disable_overwriting_user_meta' => false,
+					'wp_rainbow_field_disable_overwriting_user_meta' => 'off',
 				]
 			);
 
@@ -333,7 +333,7 @@ class WP_Rainbow_Login_Functionality {
 					'display_name' => $sanitized_display_name,
 				];
 
-				if ( ! empty( $should_set_role ) ) {
+				if ( 'on' === $should_set_role ) {
 					$user_obj['role'] = $role;
 				}
 
@@ -359,7 +359,7 @@ class WP_Rainbow_Login_Functionality {
 				);
 
 				$should_disable_user_role_updates_on_login = $this->get_should_disable_user_role_updates_on_login();
-				if ( ! empty( $should_set_role ) && empty( $should_disable_user_role_updates_on_login ) ) {
+				if ( 'on' === $should_set_role && 'on' !== $should_disable_user_role_updates_on_login ) {
 					$user->set_role( $role );
 				}
 
@@ -377,7 +377,7 @@ class WP_Rainbow_Login_Functionality {
 								],
 								true
 							) ) {
-								if ( ! empty( $wp_rainbow_options['wp_rainbow_field_disable_overwriting_user_meta'] ) ) {
+								if ( 'on' === $wp_rainbow_options['wp_rainbow_field_disable_overwriting_user_meta'] ) {
 									if ( ! empty( $user_info->{$mapping[1]} ) ) {
 										continue;
 									}
@@ -390,8 +390,8 @@ class WP_Rainbow_Login_Functionality {
 									]
 								);
 							} else {
-								if ( ! empty( $wp_rainbow_options['wp_rainbow_field_disable_overwriting_user_meta'] ) ) {
-									if ( ! empty( $user_meta[ $mapping[1] ] ) ) {
+								if ( 'on' === $wp_rainbow_options['wp_rainbow_field_disable_overwriting_user_meta'] ) {
+									if ( ! empty( $user_meta[ $mapping[1] ][0] ) ) {
 										continue;
 									}
 								}

@@ -119,33 +119,33 @@ class WP_Rainbow {
 	/**
 	 * Provide filter for compact modal setting. Defaults to settings page value.
 	 *
-	 * @return boolean|void Filtered compact modal status.
+	 * @return string|void Filtered compact modal status.
 	 */
 	public function get_compact_modal_filtered() {
-		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_compact_modal' => false ] );
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_compact_modal' => 'off' ] );
 
 		/**
 		 * Filter the compact modal status used for WP Rainbow integration.
 		 *
-		 * @param boolean $default Compact modal status as set in WP Rainbow options.
+		 * @param string $default Compact modal status as set in WP Rainbow options.
 		 */
-		return apply_filters( 'wp_rainbow_compact_modal', $options['wp_rainbow_field_compact_modal'] ?? false );
+		return apply_filters( 'wp_rainbow_compact_modal', $options['wp_rainbow_field_compact_modal'] ?? 'off' );
 	}
 
 	/**
 	 * Provide filter for cool mode. Defaults to settings page value.
 	 *
-	 * @return boolean|void Filtered cool mode status.
+	 * @return string|void Filtered cool mode status.
 	 */
 	public function get_cool_mode_filtered() {
-		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_cool_mode' => false ] );
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_cool_mode' => 'off' ] );
 
 		/**
 		 * Filter the cool mode status used for WP Rainbow integration.
 		 *
-		 * @param boolean $default Cool mode status as set in WP Rainbow options.
+		 * @param string $default Cool mode status as set in WP Rainbow options.
 		 */
-		return apply_filters( 'wp_rainbow_cool_mode', $options['wp_rainbow_field_cool_mode'] ?? false );
+		return apply_filters( 'wp_rainbow_cool_mode', $options['wp_rainbow_field_cool_mode'] ?? 'off' );
 	}
 
 	// BLOCK SCRIPTS.
