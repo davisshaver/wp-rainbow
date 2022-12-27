@@ -15,7 +15,11 @@ Sign-In With Ethereum for WordPress, powered by RainbowKit.
 Providing a [Sign-In With Ethereum](https://login.xyz/) experience for [WordPress](https://wordpress.org/) using [RainbowKit](https://www.npmjs.com/package/@rainbow-me/rainbowkit).
 
 - Allow users to log in with Ethereum
+- Style the login form to match your site
+- Enable cool mode for a fun experience 😎
 - Set required token balance for login
+- Sync ENS text records to WordPress user profile
+- Assign roles to users based on ERC-1155 token ownership
 
 _Want to try it out? [Head here.](https://wp-rainbow.davisshaver.com/wp-login.php)_
 
@@ -101,4 +105,10 @@ Find reference implementations of all filters in [example plugin here](https://g
 == Screenshots =
 
 1. RainbowKit Login allows users to log in using their Ethereum wallet
-2. RainbowKit Login includes a login block that can be customized
+2. RainbowKit Login can be styled to match your site
+3. RainbowKit Login uses the Sign-In With Ethereum protocol
+4. RainbowKit Login uses the user's address as their username, and an ENS address if available as their display name
+5. RainbowKit Login includes a login block that can be customized
+6. RainbowKit Login can be with a variety of settings
+7. RainbowKit Login can sync ENS text records to WordPress user profile fields
+8. RainbowKit Login can be used to apply specific roles to users based on ERC-1155 token ownership
