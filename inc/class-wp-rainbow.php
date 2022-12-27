@@ -44,8 +44,15 @@ class WP_Rainbow {
 			function() {
 				if ( is_plugin_active( 'wp-rainbow-customizations/wp-rainbow-customizations.php' ) ) {
 					// Also update option to apply roles on login.
-					$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_set_user_roles' => 'off' ] );
-					$options['wp_rainbow_field_set_user_roles'] = 'on';
+					$options                                       = get_option(
+						'wp_rainbow_options',
+						[
+							'wp_rainbow_field_set_user_roles' => 'off',
+							'wp_rainbow_field_default_user_role' => '',
+						] 
+					);
+					$options['wp_rainbow_field_set_user_roles']    = 'on';
+					$options['wp_rainbow_field_default_user_role'] = 'visitor';
 					update_option( 'wp_rainbow_options', $options );
 					deactivate_plugins( 'wp-rainbow-customizations/wp-rainbow-customizations.php' );
 				}
