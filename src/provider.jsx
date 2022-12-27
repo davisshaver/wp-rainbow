@@ -1,17 +1,37 @@
-import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { chain, createClient, configureChains, WagmiConfig } from 'wagmi';
+import {
+	getDefaultWallets,
+	RainbowKitProvider,
+	lightTheme,
+	darkTheme,
+	midnightTheme,
+} from '@rainbow-me/rainbowkit';
+import { createClient, configureChains, WagmiConfig } from 'wagmi';
+import * as allChains from 'wagmi/chains';
 import { infuraProvider } from 'wagmi/providers/infura';
 import stylePropType from 'react-style-proptype';
 
 import PropTypes from 'prop-types';
 import { WPRainbowConnect } from './connect';
 
-const { INFURA_ID, LOGGED_IN, SITE_TITLE, COOL_MODE, NETWORK } = wpRainbowData;
+const {
+	COMPACT_MODAL,
+	COOL_MODE,
+	INFURA_ID,
+	LOGGED_IN,
+	NETWORK,
+	SITE_TITLE,
+	THEME,
+} = wpRainbowData;
 
+const themes = {
+	lightTheme,
+	darkTheme,
+	midnightTheme,
+};
 const { chains, provider } = configureChains(
 	[
-		...( NETWORK && chain[ NETWORK ] ? [ chain[ NETWORK ] ] : [] ),
-		chain.mainnet,
+		...( NETWORK && allChains[ NETWORK ] ? [ allChains[ NETWORK ] ] : [] ),
+		allChains.mainnet,
 	],
 	[ infuraProvider( { infuraId: INFURA_ID } ) ]
 );
@@ -64,7 +84,12 @@ function WPRainbow( {
 } ) {
 	return (
 		<WagmiConfig client={ wagmiClient }>
-			<RainbowKitProvider chains={ chains } coolMode={ COOL_MODE }>
+			<RainbowKitProvider
+				chains={ chains }
+				coolMode={ COOL_MODE === 'on' }
+				modalSize={ COMPACT_MODAL === 'on' ? 'compact' : 'large' }
+				theme={ themes[ THEME ]() }
+			>
 				<WPRainbowConnect
 					buttonClassName={ buttonClassName }
 					checkWalletText={ checkWalletText }

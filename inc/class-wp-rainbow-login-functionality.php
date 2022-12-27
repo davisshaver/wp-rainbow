@@ -59,9 +59,25 @@ class WP_Rainbow_Login_Functionality {
 	 */
 	protected function setup() {
 		add_action( 'rest_api_init', [ self::$instance, 'action_rest_api_init' ] );
+		add_filter( 'wp_rainbow_should_update_roles', [ self::$instance, 'filter_backwards_compatible_boolean' ], 999999, 1 );
 	}
 
 	// FILTERS.
+
+	/**
+	 * Make sure checkboxes use on/off instead of true/false.
+	 *
+	 * @param mixed $value Current value.
+	 *
+	 * @return mixed Possibly filtered value
+	 */
+	public function filter_backwards_compatible_boolean( $value ) {
+		// Backwards compatible logic for when the filter was a boolean.
+		if ( is_bool( $value ) ) {
+			return $value ? 'on' : 'off';
+		}
+		return $value;
+	}
 
 	/**
 	 * Filter nonce lifespan with filtered valued. Defaults to 10 mins.
@@ -80,13 +96,29 @@ class WP_Rainbow_Login_Functionality {
 	/**
 	 * Provide filter for whether roles should be set by the plugin.
 
-	 * @return bool Filtered status of whether roles are being set.
+	 * @return string Filtered status of whether roles are being set.
 	 */
-	public function get_should_set_role_filtered(): bool {
+	public function get_should_set_role_filtered(): string {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_set_user_roles' => 'off' ] );
+
 		/**
 		 * Filter whether roles should be set.
 		 */
-		return apply_filters( 'wp_rainbow_should_update_roles', false );
+		return apply_filters( 'wp_rainbow_should_update_roles', $options['wp_rainbow_field_set_user_roles'] ?? 'off' );
+	}
+
+	/**
+	 * Provide filter for whether roles should be prevented from being set on login.
+
+	 * @return string Filtered status of whether roles are prevented from being set on login.
+	 */
+	public function get_should_disable_user_role_updates_on_login(): string {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_disable_user_role_updates_on_login' => 'off' ] );
+
+		/**
+		 * Filter whether roles should be prevented from being set on login.
+		 */
+		return apply_filters( 'wp_rainbow_should_disable_user_role_updates_on_login', $options['wp_rainbow_field_disable_user_role_updates_on_login'] ?? 'off' );
 	}
 
 	/**
@@ -100,6 +132,13 @@ class WP_Rainbow_Login_Functionality {
 	 * @return string Filtered role for a given address.
 	 */
 	public function get_role_for_address_filtered( string $address, string $filtered_infura_id, string $filtered_infura_network, $user ): string {
+		$default_role = get_option( 'default_role' );
+
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_default_user_role' => '' ] );
+		if ( ! empty( $options['wp_rainbow_field_default_user_role'] ) ) {
+			$default_role = $options['wp_rainbow_field_default_user_role'];
+		}
+
 		/**
 		 * Filter the default role for WP Rainbow users.
 		 *
@@ -109,7 +148,7 @@ class WP_Rainbow_Login_Functionality {
 		 * @param string $filtered_infura_network Filtered Infura network.
 		 * @param WP_User|false $user User object, if available.
 		 */
-		return apply_filters( 'wp_rainbow_role_for_address', 'subscriber', $address, $filtered_infura_id, $filtered_infura_network, $user );
+		return apply_filters( 'wp_rainbow_role_for_address', $default_role, $address, $filtered_infura_id, $filtered_infura_network, $user );
 	}
 
 	// API ROUTES.
@@ -195,6 +234,7 @@ class WP_Rainbow_Login_Functionality {
 		if ( ! empty( $overrides[ $filtered_network ] ) ) {
 			return $overrides[ $filtered_network ];
 		}
+
 		return $filtered_network;
 	}
 
@@ -259,9 +299,10 @@ class WP_Rainbow_Login_Functionality {
 			$wp_rainbow_options = get_option(
 				'wp_rainbow_options',
 				[
-					'wp_rainbow_field_override_users_can_register' => false,
+					'wp_rainbow_field_override_users_can_register' => 'off',
 					'wp_rainbow_field_required_token' => '',
 					'wp_rainbow_field_required_token_quantity' => '1',
+					'wp_rainbow_field_disable_overwriting_user_meta' => 'off',
 				]
 			);
 
@@ -308,7 +349,7 @@ class WP_Rainbow_Login_Functionality {
 					'display_name' => $sanitized_display_name,
 				];
 
-				if ( ! empty( $should_set_role ) ) {
+				if ( 'on' === $should_set_role ) {
 					$user_obj['role'] = $role;
 				}
 
@@ -333,10 +374,13 @@ class WP_Rainbow_Login_Functionality {
 					]
 				);
 
-				if ( ! empty( $should_set_role ) ) {
+				$should_disable_user_role_updates_on_login = $this->get_should_disable_user_role_updates_on_login();
+				if ( 'on' === $should_set_role && 'on' !== $should_disable_user_role_updates_on_login ) {
 					$user->set_role( $role );
 				}
 
+				$user_info               = get_userdata( $user->ID );
+				$user_meta               = get_user_meta( $user->ID );
 				$user_attributes_mapping = $wp_rainbow->get_parsed_user_attributes_mapping();
 				foreach ( $user_attributes_mapping as $mapping ) {
 					if ( is_array( $mapping ) && ! empty( $mapping[0] ) && ! empty( $mapping[1] ) ) {
@@ -349,6 +393,11 @@ class WP_Rainbow_Login_Functionality {
 								],
 								true
 							) ) {
+								if ( 'on' === $wp_rainbow_options['wp_rainbow_field_disable_overwriting_user_meta'] ) {
+									if ( ! empty( $user_info->{$mapping[1]} ) ) {
+										continue;
+									}
+								}
 								$key = $mapping[1];
 								wp_update_user(
 									[
@@ -357,6 +406,11 @@ class WP_Rainbow_Login_Functionality {
 									]
 								);
 							} else {
+								if ( 'on' === $wp_rainbow_options['wp_rainbow_field_disable_overwriting_user_meta'] ) {
+									if ( ! empty( $user_meta[ $mapping[1] ][0] ) ) {
+										continue;
+									}
+								}
 								update_user_meta( $user->ID, $mapping[1], $attributes[ $mapping[0] ] );
 							}
 						}

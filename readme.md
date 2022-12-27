@@ -61,3 +61,7 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_infura_network`** - Filter Infura network to override settings value.
 
 **`wp_rainbow_redirect_url`** - Filter login redirect URL.
+
+**`wp_rainbow_should_update_roles`** - Filter whether roles should be set.
+
+**`wp_rainbow_should_disable_user_role_updates_on_login`** - Filter whether roles should be updated on login.

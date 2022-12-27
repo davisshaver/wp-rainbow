@@ -39,6 +39,25 @@ class WP_Rainbow {
 	protected function setup() {
 		add_action( 'init', [ self::$instance, 'action_init' ] );
 		add_action( 'login_enqueue_scripts', [ self::$instance, 'action_login_enqueue_scripts' ] );
+		add_action(
+			'admin_init',
+			function() {
+				if ( is_plugin_active( 'wp-rainbow-customizations/wp-rainbow-customizations.php' ) ) {
+					// Also update option to apply roles on login.
+					$options                                       = get_option(
+						'wp_rainbow_options',
+						[
+							'wp_rainbow_field_set_user_roles' => 'off',
+							'wp_rainbow_field_default_user_role' => '',
+						] 
+					);
+					$options['wp_rainbow_field_set_user_roles']    = 'on';
+					$options['wp_rainbow_field_default_user_role'] = 'visitor';
+					update_option( 'wp_rainbow_options', $options );
+					deactivate_plugins( 'wp-rainbow-customizations/wp-rainbow-customizations.php' );
+				}
+			} 
+		);
 	}
 
 	// FILTERED VALUES.
@@ -91,19 +110,61 @@ class WP_Rainbow {
 	}
 
 	/**
+	 * Provide filter for RainbowKit theme. Defaults to settings page value.
+	 *
+	 * @return string|void Filtered RainbowKit theme.
+	 */
+	public function get_theme_filtered() {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_rainbowkit_theme' => 'lightTheme' ] );
+
+		$default_theme = ! empty( $options['wp_rainbow_field_rainbowkit_theme'] ) && in_array(
+			$options['wp_rainbow_field_rainbowkit_theme'],
+			[
+				'lightTheme',
+				'darkTheme',
+				'midnightTheme',
+			],
+			true 
+		) ? $options['wp_rainbow_field_rainbowkit_theme'] : 'lightTheme';
+
+		/**
+		 * Filter the theme used for WP Rainbow integration.
+		 *
+		 * @param string $default Theme as set in WP Rainbow options.
+		 */
+		return apply_filters( 'wp_rainbow_theme', $default_theme );
+	}
+
+	/**
+	 * Provide filter for compact modal setting. Defaults to settings page value.
+	 *
+	 * @return string|void Filtered compact modal status.
+	 */
+	public function get_compact_modal_filtered() {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_compact_modal' => 'off' ] );
+
+		/**
+		 * Filter the compact modal status used for WP Rainbow integration.
+		 *
+		 * @param string $default Compact modal status as set in WP Rainbow options.
+		 */
+		return apply_filters( 'wp_rainbow_compact_modal', $options['wp_rainbow_field_compact_modal'] ?? 'off' );
+	}
+
+	/**
 	 * Provide filter for cool mode. Defaults to settings page value.
 	 *
-	 * @return boolean|void Filtered cool mode status.
+	 * @return string|void Filtered cool mode status.
 	 */
 	public function get_cool_mode_filtered() {
-		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_cool_mode' => false ] );
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_cool_mode' => 'off' ] );
 
 		/**
 		 * Filter the cool mode status used for WP Rainbow integration.
 		 *
-		 * @param boolean $default Cool mode status as set in WP Rainbow options.
+		 * @param string $default Cool mode status as set in WP Rainbow options.
 		 */
-		return apply_filters( 'wp_rainbow_infura_id', $options['wp_rainbow_field_cool_mode'] ?? false );
+		return apply_filters( 'wp_rainbow_cool_mode', $options['wp_rainbow_field_cool_mode'] ?? 'off' );
 	}
 
 	// BLOCK SCRIPTS.
@@ -156,32 +217,36 @@ class WP_Rainbow {
 			'login-block',
 			'wpRainbowData',
 			[
-				'ADMIN_URL'    => get_admin_url(),
-				'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
-				'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
-				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
-				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
-				'SITE_TITLE'   => get_bloginfo( 'name' ),
-				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
-				'NETWORK'      => esc_textarea( $this->get_infura_network_filtered() ),
-				'ATTRIBUTES'   => $this->get_frontend_attributes(),
+				'ADMIN_URL'     => get_admin_url(),
+				'INFURA_ID'     => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'     => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'NONCE_API'     => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL'  => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'    => get_bloginfo( 'name' ),
+				'COOL_MODE'     => $this->get_cool_mode_filtered(),
+				'THEME'         => $this->get_theme_filtered(),
+				'COMPACT_MODAL' => $this->get_compact_modal_filtered(),
+				'NETWORK'       => esc_textarea( $this->get_infura_network_filtered() ),
+				'ATTRIBUTES'    => $this->get_frontend_attributes(),
 			]
 		);
 		wp_localize_script(
 			'login-block-frontend',
 			'wpRainbowData',
 			[
-				'ADMIN_URL'    => get_admin_url(),
-				'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
-				'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
-				'LOGGED_IN'    => is_user_logged_in(),
-				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
-				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
-				'SITE_TITLE'   => get_bloginfo( 'name' ),
-				'LOGOUT_URL'   => wp_logout_url(),
-				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
-				'NETWORK'      => esc_textarea( $this->get_infura_network_filtered() ),
-				'ATTRIBUTES'   => $this->get_frontend_attributes(),
+				'ADMIN_URL'     => get_admin_url(),
+				'INFURA_ID'     => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'     => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'LOGGED_IN'     => is_user_logged_in(),
+				'NONCE_API'     => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL'  => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'    => get_bloginfo( 'name' ),
+				'LOGOUT_URL'    => wp_logout_url(),
+				'COOL_MODE'     => $this->get_cool_mode_filtered(),
+				'THEME'         => $this->get_theme_filtered(),
+				'COMPACT_MODAL' => $this->get_compact_modal_filtered(),
+				'NETWORK'       => esc_textarea( $this->get_infura_network_filtered() ),
+				'ATTRIBUTES'    => $this->get_frontend_attributes(),
 			]
 		);
 	}
@@ -191,6 +256,7 @@ class WP_Rainbow {
 	 */
 	public function get_parsed_user_attributes_mapping() {
 		$csv = array_map( 'trim', explode( "\n", $this->get_user_attributes_mapping_filtered() ) );
+
 		return array_map(
 			function ( $row ) {
 				return array_map( 'trim', explode( ',', $row ) );
@@ -214,7 +280,7 @@ class WP_Rainbow {
 
 				return $agg;
 			},
-			[] 
+			[]
 		);
 	}
 
@@ -229,7 +295,7 @@ class WP_Rainbow {
 			[
 				'wp_rainbow_field_user_attributes_mapping' =>
 					'url,user_url',
-			] 
+			]
 		);
 
 		/**
@@ -267,15 +333,17 @@ class WP_Rainbow {
 			'wp-rainbow-login',
 			'wpRainbowData',
 			[
-				'ADMIN_URL'    => get_admin_url(),
-				'INFURA_ID'    => esc_textarea( $this->get_infura_id_filtered() ),
-				'LOGIN_API'    => get_rest_url( null, 'wp-rainbow/v1/login' ),
-				'NONCE_API'    => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
-				'REDIRECT_URL' => esc_url( $this->get_redirect_url_filtered() ),
-				'SITE_TITLE'   => get_bloginfo( 'name' ),
-				'COOL_MODE'    => (bool) $this->get_cool_mode_filtered(),
-				'NETWORK'      => esc_textarea( $this->get_infura_network_filtered() ),
-				'ATTRIBUTES'   => $this->get_frontend_attributes(),
+				'ADMIN_URL'     => get_admin_url(),
+				'INFURA_ID'     => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'     => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'NONCE_API'     => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL'  => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'    => get_bloginfo( 'name' ),
+				'COOL_MODE'     => $this->get_cool_mode_filtered(),
+				'NETWORK'       => esc_textarea( $this->get_infura_network_filtered() ),
+				'ATTRIBUTES'    => $this->get_frontend_attributes(),
+				'THEME'         => $this->get_theme_filtered(),
+				'COMPACT_MODAL' => $this->get_compact_modal_filtered(),
 			]
 		);
 	}
