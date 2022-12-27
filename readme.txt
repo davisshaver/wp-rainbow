@@ -4,7 +4,7 @@ Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
 Tested up to: 6.1
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
 == Changelog ==
+
+= 0.3.1 =
+* Bug fixes
 
 = 0.3.0 =
 * Major refactor with new React-powered admin and additional token-gating functionality
@@ -109,6 +112,6 @@ Find reference implementations of all filters in [example plugin here](https://g
 3. RainbowKit Login uses the Sign-In With Ethereum protocol
 4. RainbowKit Login uses the user's address as their username, and an ENS address if available as their display name
 5. RainbowKit Login includes a login block that can be customized
-6. RainbowKit Login can be with a variety of settings
+6. RainbowKit Login can be customized with a variety of settings
 7. RainbowKit Login can sync ENS text records to WordPress user profile fields
 8. RainbowKit Login can be used to apply specific roles to users based on ERC-1155 token ownership

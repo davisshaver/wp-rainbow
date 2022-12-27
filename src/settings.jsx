@@ -111,22 +111,26 @@ function WPRainbowSettings() {
 		} ).then( ( allSettings ) => {
 			const userAttributesMapping =
 				allSettings?.wp_rainbow_field_user_attributes_mapping
-					.split( '\n' )
-					.map( ( line ) => {
-						const [ key, value ] = line
-							.split( ',' )
-							.map( ( item ) => item.trim() );
-						return { key, value };
-					} );
+					? allSettings?.wp_rainbow_field_user_attributes_mapping
+							.split( '\n' )
+							.map( ( line ) => {
+								const [ key, value ] = line
+									.split( ',' )
+									.map( ( item ) => item.trim() );
+								return { key, value };
+							} )
+					: [];
 			const roleToIDMapping =
 				allSettings?.wp_rainbow_role_to_id_mapping_field
-					.split( '\n' )
-					.map( ( line ) => {
-						const [ key, value ] = line
-							.split( ',' )
-							.map( ( item ) => item.trim() );
-						return { key, value };
-					} );
+					? allSettings?.wp_rainbow_role_to_id_mapping_field
+							.split( '\n' )
+							.map( ( line ) => {
+								const [ key, value ] = line
+									.split( ',' )
+									.map( ( item ) => item.trim() );
+								return { key, value };
+							} )
+					: [];
 			setValue( 'roleToIDMapping', roleToIDMapping );
 			setValue( 'userAttributesMapping', userAttributesMapping );
 			const settings = Object.keys( allSettings ).reduce(
