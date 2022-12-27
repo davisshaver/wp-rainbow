@@ -116,17 +116,6 @@ class WP_Rainbow_Plugins_ERC_1155_Roles {
 			if ( $user ) {
 				$user->set_role( $default_role );
 			}
-			if ( ! empty( $wp_rainbow_options['wp_rainbow_redirect_url_field'] ) ) {
-				throw new Exception(
-					wp_json_encode(
-						[
-							'type'        => 'redirect',
-							'redirectURL' => esc_url( $wp_rainbow_options['wp_rainbow_redirect_url_field'] ),
-						]
-					)
-				);
-			}
-
 			return $default_role;
 		}
 
