@@ -39,6 +39,14 @@ class WP_Rainbow {
 	protected function setup() {
 		add_action( 'init', [ self::$instance, 'action_init' ] );
 		add_action( 'login_enqueue_scripts', [ self::$instance, 'action_login_enqueue_scripts' ] );
+		add_action(
+			'admin_init',
+			function() {
+				if ( is_plugin_active( 'wp-rainbow-customizations/wp-rainbow-customizations.php' ) ) {
+					deactivate_plugins( 'wp-rainbow-customizations/wp-rainbow-customizations.php' );
+				}
+			} 
+		);
 	}
 
 	// FILTERED VALUES.

@@ -7,12 +7,9 @@
 
 namespace WP_Rainbow;
 
-use Exception;
-use Web3\Contract;
 use WP_REST_Response;
 use WP_REST_Server;
 use WP_Session_Tokens;
-use WP_User;
 
 /**
  * WP Rainbow Settings

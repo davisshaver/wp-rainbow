@@ -59,9 +59,25 @@ class WP_Rainbow_Login_Functionality {
 	 */
 	protected function setup() {
 		add_action( 'rest_api_init', [ self::$instance, 'action_rest_api_init' ] );
+		add_filter( 'wp_rainbow_should_update_roles', [ self::$instance, 'filter_backwards_compatible_boolean' ], 999999, 1 );
 	}
 
 	// FILTERS.
+
+	/**
+	 * Make sure checkboxes use on/off instead of true/false.
+	 *
+	 * @param mixed $value Current value.
+	 *
+	 * @return mixed Possibly filtered value
+	 */
+	public function filter_backwards_compatible_boolean( $value ) {
+		// Backwards compatible logic for when the filter was a boolean.
+		if ( is_bool( $value ) ) {
+			return $value ? 'on' : 'off';
+		}
+		return $value;
+	}
 
 	/**
 	 * Filter nonce lifespan with filtered valued. Defaults to 10 mins.
@@ -283,9 +299,9 @@ class WP_Rainbow_Login_Functionality {
 			$wp_rainbow_options = get_option(
 				'wp_rainbow_options',
 				[
-					'wp_rainbow_field_override_users_can_register'   => 'off',
-					'wp_rainbow_field_required_token'                => '',
-					'wp_rainbow_field_required_token_quantity'       => '1',
+					'wp_rainbow_field_override_users_can_register' => 'off',
+					'wp_rainbow_field_required_token' => '',
+					'wp_rainbow_field_required_token_quantity' => '1',
 					'wp_rainbow_field_disable_overwriting_user_meta' => 'off',
 				]
 			);

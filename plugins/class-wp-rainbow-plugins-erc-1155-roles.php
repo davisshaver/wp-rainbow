@@ -57,6 +57,9 @@ class WP_Rainbow_Plugins_ERC_1155_Roles {
 	 * @throws Exception Throws if user does not hold valid tokens.
 	 */
 	public function filter_wp_rainbow_role_for_address( string $default_role, string $address, string $filtered_infura_id, string $filtered_infura_network, $user ): string {
+		if ( empty( $filtered_infura_id ) || empty( $filtered_infura_network ) ) {
+			return $default_role;
+		}
 		$erc1155_abi        = '[{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]';
 		$erc1155_role       = '';
 		$contract           = new Contract( 'https://' . $filtered_infura_network . '.infura.io/v3/' . $filtered_infura_id, $erc1155_abi );

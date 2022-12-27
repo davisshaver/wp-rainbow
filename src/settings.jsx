@@ -11,6 +11,7 @@ function WPRainbowSettings() {
 		name: 'userAttributesMapping',
 	} );
 	const setUserRoles = watch( 'wp_rainbow_field_set_user_roles' );
+	const infuraId = watch( 'wp_rainbow_field_infura_id' );
 	const {
 		fields: erc1155Fields,
 		append: erc1155FieldsAppend,
@@ -141,7 +142,6 @@ function WPRainbowSettings() {
 				},
 				{}
 			);
-			console.log( settings );
 			setState( {
 				...state,
 				loaded: true,
@@ -162,6 +162,23 @@ function WPRainbowSettings() {
 	return (
 		<div className="wrap">
 			<h1>{ __( 'RainbowKit Login Settings', 'wp-rainbow' ) }</h1>
+			{ ( infuraId === '' ||
+				( infuraId === undefined &&
+					! initialSettings?.wp_rainbow_field_infura_id ) ) && (
+				<div
+					id="setting-error-wp_rainbow_infura_id_message"
+					className="notice notice-error settings-error is-dismissible"
+				>
+					<p>
+						<strong>
+							{ __(
+								'Infura ID is not set. Token-gating and ',
+								'wp-rainbow'
+							) }
+						</strong>
+					</p>
+				</div>
+			) }
 			{ message && (
 				<div
 					id="setting-error-wp_rainbow_message"
@@ -782,40 +799,6 @@ function WPRainbowSettings() {
 											}
 											size={ 40 }
 										/>
-									</td>
-								</tr>
-								<tr>
-									<th scope="row">
-										<label htmlFor="wp_rainbow_redirect_url_field">
-											{ __(
-												'Redirect URL',
-												'wp-rainbow'
-											) }
-										</label>
-									</th>
-									<td>
-										<input
-											id="wp_rainbow_redirect_url_field"
-											type="url"
-											// eslint-disable-next-line  react/jsx-props-no-spreading
-											{ ...register(
-												'wp_rainbow_redirect_url_field'
-											) }
-											defaultValue={
-												initialSettings?.wp_rainbow_redirect_url_field
-											}
-											size={ 40 }
-										/>
-										<p>
-											<em>
-												<small>
-													{ __(
-														"If set, users will be redirected to this URL if they don't hold one of the tokens specified below.",
-														'wp-rainbow'
-													) }
-												</small>
-											</em>
-										</p>
 									</td>
 								</tr>
 								<tr>
