@@ -43,6 +43,10 @@ class WP_Rainbow {
 			'admin_init',
 			function() {
 				if ( is_plugin_active( 'wp-rainbow-customizations/wp-rainbow-customizations.php' ) ) {
+					// Also update option to apply roles on login.
+					$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_set_user_roles' => 'off' ] );
+					$options['wp_rainbow_field_set_user_roles'] = 'on';
+					update_option( 'wp_rainbow_options', $options );
 					deactivate_plugins( 'wp-rainbow-customizations/wp-rainbow-customizations.php' );
 				}
 			} 
