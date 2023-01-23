@@ -251,6 +251,7 @@ function WPRainbowSettings() {
 									id="wp_rainbow_field_infura_network"
 								>
 									<option value="mainnet">Mainnet</option>
+									<option value="optimism">Optimism</option>
 									<option value="ropsten">Ropsten</option>
 									<option value="kovan">Kovan</option>
 									<option value="rinkeby">Rinkeby</option>
