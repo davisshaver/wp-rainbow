@@ -176,7 +176,7 @@ function WPRainbowSettings() {
 					<p>
 						<strong>
 							{ __(
-								'Infura ID is not set. Token-gating and ',
+								'Infura ID is not set. Token-gating and ENS integrations will not work. Users will be assigned the default role.',
 								'wp-rainbow'
 							) }
 						</strong>
@@ -214,7 +214,7 @@ function WPRainbowSettings() {
 						<tr>
 							<th scope="row">
 								<label htmlFor="wp_rainbow_field_infura_id">
-									{ __( 'Infura ID', 'wp-rainbow' ) }
+									{ __( 'Infura ID/API key', 'wp-rainbow' ) }
 								</label>
 							</th>
 							<td>

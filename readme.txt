@@ -4,7 +4,7 @@ Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
 Tested up to: 6.1
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.3.2
+Stable tag: 0.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,12 +16,21 @@ Providing a [Sign-In With Ethereum](https://login.xyz/) experience for [WordPres
 
 - Allow users to log in with Ethereum
 - Style the login form to match your site
+- Insert a RainbowKit Login block anywhere you can insert a block
 - Enable cool mode for a fun experience 😎
 - Set required token balance for login
 - Sync ENS text records to WordPress user profile
 - Assign roles to users based on ERC-1155 token ownership
 
 _Want to try it out? [Head here.](https://wp-rainbow.davisshaver.com/wp-login.php)_
+
+== Installation ==
+
+1. Upload the plugin files to the `/wp-content/plugins/wp-rainbow` directory, or install the plugin through the WordPress plugins screen directly.
+2. Activate the plugin through the 'Plugins' screen in WordPress.
+3. Configure the plugin through the 'RainbowKit Login' screen in the WordPress admin.
+
+Using an Infura ID/API key is required to use most features in this plugin, including token-gating and role mapping. You can [sign up for a free account here](https://infura.io/). The free tier is sufficient for most use cases. If you're using this plugin for a production site, you'll want to [sign up for a paid account](https://infura.io/pricing) to avoid rate limiting.
 
 == Frequently Asked Questions ==
 
@@ -35,7 +44,7 @@ Find reference implementations of all filters in [example plugin here](https://g
 
 **`wp_rainbow_should_update_roles`** - Filter whether roles should be set.
 
-**`wp_rainbow_infura_id`** - Filter Infura ID to override settings value.
+**`wp_rainbow_infura_id`** - Filter Infura ID/API key to override settings value.
 
 **`wp_rainbow_infura_network`** - Filter Infura network to override settings value.
 
@@ -56,6 +65,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
 == Changelog ==
+
+= 0.3.3 =
+* Update readme and messaging for Infura usage
 
 = 0.3.2 =
 * Add support for Optimism network
