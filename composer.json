@@ -9,6 +9,12 @@
 			"email": "davisshaver@gmail.com"
 		}
 	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/davisshaver/web3.php.git"
+		}
+	],
 	"require-dev": {
 		"phpunit/phpunit": "^7.5.20",
 		"alleyinteractive/alley-coding-standards": "^0.3.0"
@@ -30,6 +36,6 @@
 	"require": {
 		"simplito/elliptic-php": "^1.0.10",
 		"kornrunner/keccak": "^1.1.0",
-		"web3p/web3.php": "^0.1.6"
+		"web3p/web3.php": "dev-master"
 	}
 }

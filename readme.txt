@@ -1,10 +1,10 @@
 === RainbowKit Login (Web3 Integration for Sign-In With Ethereum) ===
 Contributors: davisshaver
 Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
-Tested up to: 6.1
+Tested up to: 6.2
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.3.3
+Stable tag: 0.3.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -65,6 +65,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
 == Changelog ==
+
+= 0.3.4 =
+* Use patched version of web3 library to fix BigNumber issue
 
 = 0.3.3 =
 * Update readme and messaging for Infura usage
