@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { createRoot } from 'react-dom/client';
+import { createRoot } from '@wordpress/element';
 import WPRainbow from './provider';
 import { addErrorMessage } from './utilities/addErrorMessage';
 

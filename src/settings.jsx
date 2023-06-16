@@ -326,6 +326,7 @@ function WPRainbowSettings() {
 							<th scope="row" style={ { padding: '0' } }>
 								<h2>{ __( 'Appearance', 'wp-rainbow' ) }</h2>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -390,6 +391,7 @@ function WPRainbowSettings() {
 									) }
 								</h2>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -610,6 +612,7 @@ function WPRainbowSettings() {
 									) }
 								</h2>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -654,6 +657,7 @@ function WPRainbowSettings() {
 									) }
 								</h3>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -713,6 +717,7 @@ function WPRainbowSettings() {
 										} }
 									/>
 									<button
+										aria-label="Delete"
 										type="button"
 										className="button button-secondary"
 										onClick={ () => remove( index ) }
@@ -723,6 +728,7 @@ function WPRainbowSettings() {
 							</tr>
 						) ) }
 						<tr>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 							<td>
 								<button
@@ -751,6 +757,7 @@ function WPRainbowSettings() {
 								<h2>{ __( 'Token-Gating', 'wp-rainbow' ) }</h2>
 								<h3>{ __( 'ERC-721', 'wp-rainbow' ) }</h3>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -831,6 +838,7 @@ function WPRainbowSettings() {
 											{ __( 'ERC-1155', 'wp-rainbow' ) }
 										</h3>
 									</th>
+									{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 									<td />
 								</tr>
 								{ /* <table className="form-table" role="presentation"> */ }
@@ -917,6 +925,7 @@ function WPRainbowSettings() {
 									)
 								) }
 								<tr>
+									{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 									<td />
 									<td>
 										<button
@@ -952,6 +961,7 @@ function WPRainbowSettings() {
 									{ __( 'Advanced Settings', 'wp-rainbow' ) }
 								</h2>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>

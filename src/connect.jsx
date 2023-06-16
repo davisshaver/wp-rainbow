@@ -8,7 +8,6 @@ import {
 	useNetwork,
 	useSignMessage,
 } from 'wagmi';
-import { fetchEnsResolver } from '@wagmi/core';
 import stylePropType from 'react-style-proptype';
 import { SiweMessage } from 'siwe';
 import PropTypes from 'prop-types';
