@@ -24,3 +24,6 @@ Thumbs.db
 *.code-workspace
 .idea
 .vscode
+
+# Webpack Stats
+stats.json

@@ -93,6 +93,23 @@ class WP_Rainbow {
 	}
 
 	/**
+	 * Provide filter for WalletConnect Project ID. Defaults to RainbowKit Login global value.
+	 *
+	 * @return mixed|void Filtered WalletConnect Project ID network.
+	 */
+	public function get_walletconnect_project_id_filtered() {
+		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_walletconnect_project_id' => '' ] );
+		$default = ! empty( $options['wp_rainbow_field_walletconnect_project_id'] ) ? $options['wp_rainbow_field_walletconnect_project_id'] : 'fd1a095387aaa4bfc4cc1437ec3caac3';
+
+		/**
+		 * Filter the WalletConnect Project ID used for WP Rainbow integration.
+		 *
+		 * @param string $default WalletConnect Project ID as set in WP Rainbow options.
+		 */
+		return apply_filters( 'wp_rainbow_walletconnect_project_id', $default );
+	}
+
+	/**
 	 * Provide filter for Infura network. Defaults to settings page value.
 	 *
 	 * @return mixed|void Filtered Infura network.
@@ -217,36 +234,38 @@ class WP_Rainbow {
 			'login-block',
 			'wpRainbowData',
 			[
-				'ADMIN_URL'     => get_admin_url(),
-				'INFURA_ID'     => esc_textarea( $this->get_infura_id_filtered() ),
-				'LOGIN_API'     => get_rest_url( null, 'wp-rainbow/v1/login' ),
-				'NONCE_API'     => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
-				'REDIRECT_URL'  => esc_url( $this->get_redirect_url_filtered() ),
-				'SITE_TITLE'    => get_bloginfo( 'name' ),
-				'COOL_MODE'     => $this->get_cool_mode_filtered(),
-				'THEME'         => $this->get_theme_filtered(),
-				'COMPACT_MODAL' => $this->get_compact_modal_filtered(),
-				'NETWORK'       => esc_textarea( $this->get_infura_network_filtered() ),
-				'ATTRIBUTES'    => $this->get_frontend_attributes(),
+				'ADMIN_URL'                => get_admin_url(),
+				'INFURA_ID'                => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'                => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'NONCE_API'                => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL'             => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'               => get_bloginfo( 'name' ),
+				'COOL_MODE'                => $this->get_cool_mode_filtered(),
+				'THEME'                    => $this->get_theme_filtered(),
+				'COMPACT_MODAL'            => $this->get_compact_modal_filtered(),
+				'NETWORK'                  => esc_textarea( $this->get_infura_network_filtered() ),
+				'ATTRIBUTES'               => $this->get_frontend_attributes(),
+				'WALLETCONNECT_PROJECT_ID' => esc_textarea( $this->get_walletconnect_project_id_filtered() ),
 			]
 		);
 		wp_localize_script(
 			'login-block-frontend',
 			'wpRainbowData',
 			[
-				'ADMIN_URL'     => get_admin_url(),
-				'INFURA_ID'     => esc_textarea( $this->get_infura_id_filtered() ),
-				'LOGIN_API'     => get_rest_url( null, 'wp-rainbow/v1/login' ),
-				'LOGGED_IN'     => is_user_logged_in(),
-				'NONCE_API'     => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
-				'REDIRECT_URL'  => esc_url( $this->get_redirect_url_filtered() ),
-				'SITE_TITLE'    => get_bloginfo( 'name' ),
-				'LOGOUT_URL'    => wp_logout_url(),
-				'COOL_MODE'     => $this->get_cool_mode_filtered(),
-				'THEME'         => $this->get_theme_filtered(),
-				'COMPACT_MODAL' => $this->get_compact_modal_filtered(),
-				'NETWORK'       => esc_textarea( $this->get_infura_network_filtered() ),
-				'ATTRIBUTES'    => $this->get_frontend_attributes(),
+				'ADMIN_URL'                => get_admin_url(),
+				'INFURA_ID'                => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'                => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'LOGGED_IN'                => is_user_logged_in(),
+				'NONCE_API'                => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL'             => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'               => get_bloginfo( 'name' ),
+				'LOGOUT_URL'               => wp_logout_url(),
+				'COOL_MODE'                => $this->get_cool_mode_filtered(),
+				'THEME'                    => $this->get_theme_filtered(),
+				'COMPACT_MODAL'            => $this->get_compact_modal_filtered(),
+				'NETWORK'                  => esc_textarea( $this->get_infura_network_filtered() ),
+				'ATTRIBUTES'               => $this->get_frontend_attributes(),
+				'WALLETCONNECT_PROJECT_ID' => esc_textarea( $this->get_walletconnect_project_id_filtered() ),
 			]
 		);
 	}
@@ -333,17 +352,18 @@ class WP_Rainbow {
 			'wp-rainbow-login',
 			'wpRainbowData',
 			[
-				'ADMIN_URL'     => get_admin_url(),
-				'INFURA_ID'     => esc_textarea( $this->get_infura_id_filtered() ),
-				'LOGIN_API'     => get_rest_url( null, 'wp-rainbow/v1/login' ),
-				'NONCE_API'     => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
-				'REDIRECT_URL'  => esc_url( $this->get_redirect_url_filtered() ),
-				'SITE_TITLE'    => get_bloginfo( 'name' ),
-				'COOL_MODE'     => $this->get_cool_mode_filtered(),
-				'NETWORK'       => esc_textarea( $this->get_infura_network_filtered() ),
-				'ATTRIBUTES'    => $this->get_frontend_attributes(),
-				'THEME'         => $this->get_theme_filtered(),
-				'COMPACT_MODAL' => $this->get_compact_modal_filtered(),
+				'ADMIN_URL'                => get_admin_url(),
+				'INFURA_ID'                => esc_textarea( $this->get_infura_id_filtered() ),
+				'LOGIN_API'                => get_rest_url( null, 'wp-rainbow/v1/login' ),
+				'NONCE_API'                => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
+				'REDIRECT_URL'             => esc_url( $this->get_redirect_url_filtered() ),
+				'SITE_TITLE'               => get_bloginfo( 'name' ),
+				'COOL_MODE'                => $this->get_cool_mode_filtered(),
+				'NETWORK'                  => esc_textarea( $this->get_infura_network_filtered() ),
+				'ATTRIBUTES'               => $this->get_frontend_attributes(),
+				'THEME'                    => $this->get_theme_filtered(),
+				'COMPACT_MODAL'            => $this->get_compact_modal_filtered(),
+				'WALLETCONNECT_PROJECT_ID' => esc_textarea( $this->get_walletconnect_project_id_filtered() ),
 			]
 		);
 	}

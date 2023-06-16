@@ -1,6 +1,6 @@
 {
 	"name": "wp-rainbow",
-	"version": "0.3.4",
+	"version": "0.4.0",
 	"description": "RainbowKit Login (Web3 Integration for Sign-In With Ethereum)",
 	"author": "Davis Shaver",
 	"license": "GPL-2.0-or-later",
@@ -21,29 +21,29 @@
 		"url": "https://github.com/davisshaver/wp-rainbow/issues"
 	},
 	"dependencies": {
-		"@rainbow-me/rainbowkit": "^0.8.1",
-		"@wordpress/block-editor": "^11.0.0",
-		"@wordpress/blocks": "^12.0.0",
-		"@wordpress/components": "^23.0.0",
-		"@wordpress/i18n": "^4.23.0",
-		"@xmtp/xmtp-js": "^7.7.2",
+		"@rainbow-me/rainbowkit": "^1.0.2",
+		"@wordpress/block-editor": "^12.3.0",
+		"@wordpress/blocks": "^12.12.0",
+		"@wordpress/components": "^25.1.0",
+		"@wordpress/i18n": "^4.35.0",
 		"classnames": "^2.3.2",
-		"ethers": "^5.7.2",
 		"process": "^0.11.10",
 		"prop-types": "^15.8.1",
-		"react-hook-form": "^7.41.1",
+		"react-hook-form": "^7.44.3",
 		"react-style-proptype": "^3.2.2",
-		"siwe": "^1.1.6",
+		"siwe": "^2.1.4",
 		"util": "^0.12.5",
-		"wagmi": "^0.9.5"
+		"viem": "^1.0.7",
+		"wagmi": "^1.2.0"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^25.0.0",
-		"css-loader": "^6.7.3",
+		"@wordpress/scripts": "^26.6.0",
+		"css-loader": "^6.8.1",
 		"eslint-config-airbnb": "^19.0.4",
-		"style-loader": "^3.3.1",
-		"webpack": "^5.75.0",
-		"webpack-cli": "^4.10.0"
+		"style-loader": "^3.3.3",
+		"webpack": "^5.87.0",
+		"webpack-bundle-analyzer": "^4.9.0",
+		"webpack-cli": "^5.1.4"
 	},
 	"scripts": {
 		"build": "wp-scripts build",
@@ -55,6 +55,7 @@
 		"lint:md-docs": "wp-scripts lint-md-docs",
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
 		"packages-update": "wp-scripts packages-update",
-		"start": "wp-scripts start"
+		"start": "wp-scripts start",
+		"analyze": "webpack --json > stats.json && yarn webpack-bundle-analyzer stats.json"
 	}
 }

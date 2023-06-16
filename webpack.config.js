@@ -24,10 +24,6 @@ module.exports = {
 		],
 		settings: [ path.resolve( process.cwd(), 'src', 'settings.jsx' ) ],
 	},
-	resolve: {
-		...defaultConfig.resolve,
-		extensions: [ 'jsx', ...defaultConfig.resolve.extensions ],
-	},
 	plugins: [
 		...defaultConfig.plugins,
 		new webpack.ProvidePlugin( {

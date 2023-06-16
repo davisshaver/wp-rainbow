@@ -4,7 +4,7 @@ import {
 	useAccount,
 	useDisconnect,
 	useEnsName,
-	useProvider,
+	usePublicClient,
 	useNetwork,
 	useSignMessage,
 } from 'wagmi';
@@ -66,7 +66,9 @@ export function WPRainbowConnect( {
 		chainId: 1,
 	} );
 
-	const provider = useProvider( { chainId: 1 } );
+	const provider = usePublicClient( {
+		chainId: 1,
+	} );
 
 	const { disconnectAsync } = useDisconnect();
 
@@ -99,11 +101,11 @@ export function WPRainbowConnect( {
 			const attributes = {};
 			if ( ensName ) {
 				try {
-					const ensProvider = await provider.getResolver( ensName );
 					await ATTRIBUTES.forEach( async ( attributeKey ) => {
-						const attributeValue = await ensProvider.getText(
-							attributeKey
-						);
+						const attributeValue = await provider.getEnsText( {
+							name: ensName,
+							key: attributeKey,
+						} );
 						attributes[ attributeKey ] = attributeValue;
 					} );
 				} catch ( error ) {
@@ -118,6 +120,7 @@ export function WPRainbowConnect( {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
 				return;
 			}
+
 			const verifyRes = await fetch( LOGIN_API, {
 				method: 'POST',
 				headers: {

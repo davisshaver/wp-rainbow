@@ -1,4 +1,4 @@
-import { render, useEffect, useState } from '@wordpress/element';
+import { createRoot, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { Spinner } from '@wordpress/components';
@@ -12,6 +12,9 @@ function WPRainbowSettings() {
 	} );
 	const setUserRoles = watch( 'wp_rainbow_field_set_user_roles' );
 	const infuraId = watch( 'wp_rainbow_field_infura_id' );
+	const walletConnectProjectID = watch(
+		'wp_rainbow_field_walletconnect_project_id'
+	);
 	const {
 		fields: erc1155Fields,
 		append: erc1155FieldsAppend,
@@ -171,12 +174,29 @@ function WPRainbowSettings() {
 					! initialSettings?.wp_rainbow_field_infura_id ) ) && (
 				<div
 					id="setting-error-wp_rainbow_infura_id_message"
-					className="notice notice-error settings-error is-dismissible"
+					className="notice notice-error settings-error"
 				>
 					<p>
 						<strong>
 							{ __(
 								'Infura ID is not set. Token-gating and ENS integrations will not work. Users will be assigned the default role.',
+								'wp-rainbow'
+							) }
+						</strong>
+					</p>
+				</div>
+			) }
+			{ ( walletConnectProjectID === '' ||
+				( walletConnectProjectID === undefined &&
+					! initialSettings?.wp_rainbow_field_walletconnect_project_id ) ) && (
+				<div
+					id="setting-error-wp_rainbow_walletconnect_project_id_message"
+					className="notice notice-error settings-error"
+				>
+					<p>
+						<strong>
+							{ __(
+								'WalletConnect Project ID is not set. We highly recommend setting this. A default value is provided but may stop working at any time.',
 								'wp-rainbow'
 							) }
 						</strong>
@@ -234,6 +254,30 @@ function WPRainbowSettings() {
 						</tr>
 						<tr>
 							<th scope="row">
+								<label htmlFor="wp_rainbow_field_walletconnect_project_id">
+									{ __(
+										'WalletConnect Project ID',
+										'wp-rainbow'
+									) }
+								</label>
+							</th>
+							<td>
+								<input
+									id="wp_rainbow_field_walletconnect_project_id"
+									size="40"
+									type="text"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
+									{ ...register(
+										'wp_rainbow_field_walletconnect_project_id'
+									) }
+									defaultValue={
+										initialSettings?.wp_rainbow_field_walletconnect_project_id
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
 								<label htmlFor="wp_rainbow_field_infura_network">
 									{ __( 'Infura Network', 'wp-rainbow' ) }
 								</label>
@@ -252,10 +296,19 @@ function WPRainbowSettings() {
 								>
 									<option value="mainnet">Mainnet</option>
 									<option value="optimism">Optimism</option>
-									<option value="ropsten">Ropsten</option>
-									<option value="kovan">Kovan</option>
-									<option value="rinkeby">Rinkeby</option>
+									<option value="arbitrum">Arbitrum</option>
+									<option value="polygon">Polygon</option>
 									<option value="goerli">Goerli</option>
+									<option value="optimismGoerli">
+										Optimism Goerli
+									</option>
+									<option value="baseGoerli">
+										Base Goerli
+									</option>
+									<option value="zoraTestnet">
+										Zora Testnet
+									</option>
+									<option value="foundry">Foundry</option>
 								</select>
 								<p>
 									<em>
@@ -273,6 +326,7 @@ function WPRainbowSettings() {
 							<th scope="row" style={ { padding: '0' } }>
 								<h2>{ __( 'Appearance', 'wp-rainbow' ) }</h2>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -337,6 +391,7 @@ function WPRainbowSettings() {
 									) }
 								</h2>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -557,6 +612,7 @@ function WPRainbowSettings() {
 									) }
 								</h2>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -601,6 +657,7 @@ function WPRainbowSettings() {
 									) }
 								</h3>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -660,6 +717,7 @@ function WPRainbowSettings() {
 										} }
 									/>
 									<button
+										aria-label="Delete"
 										type="button"
 										className="button button-secondary"
 										onClick={ () => remove( index ) }
@@ -670,6 +728,7 @@ function WPRainbowSettings() {
 							</tr>
 						) ) }
 						<tr>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 							<td>
 								<button
@@ -698,6 +757,7 @@ function WPRainbowSettings() {
 								<h2>{ __( 'Token-Gating', 'wp-rainbow' ) }</h2>
 								<h3>{ __( 'ERC-721', 'wp-rainbow' ) }</h3>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -778,6 +838,7 @@ function WPRainbowSettings() {
 											{ __( 'ERC-1155', 'wp-rainbow' ) }
 										</h3>
 									</th>
+									{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 									<td />
 								</tr>
 								{ /* <table className="form-table" role="presentation"> */ }
@@ -864,6 +925,7 @@ function WPRainbowSettings() {
 									)
 								) }
 								<tr>
+									{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 									<td />
 									<td>
 										<button
@@ -899,6 +961,7 @@ function WPRainbowSettings() {
 									{ __( 'Advanced Settings', 'wp-rainbow' ) }
 								</h2>
 							</th>
+							{ /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
 							<td />
 						</tr>
 						<tr>
@@ -983,8 +1046,9 @@ function WPRainbowSettings() {
 }
 
 document.addEventListener( 'DOMContentLoaded', () => {
-	render(
-		<WPRainbowSettings />,
-		document.getElementById( 'wp-rainbow-settings-page' )
-	);
+	const settingsPage = document.getElementById( 'wp-rainbow-settings-page' );
+	if ( settingsPage ) {
+		const root = createRoot( settingsPage );
+		root.render( <WPRainbowSettings /> );
+	}
 } );

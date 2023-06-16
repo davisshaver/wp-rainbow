@@ -166,6 +166,11 @@ class WP_Rainbow_Settings {
 							'goerli',
 						],
 					],
+					'wp_rainbow_field_walletconnect_project_id' => [
+						'required'    => true,
+						'type'        => 'string',
+						'description' => 'WalletConnect Project ID',
+					],
 					'wp_rainbow_field_redirect_url'       => [
 						'required'    => true,
 						'type'        => 'string',

@@ -32,6 +32,8 @@ _Want to try it out? [Head here.](https://wp-rainbow.davisshaver.com/wp-login.ph
 
 Using an Infura ID/API key is required to use most features in this plugin, including token-gating and role mapping. You can [sign up for a free account here](https://infura.io/). The free tier is sufficient for most use cases. If you're using this plugin for a production site, you'll want to [sign up for a paid account](https://infura.io/pricing) to avoid rate limiting.
 
+Supplying your own WalletConnect Project ID is also highly recommended. You can [sign up for a free project ID from WallectConnect Cloud](https://cloud.walletconnect.com/).
+
 == Frequently Asked Questions ==
 
 = What filters are included? =
@@ -45,6 +47,8 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_should_update_roles`** - Filter whether roles should be set.
 
 **`wp_rainbow_infura_id`** - Filter Infura ID/API key to override settings value.
+
+**`wp_rainbow_walletconnect_project_id`** - Filter WalletConnect project ID to override settings value.
 
 **`wp_rainbow_infura_network`** - Filter Infura network to override settings value.
 
@@ -65,6 +69,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
 == Changelog ==
+
+= 0.4.0 =
+* Update WAGMI, RainbowKit, and web3 dependencies
 
 = 0.3.4 =
 * Use patched version of web3 library to fix BigNumber issue
