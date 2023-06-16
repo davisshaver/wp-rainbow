@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { createRoot } from 'react-dom/client';
 import WPRainbow from './provider';
 import { addErrorMessage } from './utilities/addErrorMessage';
 
@@ -26,5 +27,6 @@ const LoginPageElement = (
 const wpRainbowButton = document.getElementById( 'wp-rainbow-button' );
 
 if ( wpRainbowButton ) {
-	ReactDOM.render( LoginPageElement, wpRainbowButton );
+	const root = createRoot( wpRainbowButton );
+	root.render( LoginPageElement );
 }

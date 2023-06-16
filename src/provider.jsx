@@ -1,14 +1,32 @@
 import {
-	getDefaultWallets,
 	RainbowKitProvider,
 	lightTheme,
 	darkTheme,
 	midnightTheme,
+	connectorsForWallets,
 } from '@rainbow-me/rainbowkit';
-import { createClient, configureChains, WagmiConfig } from 'wagmi';
-import * as allChains from 'wagmi/chains';
+import {
+	metaMaskWallet,
+	rainbowWallet,
+	walletConnectWallet,
+	injectedWallet,
+	coinbaseWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+import { createConfig, configureChains, WagmiConfig } from 'wagmi';
+import {
+	mainnet,
+	optimism,
+	arbitrum,
+	goerli,
+	polygon,
+	optimismGoerli,
+	baseGoerli,
+	foundry,
+	zoraTestnet,
+} from 'wagmi/chains';
 import { infuraProvider } from 'wagmi/providers/infura';
 import stylePropType from 'react-style-proptype';
+import { publicProvider } from 'wagmi/providers/public';
 
 import PropTypes from 'prop-types';
 import { WPRainbowConnect } from './connect';
@@ -21,6 +39,7 @@ const {
 	NETWORK,
 	SITE_TITLE,
 	THEME,
+	WALLETCONNECT_PROJECT_ID,
 } = wpRainbowData;
 
 const themes = {
@@ -28,23 +47,49 @@ const themes = {
 	darkTheme,
 	midnightTheme,
 };
-const { chains, provider } = configureChains(
+
+const allChains = {
+	mainnet,
+	optimism,
+	arbitrum,
+	goerli,
+	polygon,
+	optimismGoerli,
+	baseGoerli,
+	foundry,
+	zoraTestnet,
+};
+
+const { chains, publicClient } = configureChains(
 	[
 		...( NETWORK && allChains[ NETWORK ] ? [ allChains[ NETWORK ] ] : [] ),
 		allChains.mainnet,
 	],
-	[ infuraProvider( { infuraId: INFURA_ID } ) ]
+	[ infuraProvider( { apiKey: INFURA_ID } ), publicProvider() ]
 );
 
-const { connectors } = getDefaultWallets( {
-	appName: SITE_TITLE,
-	chains,
-} );
+const wallets = [
+	{
+		groupName: 'Popular',
+		wallets: [
+			injectedWallet( { chains } ),
+			rainbowWallet( { chains, projectId: WALLETCONNECT_PROJECT_ID } ),
+			coinbaseWallet( { appName: SITE_TITLE, chains } ),
+			metaMaskWallet( { chains, projectId: WALLETCONNECT_PROJECT_ID } ),
+			walletConnectWallet( {
+				chains,
+				projectId: WALLETCONNECT_PROJECT_ID,
+			} ),
+		],
+	},
+];
 
-const wagmiClient = createClient( {
+const connectors = connectorsForWallets( wallets );
+
+const wagmiConfig = createConfig( {
 	autoConnect: LOGGED_IN === '1',
 	connectors,
-	provider,
+	publicClient,
 } );
 
 /**
@@ -83,7 +128,7 @@ function WPRainbow( {
 	style,
 } ) {
 	return (
-		<WagmiConfig client={ wagmiClient }>
+		<WagmiConfig config={ wagmiConfig }>
 			<RainbowKitProvider
 				chains={ chains }
 				coolMode={ COOL_MODE === 'on' }
