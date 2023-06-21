@@ -229,8 +229,11 @@ class WP_Rainbow_Login_Functionality {
 	 */
 	private function map_filtered_network_to_infura_endpoint( string $filtered_network ): string {
 		$overrides = [
-			'polygon'  => 'polygon-mainnet',
-			'optimism' => 'optimism-mainnet',
+			'polygon'        => 'polygon-mainnet',
+			'optimism'       => 'optimism-mainnet',
+			'arbitrum'       => 'arbitrum-mainnet',
+			'polygon'        => 'polygon-mainnet',
+			'optimismGoerli' => 'optimism-goerli',
 		];
 		if ( ! empty( $overrides[ $filtered_network ] ) ) {
 			return $overrides[ $filtered_network ];

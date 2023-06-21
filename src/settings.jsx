@@ -299,16 +299,10 @@ function WPRainbowSettings() {
 									<option value="arbitrum">Arbitrum</option>
 									<option value="polygon">Polygon</option>
 									<option value="goerli">Goerli</option>
+									<option value="sepolia">Sepolia</option>
 									<option value="optimismGoerli">
 										Optimism Goerli
 									</option>
-									<option value="baseGoerli">
-										Base Goerli
-									</option>
-									<option value="zoraTestnet">
-										Zora Testnet
-									</option>
-									<option value="foundry">Foundry</option>
 								</select>
 								<p>
 									<em>

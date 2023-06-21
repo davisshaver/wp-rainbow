@@ -20,9 +20,7 @@ import {
 	goerli,
 	polygon,
 	optimismGoerli,
-	baseGoerli,
-	foundry,
-	zoraTestnet,
+	sepolia,
 } from 'wagmi/chains';
 import { infuraProvider } from 'wagmi/providers/infura';
 import stylePropType from 'react-style-proptype';
@@ -55,9 +53,7 @@ const allChains = {
 	goerli,
 	polygon,
 	optimismGoerli,
-	baseGoerli,
-	foundry,
-	zoraTestnet,
+	sepolia,
 };
 
 const { chains, publicClient } = configureChains(
