@@ -41,7 +41,7 @@ export default function save( { attributes, className } ) {
 					{
 						[ `has-custom-width wp-block-button__width-${ width }` ]:
 							width,
-						[ `has-custom-font-size` ]: blockProps.style.fontSize,
+						[ `has-custom-font-size` ]: blockProps?.style?.fontSize,
 					}
 				) }
 				data-error-text={ errorText }

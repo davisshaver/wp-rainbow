@@ -1,3 +1,4 @@
+import { createRoot } from '@wordpress/element';
 import './index.scss';
 import WPRainbow from '../../src/provider';
 
@@ -13,7 +14,8 @@ if ( loginBlocks ) {
 		} catch {
 			// Continue regardless of error.
 		}
-		ReactDOM.render(
+		const root = createRoot( wpRainbowBlock );
+		root.render(
 			<WPRainbow
 				buttonClassName={ blockDetails.dataset.buttonClassName }
 				checkWalletText={ blockDetails.dataset.checkWalletText }
@@ -37,8 +39,7 @@ if ( loginBlocks ) {
 				}
 				redirectURL={ blockDetails.dataset.redirectUrl }
 				style={ style }
-			/>,
-			wpRainbowBlock
+			/>
 		);
 	} );
 }
