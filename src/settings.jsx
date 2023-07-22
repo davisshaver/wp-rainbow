@@ -449,7 +449,10 @@ function WPRainbowSettings() {
 												'If enabled, RainbowKit Login will set user roles on account creation and login. The default role is ',
 												'wp-rainbow'
 											) }
-											{ `${ window?.wpRainbowSettings?.default_role }` }
+											{
+												window?.wpRainbowSettings
+													?.default_role
+											}
 											{ __(
 												'. You can override this for RainbowKit Login users below. ',
 												'wp-rainbow'
