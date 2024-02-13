@@ -14,12 +14,16 @@ import {
 } from '@rainbow-me/rainbowkit/wallets';
 import { createConfig, configureChains, WagmiConfig } from 'wagmi';
 import {
+	arbitrum,
+	arbitrumGoerli,
+	arbitrumSepolia,
+	goerli,
 	mainnet,
 	optimism,
-	arbitrum,
-	goerli,
-	polygon,
 	optimismGoerli,
+	optimismSepolia,
+	polygon,
+	polygonMumbai,
 	sepolia,
 } from 'wagmi/chains';
 import { infuraProvider } from 'wagmi/providers/infura';
@@ -47,12 +51,16 @@ const themes = {
 };
 
 const allChains = {
+	arbitrum,
+	arbitrumGoerli,
+	arbitrumSepolia,
+	goerli,
 	mainnet,
 	optimism,
-	arbitrum,
-	goerli,
-	polygon,
 	optimismGoerli,
+	optimismSepolia,
+	polygon,
+	polygonMumbai,
 	sepolia,
 };
 
