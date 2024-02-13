@@ -295,13 +295,25 @@ function WPRainbowSettings() {
 									id="wp_rainbow_field_infura_network"
 								>
 									<option value="mainnet">Mainnet</option>
-									<option value="optimism">Optimism</option>
-									<option value="arbitrum">Arbitrum</option>
-									<option value="polygon">Polygon</option>
 									<option value="goerli">Goerli</option>
 									<option value="sepolia">Sepolia</option>
+									<option value="polygon">Polygon</option>
+									<option value="polygonMumbai">
+										Polygon Mumbai
+									</option>
+									<option value="optimism">Optimism</option>
 									<option value="optimismGoerli">
 										Optimism Goerli
+									</option>
+									<option value="optimismSepolia">
+										Optimism Sepolia
+									</option>
+									<option value="arbitrum">Arbitrum</option>
+									<option value="arbitrumGoerli">
+										Arbitrum Goerli
+									</option>
+									<option value="arbitrumSepolia">
+										Arbitrum Sepolia
 									</option>
 								</select>
 								<p>
