@@ -62,7 +62,7 @@ class WP_Rainbow_Plugins_ERC_1155_Roles {
 		}
 		$erc1155_abi        = '[{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]';
 		$erc1155_role       = '';
-		$contract           = new Contract( 'https://' . $filtered_infura_network . '.infura.io/v3/' . $filtered_infura_id, $erc1155_abi );
+		$contract           = new Contract( 'https://' . map_filtered_network_to_infura_endpoint( $filtered_infura_network ) . '.infura.io/v3/' . $filtered_infura_id, $erc1155_abi );
 		$wp_rainbow_options = get_option(
 			'wp_rainbow_options',
 			[

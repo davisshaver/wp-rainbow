@@ -51,4 +51,24 @@ class Erc_1155_Role_Test extends TestCase {
 		);
 		$this->assertTrue( $erc1155_check );
 	}
+
+	/**
+	 * Verify ERC-1155 role logic on Polygon.
+	 */
+	public function testVerifyERC1155Polygon() {
+		$erc1155_abi   = '[{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]';
+		$contract      = new Contract( 'https://polygon-mainnet.infura.io/v3/9861d9fc6201412a801f7a2380fb2f0c', $erc1155_abi );
+		$erc1155_check = false;
+		$contract->at( '0xB5Cd475c41b7c59646Fa2779Dd5fA54765B61039' )->call(
+			'balanceOf',
+			'0xBaab0948403fc1D524928074663d21282F7F1412',
+			'0',
+			function ( $err, $balance ) use ( &$erc1155_check ) {
+				if ( hexdec( $balance[0]->value ) >= 1 ) {
+					$erc1155_check = true;
+				}
+			}
+		);
+		$this->assertTrue( $erc1155_check );
+	}
 }

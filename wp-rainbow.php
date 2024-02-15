@@ -10,7 +10,7 @@
  * Plugin Name:       RainbowKit Login (Web3 Integration for Sign-In With Ethereum)
  * Plugin URI:        https://wp-rainbow.davisshaver.com/
  * Description:       RainbowKit Login allows WordPress users to log in with Ethereum using the Sign-In With Ethereum standard, powered by RainbowKit.
- * Version:           0.4.5
+ * Version:           0.4.6
  * Author:            Davis Shaver
  * Author URI:        https://davisshaver.com/
  * License:           GPL v2 or later
@@ -39,6 +39,9 @@ add_action(
 	},
 	1
 );
+
+// Require the helper functions.
+require_once __DIR__ . '/inc/functions.php';
 
 // Require the main class.
 require_once __DIR__ . '/inc/class-wp-rainbow.php';
