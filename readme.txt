@@ -4,7 +4,7 @@ Tags: WordPress, web3, SIWE, Ethereum, RainbowKit, Sign-In With Ethereum
 Tested up to: 6.4.3
 Requires at least: 5.9
 Requires PHP: 7.0
-Stable tag: 0.4.5
+Stable tag: 0.4.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 **`wp_rainbow_user_login`** - Fires when user logs in.
 
 == Changelog ==
+
+= 0.4.6 =
+* Fix bug with Infura endpoint mapping
 
 = 0.4.5 =
 * Fix bug with Polygon network, add Polygon Mumbai
