@@ -5,16 +5,20 @@ import { Spinner } from '@wordpress/components';
 import { useForm, useFieldArray } from 'react-hook-form';
 
 function WPRainbowSettings() {
-	const { control, register, handleSubmit, watch, setValue } = useForm();
+	const {
+		control,
+		register,
+		handleSubmit,
+		watch,
+		setValue,
+		formState: { errors },
+	} = useForm( {
+		criteriaMode: 'all',
+	} );
 	const { fields, append, remove } = useFieldArray( {
 		control,
 		name: 'userAttributesMapping',
 	} );
-	const setUserRoles = watch( 'wp_rainbow_field_set_user_roles' );
-	const infuraId = watch( 'wp_rainbow_field_infura_id' );
-	const walletConnectProjectID = watch(
-		'wp_rainbow_field_walletconnect_project_id'
-	);
 	const {
 		fields: erc1155Fields,
 		append: erc1155FieldsAppend,
@@ -166,12 +170,27 @@ function WPRainbowSettings() {
 			</div>
 		);
 	}
+
+	const setUserRoles = watch(
+		'wp_rainbow_field_set_user_roles',
+		initialSettings?.wp_rainbow_field_set_user_roles
+	);
+	const provider = watch(
+		'wp_rainbow_field_provider',
+		initialSettings?.wp_rainbow_field_provider ?? 'infura'
+	);
+	const network = watch(
+		'wp_rainbow_field_infura_network',
+		initialSettings?.wp_rainbow_field_infura_network ?? 'mainnet'
+	);
+	const walletConnectProjectID = watch(
+		'wp_rainbow_field_walletconnect_project_id',
+		initialSettings?.wp_rainbow_field_walletconnect_project_id ?? ''
+	);
 	return (
 		<div className="wrap">
 			<h1>{ __( 'RainbowKit Login Settings', 'wp-rainbow' ) }</h1>
-			{ ( infuraId === '' ||
-				( infuraId === undefined &&
-					! initialSettings?.wp_rainbow_field_infura_id ) ) && (
+			{ Object.keys( errors ).length > 0 && (
 				<div
 					id="setting-error-wp_rainbow_infura_id_message"
 					className="notice notice-error settings-error"
@@ -179,7 +198,7 @@ function WPRainbowSettings() {
 					<p>
 						<strong>
 							{ __(
-								'Infura ID is not set. Token-gating and ENS integrations will not work. Users will be assigned the default role.',
+								'There was an error validating your settings and they were not saved. Please review the form and try again.',
 								'wp-rainbow'
 							) }
 						</strong>
@@ -233,60 +252,58 @@ function WPRainbowSettings() {
 					<tbody>
 						<tr>
 							<th scope="row">
-								<label htmlFor="wp_rainbow_field_infura_id">
-									{ __( 'Infura ID/API key', 'wp-rainbow' ) }
-								</label>
-							</th>
-							<td>
-								<input
-									id="wp_rainbow_field_infura_id"
-									size="40"
-									type="text"
-									// eslint-disable-next-line  react/jsx-props-no-spreading
-									{ ...register(
-										'wp_rainbow_field_infura_id'
-									) }
-									defaultValue={
-										initialSettings?.wp_rainbow_field_infura_id
-									}
-								/>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row">
-								<label htmlFor="wp_rainbow_field_walletconnect_project_id">
-									{ __(
-										'WalletConnect Project ID',
-										'wp-rainbow'
-									) }
-								</label>
-							</th>
-							<td>
-								<input
-									id="wp_rainbow_field_walletconnect_project_id"
-									size="40"
-									type="text"
-									// eslint-disable-next-line  react/jsx-props-no-spreading
-									{ ...register(
-										'wp_rainbow_field_walletconnect_project_id'
-									) }
-									defaultValue={
-										initialSettings?.wp_rainbow_field_walletconnect_project_id
-									}
-								/>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row">
-								<label htmlFor="wp_rainbow_field_infura_network">
-									{ __( 'Infura Network', 'wp-rainbow' ) }
+								<label htmlFor="wp_rainbow_field_provider">
+									{ __( 'Provider', 'wp-rainbow' ) }
 								</label>
 							</th>
 							<td>
 								<select
 									// eslint-disable-next-line  react/jsx-props-no-spreading
 									{ ...register(
-										'wp_rainbow_field_infura_network'
+										'wp_rainbow_field_provider'
+									) }
+									defaultValue={
+										initialSettings?.wp_rainbow_field_provider ||
+										'infura'
+									}
+									id="wp_rainbow_field_provider"
+								>
+									<option value="infura">Infura</option>
+									<option value="other">Other</option>
+								</select>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_infura_network">
+									{ __( 'Network', 'wp-rainbow' ) }
+								</label>
+							</th>
+							<td>
+								<select
+									// eslint-disable-next-line  react/jsx-props-no-spreading
+									{ ...register(
+										'wp_rainbow_field_infura_network',
+										{
+											validate: {
+												providerSupportsChain: (
+													value,
+													values
+												) =>
+													! (
+														values.wp_rainbow_field_provider ===
+															'infura' &&
+														[
+															'base',
+															'baseSepolia',
+															'zora',
+															'zoraSepolia',
+														].includes( value )
+													) ||
+													'Infura does not support this chain.',
+											},
+										}
 									) }
 									defaultValue={
 										initialSettings?.wp_rainbow_field_infura_network ||
@@ -315,7 +332,48 @@ function WPRainbowSettings() {
 									<option value="arbitrumSepolia">
 										Arbitrum Sepolia
 									</option>
+									<option
+										disabled={ provider === 'infura' }
+										value="base"
+									>
+										Base
+									</option>
+									<option
+										disabled={ provider === 'infura' }
+										value="baseSepolia"
+									>
+										Base Sepolia
+									</option>
+									<option
+										disabled={ provider === 'infura' }
+										value="zora"
+									>
+										Zora
+									</option>
+									<option
+										disabled={ provider === 'infura' }
+										value="zoraSepolia"
+									>
+										Zora Sepolia
+									</option>
 								</select>
+								{ errors.wp_rainbow_field_infura_network &&
+								errors.wp_rainbow_field_infura_network
+									.message ? (
+									<div className="notice notice-error settings-error">
+										<p>
+											<em>
+												<small>
+													{
+														errors
+															.wp_rainbow_field_infura_network
+															.message
+													}
+												</small>
+											</em>
+										</p>
+									</div>
+								) : null }
 								<p>
 									<em>
 										<small>
@@ -326,6 +384,210 @@ function WPRainbowSettings() {
 										</small>
 									</em>
 								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_infura_id">
+									{ __( 'Infura ID/API key', 'wp-rainbow' ) }
+								</label>
+							</th>
+							<td>
+								<input
+									id="wp_rainbow_field_infura_id"
+									size="40"
+									type="text"
+									readOnly={ provider !== 'infura' }
+									// eslint-disable-next-line  react/jsx-props-no-spreading
+									{ ...register(
+										'wp_rainbow_field_infura_id',
+										{
+											validate: {
+												requiredForInfuraProvider: (
+													value,
+													formValues
+												) => {
+													if (
+														formValues.wp_rainbow_field_provider ===
+															'infura' &&
+														! value
+													) {
+														return 'Infura ID is required.';
+													}
+													return true;
+												},
+											},
+										}
+									) }
+									defaultValue={
+										initialSettings?.wp_rainbow_field_infura_id
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_rpc_url">
+									{ __( 'RPC URL', 'wp-rainbow' ) }
+								</label>
+							</th>
+							<td>
+								<fieldset disabled={ provider !== 'other' }>
+									<input
+										id="wp_rainbow_field_rpc_url"
+										size="40"
+										type="url"
+										// eslint-disable-next-line  react/jsx-props-no-spreading
+										{ ...register(
+											'wp_rainbow_field_rpc_url',
+											{
+												validate: {
+													hasRPC: (
+														value,
+														formValues
+													) => {
+														if (
+															formValues.wp_rainbow_field_provider ===
+																'other' &&
+															! value
+														) {
+															return 'RPC URL is required.';
+														}
+														return true;
+													},
+												},
+											}
+										) }
+										defaultValue={
+											initialSettings?.wp_rainbow_field_rpc_url
+										}
+									/>
+								</fieldset>
+								{ errors.wp_rainbow_field_rpc_url &&
+								errors.wp_rainbow_field_rpc_url.message ? (
+									<div className="notice notice-error settings-error">
+										<p>
+											<em>
+												<small>
+													{
+														errors
+															.wp_rainbow_field_rpc_url
+															.message
+													}
+												</small>
+											</em>
+										</p>
+									</div>
+								) : null }
+								<p>
+									<em>
+										<small>
+											{ __(
+												'RPC URL only used when provider is not Infura.',
+												'wp-rainbow'
+											) }
+										</small>
+									</em>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_rpc_url_mainnet">
+									{ __( 'Mainnet RPC URL', 'wp-rainbow' ) }
+								</label>
+							</th>
+							<td>
+								<fieldset
+									disabled={
+										provider !== 'other' ||
+										network === 'mainnet'
+									}
+								>
+									<input
+										id="wp_rainbow_field_rpc_url_mainnet"
+										size="40"
+										type="url"
+										// eslint-disable-next-line  react/jsx-props-no-spreading
+										{ ...register(
+											'wp_rainbow_field_rpc_url_mainnet',
+											{
+												validate: {
+													hasMainnetRPC: (
+														value,
+														formValues
+													) => {
+														if (
+															formValues.wp_rainbow_field_provider ===
+																'other' &&
+															formValues.wp_rainbow_field_infura_network !==
+																'mainnet' &&
+															! value
+														) {
+															return 'Mainnet RPC URL is required when primary network is not mainnet. Used for ENS integration.';
+														}
+														return true;
+													},
+												},
+											}
+										) }
+										defaultValue={
+											initialSettings?.wp_rainbow_field_rpc_url_mainnet
+										}
+									/>
+								</fieldset>
+								{ errors.wp_rainbow_field_rpc_url_mainnet &&
+								errors.wp_rainbow_field_rpc_url_mainnet
+									.message ? (
+									<div className="notice notice-error settings-error">
+										<p>
+											<em>
+												<small>
+													{
+														errors
+															.wp_rainbow_field_rpc_url_mainnet
+															.message
+													}
+												</small>
+											</em>
+										</p>
+									</div>
+								) : null }
+								<p>
+									<em>
+										<small>
+											{ __(
+												'Additional mainnet RPC URL required for ENS integration. Only used when provider is not Infura and network is not mainnet.',
+												'wp-rainbow'
+											) }
+										</small>
+									</em>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label htmlFor="wp_rainbow_field_walletconnect_project_id">
+									{ __(
+										'WalletConnect Project ID',
+										'wp-rainbow'
+									) }
+								</label>
+							</th>
+							<td>
+								<input
+									id="wp_rainbow_field_walletconnect_project_id"
+									size="40"
+									type="text"
+									// eslint-disable-next-line  react/jsx-props-no-spreading
+									{ ...register(
+										'wp_rainbow_field_walletconnect_project_id'
+									) }
+									defaultValue={
+										initialSettings?.wp_rainbow_field_walletconnect_project_id
+									}
+								/>
 							</td>
 						</tr>
 						<tr>
@@ -492,7 +754,7 @@ function WPRainbowSettings() {
 									{ ...register(
 										'wp_rainbow_field_default_user_role'
 									) }
-									disabled={
+									readOnly={
 										setUserRoles === false ||
 										( setUserRoles === undefined &&
 											! initialSettings?.wp_rainbow_field_set_user_roles )
@@ -532,7 +794,7 @@ function WPRainbowSettings() {
 									defaultChecked={
 										initialSettings?.wp_rainbow_field_disable_user_role_updates_on_login
 									}
-									disabled={
+									readOnly={
 										setUserRoles === false ||
 										( setUserRoles === undefined &&
 											! initialSettings?.wp_rainbow_field_set_user_roles )

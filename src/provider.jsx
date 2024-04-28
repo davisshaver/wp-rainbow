@@ -3,16 +3,10 @@ import {
 	lightTheme,
 	darkTheme,
 	midnightTheme,
-	connectorsForWallets,
 } from '@rainbow-me/rainbowkit';
-import {
-	metaMaskWallet,
-	rainbowWallet,
-	walletConnectWallet,
-	injectedWallet,
-	coinbaseWallet,
-} from '@rainbow-me/rainbowkit/wallets';
-import { createConfig, configureChains, WagmiConfig } from 'wagmi';
+import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createConfig, http, WagmiProvider } from 'wagmi';
 import {
 	arbitrum,
 	arbitrumGoerli,
@@ -25,10 +19,12 @@ import {
 	polygon,
 	polygonMumbai,
 	sepolia,
+	base,
+	baseSepolia,
+	zora,
+	zoraSepolia,
 } from 'wagmi/chains';
-import { infuraProvider } from 'wagmi/providers/infura';
 import stylePropType from 'react-style-proptype';
-import { publicProvider } from 'wagmi/providers/public';
 
 import PropTypes from 'prop-types';
 import { WPRainbowConnect } from './connect';
@@ -36,9 +32,10 @@ import { WPRainbowConnect } from './connect';
 const {
 	COMPACT_MODAL,
 	COOL_MODE,
-	INFURA_ID,
 	LOGGED_IN,
 	NETWORK,
+	RPC_URL,
+	RPC_URL_MAINNET,
 	SITE_TITLE,
 	THEME,
 	WALLETCONNECT_PROJECT_ID,
@@ -62,39 +59,42 @@ const allChains = {
 	polygon,
 	polygonMumbai,
 	sepolia,
+	base,
+	baseSepolia,
+	zora,
+	zoraSepolia,
 };
 
-const { chains, publicClient } = configureChains(
-	[
-		...( NETWORK && allChains[ NETWORK ] ? [ allChains[ NETWORK ] ] : [] ),
-		allChains.mainnet,
-	],
-	[ infuraProvider( { apiKey: INFURA_ID } ), publicProvider() ]
-);
+const chains =
+	NETWORK && allChains[ NETWORK ] && NETWORK !== 'mainnet'
+		? [ allChains[ NETWORK ], mainnet ]
+		: [ mainnet ];
 
-const wallets = [
-	{
-		groupName: 'Popular',
-		wallets: [
-			injectedWallet( { chains } ),
-			rainbowWallet( { chains, projectId: WALLETCONNECT_PROJECT_ID } ),
-			coinbaseWallet( { appName: SITE_TITLE, chains } ),
-			metaMaskWallet( { chains, projectId: WALLETCONNECT_PROJECT_ID } ),
-			walletConnectWallet( {
-				chains,
-				projectId: WALLETCONNECT_PROJECT_ID,
-			} ),
-		],
-	},
-];
-
-const connectors = connectorsForWallets( wallets );
-
+const transports =
+	NETWORK && allChains[ NETWORK ] && NETWORK !== 'mainnet'
+		? {
+				[ allChains[ NETWORK ] ]: http( RPC_URL ),
+				[ mainnet.id ]: http( RPC_URL_MAINNET ),
+		  }
+		: {
+				[ mainnet.id ]: http( RPC_URL_MAINNET ),
+		  };
 const wagmiConfig = createConfig( {
-	autoConnect: LOGGED_IN === '1',
-	connectors,
-	publicClient,
+	chains,
+	connectors: [
+		coinbaseWallet( {
+			appName: SITE_TITLE,
+			chainId: allChains[ NETWORK ].id,
+		} ),
+		injected(),
+		walletConnect( {
+			projectId: WALLETCONNECT_PROJECT_ID,
+		} ),
+	],
+	transports,
 } );
+
+const queryClient = new QueryClient();
 
 /**
  * WP Rainbow Provider.
@@ -132,31 +132,35 @@ function WPRainbow( {
 	style,
 } ) {
 	return (
-		<WagmiConfig config={ wagmiConfig }>
-			<RainbowKitProvider
-				chains={ chains }
-				coolMode={ COOL_MODE === 'on' }
-				modalSize={ COMPACT_MODAL === 'on' ? 'compact' : 'large' }
-				theme={ themes[ THEME ]() }
-			>
-				<WPRainbowConnect
-					buttonClassName={ buttonClassName }
-					checkWalletText={ checkWalletText }
-					containerClassName={ containerClassName }
-					containers={ containers }
-					errorText={ errorText }
-					loginText={ loginText }
-					mockLogin={ mockLogin }
-					onError={ onError }
-					onLogin={ onLogin }
-					onLogout={ onLogout }
-					outerContainerClassName={ outerContainerClassName }
-					redirectBoomerang={ redirectBoomerang }
-					redirectURL={ redirectURL }
-					style={ style }
-				/>
-			</RainbowKitProvider>
-		</WagmiConfig>
+		<WagmiProvider
+			config={ wagmiConfig }
+			reconnectOnMount={ LOGGED_IN === '1' }
+		>
+			<QueryClientProvider client={ queryClient }>
+				<RainbowKitProvider
+					coolMode={ COOL_MODE === 'on' }
+					modalSize={ COMPACT_MODAL === 'on' ? 'compact' : 'wide' }
+					theme={ themes[ THEME ]() }
+				>
+					<WPRainbowConnect
+						buttonClassName={ buttonClassName }
+						checkWalletText={ checkWalletText }
+						containerClassName={ containerClassName }
+						containers={ containers }
+						errorText={ errorText }
+						loginText={ loginText }
+						mockLogin={ mockLogin }
+						onError={ onError }
+						onLogin={ onLogin }
+						onLogout={ onLogout }
+						outerContainerClassName={ outerContainerClassName }
+						redirectBoomerang={ redirectBoomerang }
+						redirectURL={ redirectURL }
+						style={ style }
+					/>
+				</RainbowKitProvider>
+			</QueryClientProvider>
+		</WagmiProvider>
 	);
 }
 

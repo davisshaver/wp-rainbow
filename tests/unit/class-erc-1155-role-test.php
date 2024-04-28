@@ -61,8 +61,28 @@ class Erc_1155_Role_Test extends TestCase {
 		$erc1155_check = false;
 		$contract->at( '0xB5Cd475c41b7c59646Fa2779Dd5fA54765B61039' )->call(
 			'balanceOf',
-			'0xBaab0948403fc1D524928074663d21282F7F1412',
+			'0x7929DA8e397aE58Be05ee8ffe00a0Da2E58D9271',
 			'0',
+			function ( $err, $balance ) use ( &$erc1155_check ) {
+				if ( hexdec( $balance[0]->value ) >= 1 ) {
+					$erc1155_check = true;
+				}
+			}
+		);
+		$this->assertTrue( $erc1155_check );
+	}
+
+	/**
+	 * Verify ERC-1155 role logic on Base.
+	 */
+	public function testVerifyERC1155Base() {
+		$erc1155_abi   = '[{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]';
+		$contract      = new Contract( 'https://divine-practical-aura.base-mainnet.quiknode.pro/3546a321b96b62c1edcdc8df17978d6ffdf09024/', $erc1155_abi );
+		$erc1155_check = false;
+		$contract->at( '0x73b2bdee3c89ff52e3ddb398d740dc0968c1f1b4' )->call(
+			'balanceOf',
+			'0x0F9Bd2a9E0D30f121c525DB5419A07b08Fce8440',
+			'3',
 			function ( $err, $balance ) use ( &$erc1155_check ) {
 				if ( hexdec( $balance[0]->value ) >= 1 ) {
 					$erc1155_check = true;

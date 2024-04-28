@@ -41,7 +41,7 @@ class WP_Rainbow_Plugins_ERC_1155_Roles {
 	 * Setup instance.
 	 */
 	protected function setup() {
-		add_filter( 'wp_rainbow_role_for_address', [ self::$instance, 'filter_wp_rainbow_role_for_address' ], 10, 5 );
+		add_filter( 'wp_rainbow_role', [ self::$instance, 'filter_wp_rainbow_role' ], 10, 5 );
 	}
 
 	/**
@@ -49,20 +49,19 @@ class WP_Rainbow_Plugins_ERC_1155_Roles {
 	 *
 	 * @param string        $default_role Role used as fallback.
 	 * @param string        $address Address for determining role.
-	 * @param string        $filtered_infura_id Infura ID to use for contract calls.
-	 * @param string        $filtered_infura_network Infura network to use for contract calls.
+	 * @param string        $filtered_rpc_url Filtered RPC URL to use.
 	 * @param WP_User|false $user WordPress user if available.
 	 *
 	 * @return string Filtered WP Rainbow role.
 	 * @throws Exception Throws if user does not hold valid tokens.
 	 */
-	public function filter_wp_rainbow_role_for_address( string $default_role, string $address, string $filtered_infura_id, string $filtered_infura_network, $user ): string {
-		if ( empty( $filtered_infura_id ) || empty( $filtered_infura_network ) ) {
+	public function filter_wp_rainbow_role( string $default_role, string $address, string $filtered_rpc_url, $user ): string {
+		if ( empty( $filtered_rpc_url ) ) {
 			return $default_role;
 		}
 		$erc1155_abi        = '[{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]';
 		$erc1155_role       = '';
-		$contract           = new Contract( 'https://' . map_filtered_network_to_infura_endpoint( $filtered_infura_network ) . '.infura.io/v3/' . $filtered_infura_id, $erc1155_abi );
+		$contract           = new Contract( $filtered_rpc_url, $erc1155_abi );
 		$wp_rainbow_options = get_option(
 			'wp_rainbow_options',
 			[

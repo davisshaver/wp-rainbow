@@ -71,7 +71,7 @@ class WP_Rainbow_Settings {
 					return current_user_can( 'manage_options' );
 				},
 				'args'                => [
-					'wp_rainbow_field_cool_mode'          => [
+					'wp_rainbow_field_cool_mode' => [
 						'required'    => true,
 						'type'        => 'string',
 						'description' => 'Whether RainbowKit Cool Mode is enabled',
@@ -80,7 +80,7 @@ class WP_Rainbow_Settings {
 							'off',
 						],
 					],
-					'wp_rainbow_field_rainbowkit_theme'   => [
+					'wp_rainbow_field_rainbowkit_theme' => [
 						'required'    => true,
 						'type'        => 'string',
 						'description' => 'What base theme is used by RainbowKit',
@@ -90,7 +90,7 @@ class WP_Rainbow_Settings {
 							'midnightTheme',
 						],
 					],
-					'wp_rainbow_field_compact_modal'      => [
+					'wp_rainbow_field_compact_modal' => [
 						'required'    => true,
 						'type'        => 'string',
 						'description' => 'Whether RainbowKit should use the compact modal',
@@ -126,7 +126,7 @@ class WP_Rainbow_Settings {
 							'off',
 						],
 					],
-					'wp_rainbow_field_set_user_roles'     => [
+					'wp_rainbow_field_set_user_roles' => [
 						'required'    => true,
 						'type'        => 'string',
 						'description' => 'Whether user roles should be set on account creation',
@@ -144,18 +144,27 @@ class WP_Rainbow_Settings {
 							'off',
 						],
 					],
-					'wp_rainbow_field_default_user_role'  => [
+					'wp_rainbow_field_default_user_role' => [
 						'required'    => false,
 						'type'        => 'string',
 						'description' => 'Default RainbowKit Login user role',
 					],
-					'wp_rainbow_field_infura_id'          => [
-						'required'    => true,
+					'wp_rainbow_field_infura_id' => [
+						'required'    => false,
 						'type'        => 'string',
 						'description' => 'Infura ID field',
 					],
-					'wp_rainbow_field_infura_network'     => [
+					'wp_rainbow_field_provider' => [
 						'required'    => true,
+						'type'        => 'string',
+						'description' => 'RPC provider to use for RainbowKit login',
+						'enum'        => [
+							'infura',
+							'other',
+						],
+					],
+					'wp_rainbow_field_infura_network' => [
+						'required'    => false,
 						'type'        => 'string',
 						'description' => 'Infura network',
 						'enum'        => [
@@ -170,19 +179,33 @@ class WP_Rainbow_Settings {
 							'arbitrum',
 							'arbitrumGoerli',
 							'arbitrumSepolia',
+							'base',
+							'baseSepolia',
+							'zora',
+							'zoraSepolia',
 						],
+					],
+					'wp_rainbow_field_rpc_url' => [
+						'required'    => false,
+						'type'        => 'string',
+						'description' => 'RPC URL',
+					],
+					'wp_rainbow_field_rpc_url_mainnet' => [
+						'required'    => false,
+						'type'        => 'string',
+						'description' => 'RPC URL',
 					],
 					'wp_rainbow_field_walletconnect_project_id' => [
 						'required'    => true,
 						'type'        => 'string',
 						'description' => 'WalletConnect Project ID',
 					],
-					'wp_rainbow_field_redirect_url'       => [
+					'wp_rainbow_field_redirect_url' => [
 						'required'    => true,
 						'type'        => 'string',
 						'description' => 'Default redirect URL',
 					],
-					'wp_rainbow_field_required_token'     => [
+					'wp_rainbow_field_required_token' => [
 						'required'    => true,
 						'type'        => 'string',
 						'description' => 'Required token contract',
@@ -202,7 +225,7 @@ class WP_Rainbow_Settings {
 						'type'        => 'string',
 						'description' => 'Role to ID mapping',
 					],
-					'wp_rainbow_redirect_url_field'       => [
+					'wp_rainbow_redirect_url_field' => [
 						'required'    => false,
 						'type'        => 'string',
 						'description' => 'ERC-1155 redirect URL',

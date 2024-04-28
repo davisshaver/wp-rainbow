@@ -5,11 +5,10 @@ import {
 	useDisconnect,
 	useEnsName,
 	usePublicClient,
-	useNetwork,
 	useSignMessage,
 } from 'wagmi';
 import stylePropType from 'react-style-proptype';
-import { SiweMessage } from 'siwe';
+import { prepareMessage } from 'simple-siwe';
 import PropTypes from 'prop-types';
 
 const {
@@ -58,8 +57,7 @@ export function WPRainbowConnect( {
 	style,
 } ) {
 	const [ state, setState ] = React.useState( {} );
-	const { address, connector: activeConnector } = useAccount();
-	const { chain } = useNetwork();
+	const { address, chain, connector: activeConnector } = useAccount();
 	const { signMessageAsync } = useSignMessage();
 	const { data: ensName, isSuccess: isENSSuccess } = useEnsName( {
 		address,
@@ -97,7 +95,7 @@ export function WPRainbowConnect( {
 				uri: window.location.origin,
 				version: '1',
 			};
-			const message = new SiweMessage( siwePayload );
+			const message = prepareMessage( siwePayload );
 			const attributes = {};
 			if ( ensName ) {
 				try {
@@ -114,7 +112,7 @@ export function WPRainbowConnect( {
 				}
 			}
 			const signature = await signMessageAsync( {
-				message: message.prepareMessage(),
+				message,
 			} );
 			if ( mockLogin ) {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
@@ -176,6 +174,20 @@ export function WPRainbowConnect( {
 		}
 	}, [ address, isENSSuccess, state.address ] );
 
+	const buttonClassNameWithState = React.useMemo( () => {
+		let buttonClassNameEnriched = buttonClassName;
+		if ( LOGGED_IN ) {
+			buttonClassNameEnriched += ' wpr-logged-in';
+		}
+		if ( state.loading ) {
+			buttonClassNameEnriched += ' wpr-signing-in';
+		}
+		if ( state.error ) {
+			buttonClassNameEnriched += ' wpr-error';
+		}
+		return buttonClassNameEnriched;
+	}, [ buttonClassName, state.error, state.loading ] );
+
 	return (
 		<ConnectButton.Custom>
 			{ ( { account, openAccountModal, openConnectModal } ) => {
@@ -183,7 +195,7 @@ export function WPRainbowConnect( {
 				if ( state.error ) {
 					button = (
 						<div
-							className={ buttonClassName }
+							className={ buttonClassNameWithState }
 							onClick={ () => {
 								window.location = window.location.href;
 							} }
@@ -223,7 +235,7 @@ export function WPRainbowConnect( {
 					};
 					button = (
 						<div
-							className={ buttonClassName }
+							className={ buttonClassNameWithState }
 							onClick={ triggerContinueLogin }
 							onKeyDown={ ( e ) => {
 								if ( e.keyCode === 13 ) {
@@ -248,7 +260,7 @@ export function WPRainbowConnect( {
 					};
 					button = (
 						<div
-							className={ buttonClassName }
+							className={ buttonClassNameWithState }
 							onClick={ () => {
 								triggerLogin();
 							} }
