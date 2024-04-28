@@ -82,21 +82,27 @@ class WP_Rainbow {
 	 * @return mixed|void Filtered RPC URL.
 	 */
 	public function get_rpc_url() {
-		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_provider' => '', 'wp_rainbow_field_rpc_url' => '' ] );
+		$options = get_option(
+			'wp_rainbow_options',
+			[
+				'wp_rainbow_field_provider' => '',
+				'wp_rainbow_field_rpc_url'  => '',
+			] 
+		);
 		$rpc_url = '';
 		if (
 			! empty( $options['wp_rainbow_field_provider'] ) &&
-			$options['wp_rainbow_field_provider'] === 'other' &&
+			'other' === $options['wp_rainbow_field_provider'] &&
 			! empty( $options['wp_rainbow_field_rpc_url'] )
 		) {
 			$rpc_url = $options['wp_rainbow_field_rpc_url'];
 		} elseif (
 			empty( $options['wp_rainbow_field_provider'] ) ||
-			$options['wp_rainbow_field_provider'] === 'infura'
+			'infura' === $options['wp_rainbow_field_provider']
 		) {
 			$infura_network = $this->get_infura_network_filtered();
-			$infura_id = $this->get_infura_id_filtered();
-			$rpc_url = 'https://' . map_filtered_network_to_infura_endpoint( $infura_network ) . '.infura.io/v3/' . $infura_id;
+			$infura_id      = $this->get_infura_id_filtered();
+			$rpc_url        = 'https://' . wp_rainbow_map_filtered_network_to_infura_endpoint( $infura_network ) . '.infura.io/v3/' . $infura_id;
 		}
 		
 		/**
@@ -113,19 +119,25 @@ class WP_Rainbow {
 	 * @return mixed|void Filtered RPC URL for mainnet.
 	 */
 	public function get_rpc_url_mainnet() {
-		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_provider' => '', 'wp_rainbow_field_rpc_url_mainnet' => '' ] );
+		$options         = get_option(
+			'wp_rainbow_options',
+			[
+				'wp_rainbow_field_provider'        => '',
+				'wp_rainbow_field_rpc_url_mainnet' => '',
+			] 
+		);
 		$rpc_url_mainnet = '';
 		if (
 			! empty( $options['wp_rainbow_field_provider'] ) &&
-			$options['wp_rainbow_field_provider'] === 'other' &&
+			'other' === $options['wp_rainbow_field_provider'] &&
 			! empty( $options['wp_rainbow_field_rpc_url_mainnet'] )
 		) {
 			$rpc_url_mainnet = $options['wp_rainbow_field_rpc_url_mainnet'];
 		} elseif (
 			empty( $options['wp_rainbow_field_provider'] ) ||
-			$options['wp_rainbow_field_provider'] === 'infura'
+			'infura' === $options['wp_rainbow_field_provider']
 		) {
-			$infura_id = $this->get_infura_id_filtered();
+			$infura_id       = $this->get_infura_id_filtered();
 			$rpc_url_mainnet = 'https://mainnet.infura.io/v3/' . $infura_id;
 		}
 		
@@ -143,7 +155,7 @@ class WP_Rainbow {
 	 * @return mixed|void Filtered Infura ID.
 	 */
 	public function get_infura_id_filtered() {
-		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_infura_id' => '' ] );
+		$options   = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_infura_id' => '' ] );
 		$infura_id = $options['wp_rainbow_field_infura_id'] ?? '';
 		/**
 		 * Filter the Infura ID used for WP Rainbow integration.

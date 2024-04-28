@@ -308,7 +308,7 @@ class WP_Rainbow_Login_Functionality {
 				// @TODO Figure out if ABI should be an option (or formatted differently).
 
 				$example_abi = '[{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
-				$contract    = new Contract( 'https://' . map_filtered_network_to_infura_endpoint( $filtered_infura_network ) . '.infura.io/v3/' . $filtered_infura_id, $example_abi );
+				$contract    = new Contract( 'https://' . wp_rainbow_map_filtered_network_to_infura_endpoint( $filtered_infura_network ) . '.infura.io/v3/' . $filtered_infura_id, $example_abi );
 				$contract->at( $wp_rainbow_options['wp_rainbow_field_required_token'] )->call(
 					'balanceOf',
 					$address,
