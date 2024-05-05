@@ -150,12 +150,21 @@ class WP_Rainbow_Settings {
 						'description' => 'Default RainbowKit Login user role',
 					],
 					'wp_rainbow_field_infura_id'          => [
-						'required'    => true,
+						'required'    => false,
 						'type'        => 'string',
 						'description' => 'Infura ID field',
 					],
-					'wp_rainbow_field_infura_network'     => [
+					'wp_rainbow_field_provider'           => [
 						'required'    => true,
+						'type'        => 'string',
+						'description' => 'RPC provider to use for RainbowKit login',
+						'enum'        => [
+							'infura',
+							'other',
+						],
+					],
+					'wp_rainbow_field_infura_network'     => [
+						'required'    => false,
 						'type'        => 'string',
 						'description' => 'Infura network',
 						'enum'        => [
@@ -170,7 +179,21 @@ class WP_Rainbow_Settings {
 							'arbitrum',
 							'arbitrumGoerli',
 							'arbitrumSepolia',
+							'base',
+							'baseSepolia',
+							'zora',
+							'zoraSepolia',
 						],
+					],
+					'wp_rainbow_field_rpc_url'            => [
+						'required'    => false,
+						'type'        => 'string',
+						'description' => 'RPC URL',
+					],
+					'wp_rainbow_field_rpc_url_mainnet'    => [
+						'required'    => false,
+						'type'        => 'string',
+						'description' => 'RPC URL',
 					],
 					'wp_rainbow_field_walletconnect_project_id' => [
 						'required'    => true,

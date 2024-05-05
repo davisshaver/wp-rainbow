@@ -128,10 +128,11 @@ class WP_Rainbow_Login_Functionality {
 	 * @param string        $filtered_infura_id Filtered Infura ID.
 	 * @param string        $filtered_infura_network Filtered Infura network.
 	 * @param WP_User|false $user User object, if available.
+	 * @param string        $filtered_rpc_url Filtered RPC URL.
 	 *
 	 * @return string Filtered role for a given address.
 	 */
-	public function get_role_for_address_filtered( string $address, string $filtered_infura_id, string $filtered_infura_network, $user ): string {
+	public function get_role_for_address_filtered( string $address, string $filtered_infura_id, string $filtered_infura_network, $user, string $filtered_rpc_url ): string {
 		$default_role = get_option( 'default_role' );
 
 		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_default_user_role' => '' ] );
@@ -140,7 +141,7 @@ class WP_Rainbow_Login_Functionality {
 		}
 
 		/**
-		 * Filter the default role for WP Rainbow users.
+		 * Legacy filter for the default role for WP Rainbow users.
 		 *
 		 * @param string $default Default role for new users.
 		 * @param string $address Address of user being added.
@@ -148,7 +149,17 @@ class WP_Rainbow_Login_Functionality {
 		 * @param string $filtered_infura_network Filtered Infura network.
 		 * @param WP_User|false $user User object, if available.
 		 */
-		return apply_filters( 'wp_rainbow_role_for_address', $default_role, $address, $filtered_infura_id, $filtered_infura_network, $user );
+		$legacy_filtered_role = apply_filters( 'wp_rainbow_role_for_address', $default_role, $address, $filtered_infura_id, $filtered_infura_network, $user );
+
+		/**
+		 * Filter the default role for WP Rainbow users.
+		 *
+		 * @param string $default Default role for new users.
+		 * @param string $address Address of user being added.
+		 * @param string $filtered_rpc_url Filtered RPC URL.
+		 * @param WP_User|false $user User object, if available.
+		 */
+		return apply_filters( 'wp_rainbow_role', $legacy_filtered_role, $address, $filtered_rpc_url, $user );
 	}
 
 	// API ROUTES.
@@ -291,12 +302,13 @@ class WP_Rainbow_Login_Functionality {
 			$wp_rainbow              = WP_Rainbow::instance();
 			$filtered_infura_id      = $wp_rainbow->get_infura_id_filtered();
 			$filtered_infura_network = $wp_rainbow->get_infura_network_filtered();
+			$filtered_rpc_url        = $wp_rainbow->get_rpc_url();
 
 			if ( ! empty( $wp_rainbow_options['wp_rainbow_field_required_token'] ) && ! empty( $filtered_infura_id ) && ! empty( $filtered_infura_network ) ) {
 				// @TODO Figure out if ABI should be an option (or formatted differently).
 
 				$example_abi = '[{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
-				$contract    = new Contract( 'https://' . map_filtered_network_to_infura_endpoint( $filtered_infura_network ) . '.infura.io/v3/' . $filtered_infura_id, $example_abi );
+				$contract    = new Contract( 'https://' . wp_rainbow_map_filtered_network_to_infura_endpoint( $filtered_infura_network ) . '.infura.io/v3/' . $filtered_infura_id, $example_abi );
 				$contract->at( $wp_rainbow_options['wp_rainbow_field_required_token'] )->call(
 					'balanceOf',
 					$address,
@@ -311,7 +323,7 @@ class WP_Rainbow_Login_Functionality {
 			// Lookup or generate user and then sign them in.
 			$user                   = get_user_by( 'login', $address );
 			$sanitized_display_name = sanitize_text_field( $display_name );
-			$role                   = $this->get_role_for_address_filtered( $address, $filtered_infura_id, $filtered_infura_network, $user );
+			$role                   = $this->get_role_for_address_filtered( $address, $filtered_infura_id, $filtered_infura_network, $user, $filtered_rpc_url );
 			$should_set_role        = $this->get_should_set_role_filtered();
 
 			if ( ! $user ) {

@@ -92,6 +92,7 @@ class WP_Rainbow_Login_Styling {
 			}
 
 			#wp-rainbow-button div[role="button"] {
+				padding: 0 18px;
 				text-align: center;
 				width: 100%;
 			}

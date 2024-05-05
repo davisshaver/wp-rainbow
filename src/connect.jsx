@@ -5,11 +5,11 @@ import {
 	useDisconnect,
 	useEnsName,
 	usePublicClient,
-	useNetwork,
 	useSignMessage,
+	useConnections,
 } from 'wagmi';
 import stylePropType from 'react-style-proptype';
-import { SiweMessage } from 'siwe';
+import { prepareMessage } from 'simple-siwe';
 import PropTypes from 'prop-types';
 
 const {
@@ -58,19 +58,19 @@ export function WPRainbowConnect( {
 	style,
 } ) {
 	const [ state, setState ] = React.useState( {} );
-	const { address, connector: activeConnector } = useAccount();
-	const { chain } = useNetwork();
+	const { address, chain, connector: activeConnector } = useAccount();
 	const { signMessageAsync } = useSignMessage();
 	const { data: ensName, isSuccess: isENSSuccess } = useEnsName( {
 		address,
 		chainId: 1,
 	} );
+	const connections = useConnections();
 
 	const provider = usePublicClient( {
 		chainId: 1,
 	} );
 
-	const { disconnectAsync } = useDisconnect();
+	const { disconnect, disconnectAsync } = useDisconnect();
 
 	const signIn = React.useCallback( async () => {
 		try {
@@ -81,7 +81,7 @@ export function WPRainbowConnect( {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
 				return;
 			}
-			if ( window?.signingIn.length > 1 ) {
+			if ( window.signingIn && window.signingIn.length > 1 ) {
 				return;
 			}
 			setState( ( x ) => ( { ...x, error: undefined, loading: true } ) );
@@ -97,7 +97,7 @@ export function WPRainbowConnect( {
 				uri: window.location.origin,
 				version: '1',
 			};
-			const message = new SiweMessage( siwePayload );
+			const message = prepareMessage( siwePayload );
 			const attributes = {};
 			if ( ensName ) {
 				try {
@@ -114,7 +114,7 @@ export function WPRainbowConnect( {
 				}
 			}
 			const signature = await signMessageAsync( {
-				message: message.prepareMessage(),
+				message,
 			} );
 			if ( mockLogin ) {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
@@ -149,12 +149,47 @@ export function WPRainbowConnect( {
 				setState( ( x ) => ( { ...x, error, loading: false } ) );
 			}
 		} catch ( error ) {
+			console.error( error );
 			setState( ( x ) => ( { ...x, error, loading: false } ) );
 		}
 	}, [ address, chain, ensName ] );
 
 	const [ triggeredLogin, setTriggeredLogin ] = React.useState( false );
 	React.useEffect( () => {
+		const urlParams = new URLSearchParams( window.location.search );
+		// This code is NUTS but Metamask doesn't support disconnecting apparently?
+		// Keep an eye on these issues:
+		// - https://github.com/wevm/wagmi/issues/684
+		// - https://github.com/MetaMask/metamask-extension/issues/10353
+		if (
+			activeConnector &&
+			activeConnector.id.includes( 'metamask' ) &&
+			! triggeredLogin &&
+			( urlParams.has( 'wp-rainbow-logout' ) ||
+				( urlParams.has( 'loggedout' ) &&
+					! urlParams.has( 'wp-rainbow-loggedout' ) ) )
+		) {
+			connections.forEach( ( { connector } ) => {
+				disconnect( { connector } );
+			} );
+			// Remove the query parameter from the URL.
+			if ( urlParams.has( 'wp-rainbow-logout' ) ) {
+				urlParams.delete( 'wp-rainbow-logout' );
+			}
+			if ( urlParams.has( 'loggedout' ) ) {
+				urlParams.append( 'wp-rainbow-loggedout', 'true' );
+			}
+			const paramsString = urlParams.toString();
+			// Set the new URL without the query parameter.
+			window.history.replaceState(
+				{},
+				document.title,
+				`${ window.location.pathname }${
+					paramsString ? `?${ paramsString }` : ''
+				}`
+			);
+			return;
+		}
 		if ( activeConnector && address && isENSSuccess && ! triggeredLogin ) {
 			window.signingIn = ! window.signingIn
 				? [ true ]
@@ -162,6 +197,9 @@ export function WPRainbowConnect( {
 			signIn();
 			setTriggeredLogin( true );
 		} else if ( ! address && state.address && ! window.signingOut ) {
+			connections.forEach( ( { connector } ) => {
+				disconnect( { connector } );
+			} );
 			window.signingOut = true;
 			setState( {} );
 			setTriggeredLogin( false );
@@ -176,6 +214,20 @@ export function WPRainbowConnect( {
 		}
 	}, [ address, isENSSuccess, state.address ] );
 
+	const buttonClassNameWithState = React.useMemo( () => {
+		let buttonClassNameEnriched = buttonClassName;
+		if ( LOGGED_IN ) {
+			buttonClassNameEnriched += ' wpr-logged-in';
+		}
+		if ( state.loading ) {
+			buttonClassNameEnriched += ' wpr-signing-in';
+		}
+		if ( state.error ) {
+			buttonClassNameEnriched += ' wpr-error';
+		}
+		return buttonClassNameEnriched;
+	}, [ buttonClassName, state.error, state.loading ] );
+
 	return (
 		<ConnectButton.Custom>
 			{ ( { account, openAccountModal, openConnectModal } ) => {
@@ -183,7 +235,7 @@ export function WPRainbowConnect( {
 				if ( state.error ) {
 					button = (
 						<div
-							className={ buttonClassName }
+							className={ buttonClassNameWithState }
 							onClick={ () => {
 								window.location = window.location.href;
 							} }
@@ -223,7 +275,7 @@ export function WPRainbowConnect( {
 					};
 					button = (
 						<div
-							className={ buttonClassName }
+							className={ buttonClassNameWithState }
 							onClick={ triggerContinueLogin }
 							onKeyDown={ ( e ) => {
 								if ( e.keyCode === 13 ) {
@@ -248,7 +300,7 @@ export function WPRainbowConnect( {
 					};
 					button = (
 						<div
-							className={ buttonClassName }
+							className={ buttonClassNameWithState }
 							onClick={ () => {
 								triggerLogin();
 							} }

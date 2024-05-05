@@ -77,19 +77,92 @@ class WP_Rainbow {
 	}
 
 	/**
+	 * Provide filter for RPC URL. Defaults to settings page value.
+	 *
+	 * @return mixed|void Filtered RPC URL.
+	 */
+	public function get_rpc_url() {
+		$options = get_option(
+			'wp_rainbow_options',
+			[
+				'wp_rainbow_field_provider' => '',
+				'wp_rainbow_field_rpc_url'  => '',
+			] 
+		);
+		$rpc_url = '';
+		if (
+			! empty( $options['wp_rainbow_field_provider'] ) &&
+			'other' === $options['wp_rainbow_field_provider'] &&
+			! empty( $options['wp_rainbow_field_rpc_url'] )
+		) {
+			$rpc_url = $options['wp_rainbow_field_rpc_url'];
+		} elseif (
+			empty( $options['wp_rainbow_field_provider'] ) ||
+			'infura' === $options['wp_rainbow_field_provider']
+		) {
+			$infura_network = $this->get_infura_network_filtered();
+			$infura_id      = $this->get_infura_id_filtered();
+			$rpc_url        = 'https://' . wp_rainbow_map_filtered_network_to_infura_endpoint( $infura_network ) . '.infura.io/v3/' . $infura_id;
+		}
+		
+		/**
+		 * Filter the RPC URL used for WP Rainbow integration.
+		 *
+		 * @param string $default RPC URL as set in WP Rainbow options or derived from Infura ID.
+		 */
+		return apply_filters( 'wp_rainbow_rpc_url', $rpc_url );
+	}
+
+	/**
+	 * Provide filter for mainnet RPC URL. Defaults to settings page value.
+	 *
+	 * @return mixed|void Filtered RPC URL for mainnet.
+	 */
+	public function get_rpc_url_mainnet() {
+		$options         = get_option(
+			'wp_rainbow_options',
+			[
+				'wp_rainbow_field_provider'        => '',
+				'wp_rainbow_field_rpc_url_mainnet' => '',
+			] 
+		);
+		$rpc_url_mainnet = '';
+		if (
+			! empty( $options['wp_rainbow_field_provider'] ) &&
+			'other' === $options['wp_rainbow_field_provider'] &&
+			! empty( $options['wp_rainbow_field_rpc_url_mainnet'] )
+		) {
+			$rpc_url_mainnet = $options['wp_rainbow_field_rpc_url_mainnet'];
+		} elseif (
+			empty( $options['wp_rainbow_field_provider'] ) ||
+			'infura' === $options['wp_rainbow_field_provider']
+		) {
+			$infura_id       = $this->get_infura_id_filtered();
+			$rpc_url_mainnet = 'https://mainnet.infura.io/v3/' . $infura_id;
+		}
+		
+		/**
+		 * Filter the mainnet RPC URL used for WP Rainbow integration.
+		 *
+		 * @param string $default Mainnet RPC URL as set in WP Rainbow options or derived from Infura ID.
+		 */
+		return apply_filters( 'wp_rainbow_rpc_url_mainnet', $rpc_url_mainnet );
+	}
+
+	/**
 	 * Provide filter for Infura ID. Defaults to settings page value.
 	 *
 	 * @return mixed|void Filtered Infura ID.
 	 */
 	public function get_infura_id_filtered() {
-		$options = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_infura_id' => '' ] );
-
+		$options   = get_option( 'wp_rainbow_options', [ 'wp_rainbow_field_infura_id' => '' ] );
+		$infura_id = $options['wp_rainbow_field_infura_id'] ?? '';
 		/**
 		 * Filter the Infura ID used for WP Rainbow integration.
 		 *
 		 * @param string $default Infura ID as set in WP Rainbow options.
 		 */
-		return apply_filters( 'wp_rainbow_infura_id', $options['wp_rainbow_field_infura_id'] );
+		return apply_filters( 'wp_rainbow_infura_id', $infura_id );
 	}
 
 	/**
@@ -235,7 +308,8 @@ class WP_Rainbow {
 			'wpRainbowData',
 			[
 				'ADMIN_URL'                => get_admin_url(),
-				'INFURA_ID'                => esc_textarea( $this->get_infura_id_filtered() ),
+				'RPC_URL'                  => esc_textarea( $this->get_rpc_url() ),
+				'RPC_URL_MAINNET'          => esc_textarea( $this->get_rpc_url_mainnet() ),
 				'LOGIN_API'                => get_rest_url( null, 'wp-rainbow/v1/login' ),
 				'NONCE_API'                => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
 				'REDIRECT_URL'             => esc_url( $this->get_redirect_url_filtered() ),
@@ -253,7 +327,8 @@ class WP_Rainbow {
 			'wpRainbowData',
 			[
 				'ADMIN_URL'                => get_admin_url(),
-				'INFURA_ID'                => esc_textarea( $this->get_infura_id_filtered() ),
+				'RPC_URL'                  => esc_textarea( $this->get_rpc_url() ),
+				'RPC_URL_MAINNET'          => esc_textarea( $this->get_rpc_url_mainnet() ),
 				'LOGIN_API'                => get_rest_url( null, 'wp-rainbow/v1/login' ),
 				'LOGGED_IN'                => is_user_logged_in(),
 				'NONCE_API'                => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
@@ -353,7 +428,8 @@ class WP_Rainbow {
 			'wpRainbowData',
 			[
 				'ADMIN_URL'                => get_admin_url(),
-				'INFURA_ID'                => esc_textarea( $this->get_infura_id_filtered() ),
+				'RPC_URL'                  => esc_textarea( $this->get_rpc_url() ),
+				'RPC_URL_MAINNET'          => esc_textarea( $this->get_rpc_url_mainnet() ),
 				'LOGIN_API'                => get_rest_url( null, 'wp-rainbow/v1/login' ),
 				'NONCE_API'                => get_rest_url( null, 'wp-rainbow/v1/nonce' ),
 				'REDIRECT_URL'             => esc_url( $this->get_redirect_url_filtered() ),
