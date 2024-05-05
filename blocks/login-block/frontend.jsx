@@ -28,9 +28,12 @@ if ( loginBlocks ) {
 				}
 				onLogout={ () => {
 					const logoutURL = new URL( LOGOUT_URL );
+					const currentURL = new URL( window.location.href );
+					// Add a 'wp-rainbow-logout' query parameter to the current URL.
+					currentURL.searchParams.append( 'wp-rainbow-logout', 'true' );
 					logoutURL.searchParams.append(
 						'redirect_to',
-						encodeURI( window.location.href )
+						encodeURI( currentURL )
 					);
 					window.location = logoutURL.toString();
 				} }

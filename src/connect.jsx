@@ -6,6 +6,7 @@ import {
 	useEnsName,
 	usePublicClient,
 	useSignMessage,
+	useConnections,
 } from 'wagmi';
 import stylePropType from 'react-style-proptype';
 import { prepareMessage } from 'simple-siwe';
@@ -63,12 +64,13 @@ export function WPRainbowConnect( {
 		address,
 		chainId: 1,
 	} );
+	const connections = useConnections();
 
 	const provider = usePublicClient( {
 		chainId: 1,
 	} );
 
-	const { disconnectAsync } = useDisconnect();
+	const { disconnect, disconnectAsync } = useDisconnect();
 
 	const signIn = React.useCallback( async () => {
 		try {
@@ -79,7 +81,7 @@ export function WPRainbowConnect( {
 				setState( ( x ) => ( { ...x, address, loading: false } ) );
 				return;
 			}
-			if ( window?.signingIn.length > 1 ) {
+			if ( window.signingIn && window.signingIn.length > 1 ) {
 				return;
 			}
 			setState( ( x ) => ( { ...x, error: undefined, loading: true } ) );
@@ -147,12 +149,47 @@ export function WPRainbowConnect( {
 				setState( ( x ) => ( { ...x, error, loading: false } ) );
 			}
 		} catch ( error ) {
+			console.error( error );
 			setState( ( x ) => ( { ...x, error, loading: false } ) );
 		}
 	}, [ address, chain, ensName ] );
 
 	const [ triggeredLogin, setTriggeredLogin ] = React.useState( false );
 	React.useEffect( () => {
+		const urlParams = new URLSearchParams( window.location.search );
+		// This code is NUTS but Metamask doesn't support disconnecting apparently?
+		// Keep an eye on these issues:
+		// - https://github.com/wevm/wagmi/issues/684
+		// - https://github.com/MetaMask/metamask-extension/issues/10353
+		if (
+			activeConnector &&
+			activeConnector.id.includes( 'metamask' ) &&
+			! triggeredLogin &&
+			( urlParams.has( 'wp-rainbow-logout' ) ||
+				( urlParams.has( 'loggedout' ) &&
+					! urlParams.has( 'wp-rainbow-loggedout' ) ) )
+		) {
+			connections.forEach( ( { connector } ) => {
+				disconnect( { connector } );
+			} );
+			// Remove the query parameter from the URL.
+			if ( urlParams.has( 'wp-rainbow-logout' ) ) {
+				urlParams.delete( 'wp-rainbow-logout' );
+			}
+			if ( urlParams.has( 'loggedout' ) ) {
+				urlParams.append( 'wp-rainbow-loggedout', 'true' );
+			}
+			const paramsString = urlParams.toString();
+			// Set the new URL without the query parameter.
+			window.history.replaceState(
+				{},
+				document.title,
+				`${ window.location.pathname }${
+					paramsString ? `?${ paramsString }` : ''
+				}`
+			);
+			return;
+		}
 		if ( activeConnector && address && isENSSuccess && ! triggeredLogin ) {
 			window.signingIn = ! window.signingIn
 				? [ true ]
@@ -160,6 +197,9 @@ export function WPRainbowConnect( {
 			signIn();
 			setTriggeredLogin( true );
 		} else if ( ! address && state.address && ! window.signingOut ) {
+			connections.forEach( ( { connector } ) => {
+				disconnect( { connector } );
+			} );
 			window.signingOut = true;
 			setState( {} );
 			setTriggeredLogin( false );

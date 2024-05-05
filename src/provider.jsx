@@ -3,10 +3,10 @@ import {
 	lightTheme,
 	darkTheme,
 	midnightTheme,
+	getDefaultConfig,
 } from '@rainbow-me/rainbowkit';
-import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createConfig, http, WagmiProvider } from 'wagmi';
+import { http, WagmiProvider } from 'wagmi';
 import {
 	arbitrum,
 	arbitrumGoerli,
@@ -79,18 +79,10 @@ const transports =
 		: {
 				[ mainnet.id ]: http( RPC_URL_MAINNET ),
 		  };
-const wagmiConfig = createConfig( {
+const wagmiConfig = getDefaultConfig( {
+	appName: SITE_TITLE,
 	chains,
-	connectors: [
-		coinbaseWallet( {
-			appName: SITE_TITLE,
-			chainId: allChains[ NETWORK ].id,
-		} ),
-		injected(),
-		walletConnect( {
-			projectId: WALLETCONNECT_PROJECT_ID,
-		} ),
-	],
+	projectId: WALLETCONNECT_PROJECT_ID,
 	transports,
 } );
 
