@@ -70,6 +70,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 
 == Changelog ==
 
+= 0.5.1 =
+* Add default helper classname for button
+
 = 0.5.0 =
 * Add support for custom RPC URLs and Base/Zora networks
 * Add helper classnames to buttons for additional style customization

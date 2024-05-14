@@ -149,6 +149,7 @@ export function WPRainbowConnect( {
 				setState( ( x ) => ( { ...x, error, loading: false } ) );
 			}
 		} catch ( error ) {
+			// eslint-disable-next-line no-console
 			console.error( error );
 			setState( ( x ) => ( { ...x, error, loading: false } ) );
 		}
@@ -216,6 +217,7 @@ export function WPRainbowConnect( {
 
 	const buttonClassNameWithState = React.useMemo( () => {
 		let buttonClassNameEnriched = buttonClassName;
+		buttonClassNameEnriched += ' wpr-button';
 		if ( LOGGED_IN ) {
 			buttonClassNameEnriched += ' wpr-logged-in';
 		}
