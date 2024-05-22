@@ -9,7 +9,7 @@ import {
 	useConnections,
 } from 'wagmi';
 import stylePropType from 'react-style-proptype';
-import { prepareMessage } from 'simple-siwe';
+import { createSiweMessage } from 'viem/siwe';
 import PropTypes from 'prop-types';
 
 const {
@@ -91,13 +91,13 @@ export function WPRainbowConnect( {
 				address,
 				chainId: chain.id,
 				domain: window.location.host,
-				issuedAt: new Date().toISOString(),
+				issuedAt: new Date(),
 				nonce,
 				statement: `Log In with Ethereum to ${ SITE_TITLE }`,
 				uri: window.location.origin,
 				version: '1',
 			};
-			const message = prepareMessage( siwePayload );
+			const message = createSiweMessage( siwePayload );
 			const attributes = {};
 			if ( ensName ) {
 				try {

@@ -70,6 +70,9 @@ Find reference implementations of all filters in [example plugin here](https://g
 
 == Changelog ==
 
+= 0.5.2 =
+* Switch from simple-siwe to viem/siwe
+
 = 0.5.1 =
 * Add default helper classname for button
 
